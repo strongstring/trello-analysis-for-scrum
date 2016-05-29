@@ -15,3 +15,44 @@ a {
 .rightPont { 
 	text-align: right;
 }
+
+.tast_cell {
+	padding-top: 10px;
+  padding-bottom: 10px;
+  border: 1px solid #ddd;
+}
+
+tr.primary {
+	background-color: #337ab7;
+	border-color: #337ab7;
+	color: white;
+	text-align: center;
+}
+
+td {
+	text-align: center;
+}
+
+td.textLabel {
+	text-align: left;
+}
+
+tr.taskDone {
+	background-color : #5cb85c;
+	color : white;
+}
+
+tr.taskDoing {
+	background-color : #f0ad4e;
+	color : white;
+}
+
+td.taskDone {
+	background-color : #5cb85c;
+	color : white;
+}
+
+td.taskDoing {
+	background-color : #f0ad4e;
+	color : white;
+}

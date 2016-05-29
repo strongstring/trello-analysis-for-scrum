@@ -17,57 +17,107 @@
     <!-- Custom Fonts -->
     <link href="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
-    <script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script src="https://trello.com/1/client.js?key=129a907b7a37f2e3d1e84386fab4549f"></script>
     <script src="javascripts/trello_client.js"></script>
   </head>
   <body>
-    <div id="wrapper">
-      <!-- Navigation -->
-      <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
-      </nav>
-      <div class="navbar-default sidebar" role="navigation">
-        <div class="sidebar-nav navbar-collapse">
-        </div>
-      </div>
+  <div id="wrapper">
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+    </nav>
 
-      <div id="page-wrapper">
-        <div class="row">
-                <div class="col-lg-12">
-                    <div class="panel panel-default">
-                        <div class="panel-body">
-                            <h3>Mobile Part Total resouce</h3>
-                            <div class="row show-grid" id="total_resource">
-                                <div class="col-md-4 font_resizing">NO COMMENT<br />NO COMMENT</div>
-                                <div class="col-md-1 font_resizing">SAMPLE1<br />1 / 1</div>
-                                <div class="col-md-1 font_resizing">SAMPLE1<br />1 / 1</div>
-                                <div class="col-md-1 font_resizing">SAMPLE1<br />1 / 1</div>
-                                <div class="col-md-1 font_resizing">SAMPLE1<br />1 / 1</div>
-                                <div class="col-md-1 font_resizing">SAMPLE1<br />1 / 1</div>
-                                <div class="col-md-1 font_resizing">SAMPLE1<br />1 / 1</div>
-                                <div class="col-md-1 font_resizing">SAMPLE1<br />1 / 1</div>
-                                <div class="col-md-1 font_resizing">SAMPLE1<br />1 / 1</div>
-                            </div>
-                            <!-- <div class="row show-grid">
-                                <div class="col-md-8">.col-md-8</div>
-                                <div class="col-md-4">.col-md-4</div>
-                            </div>
-                            <div class="row show-grid">
-                                <div class="col-md-4">.col-md-4</div>
-                                <div class="col-md-4">.col-md-4</div>
-                                <div class="col-md-4">.col-md-4</div>
-                            </div>
-                            <div class="row show-grid">
-                                <div class="col-md-6">.col-md-6</div>
-                                <div class="col-md-6">.col-md-6</div>
-                            </div> -->
-                        </div>
-                    </div>
-                </div>
-                <!-- /.col-lg-12 -->
+    <div id="page-wrapper">
+      <div class=""><h3>Mobile Part H/Resource</h3></div>
+      <div class="">
+        <div class="panel-group" id="accordion">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Member</a>
+              </h4>
             </div>
-            <!-- /.row -->
+            <div id="collapse1" class="panel-collapse collapse">
+              <div class="panel-body" id="memberSelectForm"></div>
+            </div>
+          </div>
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Detail Search</a>
+              </h4>
+            </div>
+            <div id="collapse2" class="panel-collapse collapse in">
+              <div class="panel-body">
+                <div class="col-md-3 font_resizing">
+                  <h4>Iteration Start : </h4>
+                </div>
+                <div class="col-md-2 font_resizing">
+                    <input class="form-control" id="iterationStartDay" placeholder="2016-05-01"/></div>
+                <div class="col-md-3 font_resizing">
+                  <h4>Work Day : </h4>
+                </div>
+                <div class="col-md-2 font_resizing">
+                    <input class="form-control" id="workDay" placeholder="2016-05-02" /></div>
+                <div class="col-md-2 font_resizing">
+                    <button type="button" class="btn btn-info" onClick="searchSNE()">SEARCH</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- <div class="panel panel-default">
+            <div class="panel-heading">
+              <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">Collapsible Group 3</a>
+              </h4>
+            </div>
+            <div id="collapse3" class="panel-collapse collapse">
+              <div class="panel-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+              sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+              quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div>
+            </div>
+          </div> -->
+        </div> 
       </div>
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="panel panel-default" id="projectDashBoard">
+            <div class="panel-heading panel-title">
+              Total Project Resource
+            </div>
+            <div class="panel-body" id="total_resource">
+            <!-- </div> -->
+                <!-- <div class="row show-grid" id="total_resource"> -->
+                    <!-- <div class="col-md-5 font_resizing">NO COMMENT<br />NO COMMENT</div>
+                    <div class="col-md-1 font_resizing">SAMPLE1<br />1 / 1</div>
+                    <div class="col-md-1 font_resizing">SAMPLE1<br />1 / 1</div>
+                    <div class="col-md-1 font_resizing">SAMPLE1<br />1 / 1</div>
+                    <div class="col-md-1 font_resizing">SAMPLE1<br />1 / 1</div>
+                    <div class="col-md-1 font_resizing">SAMPLE1<br />1 / 1</div>
+                    <div class="col-md-1 font_resizing">SAMPLE1<br />1 / 1</div>
+                    <div class="col-md-1 font_resizing">SAMPLE1<br />1 / 1</div> -->
+                <!-- </div> -->
+                <!-- <div class="row show-grid">
+                    <div class="col-md-8">.col-md-8</div>
+                    <div class="col-md-4">.col-md-4</div>
+                </div>
+                <div class="row show-grid">
+                    <div class="col-md-4">.col-md-4</div>
+                    <div class="col-md-4">.col-md-4</div>
+                    <div class="col-md-4">.col-md-4</div>
+                </div>
+                <div class="row show-grid">
+                    <div class="col-md-6">.col-md-6</div>
+                    <div class="col-md-6">.col-md-6</div>
+                </div> -->
+            </div>
+          </div>
+        </div>
+        <!-- /.col-lg-12 -->
+      </div>
+      <!-- /.row -->
     </div>
+  </div>
   </body>
 </html>
