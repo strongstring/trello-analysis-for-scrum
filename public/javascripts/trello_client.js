@@ -174,7 +174,8 @@ var showMemberResource = function() {
     _resouceTable += '<tr><td class="textLabel">' + memberName + '</td><td>'+ _member['estimate'].toFixed(1) +'</td>';
     for(var j = 0; j < 14; j++) {
       var _dateSpend = _member['date_spend'][_date.getDate()];
-      _dateSpend = (_dateSpend === undefined) ? 0.0 : _dateSpend.toFixed(1);
+      _dateSpend = (_dateSpend === undefined) ? ' ' : _dateSpend.toFixed(1);
+      if(_dateSpend < 0.1) _dateSpend = ' ';
 
       if(parseInt(_date.getDate()) === parseInt(workDay.getDate())) {
         _resouceTable += '<td style="border-left:solid 2px; border-right:solid 2px;">' + _dateSpend + '</td>';
@@ -195,7 +196,7 @@ var showProjectResource = function() {
   for(projectName in MOBILE_PART['project']) {
     var _project = MOBILE_PART['project'][projectName];
 
-    var _resouceTable = '<div class="panel-heading panel-title">' + projectName + '</div><div class="panel-body">'
+    var _resouceTable = '<div class="panel panel-default"><div class="panel-heading panel-title">' + MOBILE_PART['project'][projectName]['name'] + '</div><div class="panel-body">'
       + '<table class="table"><tr class="primary">' + '<td>Task</td><td>Member</td><td>E</td>';
     console.log("project : " + projectName + ", cardLength : " + _project['cards'].length);
 
@@ -213,13 +214,9 @@ var showProjectResource = function() {
     _resouceTable += '<td>R</td></tr>';
 
     for(var j = 0; j < _project['cards'].length; j++) {
-      if(projectName === 'wisenet') {
-        console.log("hi");
-      }
       var _card = _project['cards'][j];
-      console.log("card : " + _card.name);
-
       var memCount = 0;
+      
       for(members in _card['members']) {
         if(_card['members'][members]['estimate'] !== undefined && _card['members'][members]['estimate'] > 0) {
           memCount++;
@@ -256,7 +253,8 @@ var showProjectResource = function() {
 
             for(var k = 0; k < 14; k++) {
               var _dateSpend = _card['members'][memberName]['date_spend'][_date.getDate()];
-              _dateSpend = (_dateSpend === undefined) ? 0.0 : _dateSpend.toFixed(1);
+              _dateSpend = (_dateSpend === undefined) ? ' ' : _dateSpend.toFixed(1);
+              if(_dateSpend < 0.1) _dateSpend = ' ';
 
               if(_date.getDate() === workDay.getDate()) {
                 _resouceTable += '<td style="border-left:solid 2px; border-right:solid 2px;">' + _dateSpend + '</td>';
@@ -275,6 +273,91 @@ var showProjectResource = function() {
     _resouceTable += '</table></div></div>';
     $('#projectDashBoard').append(_resouceTable);
   }
+}
+
+var showMemberResourceToGraph = function() {
+  var _dataObj = {"estimateG" : [], "spendG" : []},
+    firstDay = new Date($('#iterationStartDay').val()),
+    today = new Date();
+    targetElement = $('#flot-line-chart-multi');
+
+  firstDay.setDate(firstDay.getDate() - 1);
+
+  var memCount = 6;
+  // for(member in MOBILE_PART['members']) {
+  //   memCount ++;
+  // }
+
+  console.log("member is " + memCount);
+
+  var estimateValForLogical = MOBILE_PART['estimate'],
+    estimateValForReal = MOBILE_PART['estimate'];
+
+  var stopflag = false;
+  for(var i = 0; i < 15; i++) {
+    var _estimateData = [],
+      _spendData = [];
+
+    if(i === 0) {
+      _estimateData.push(firstDay.getTime());
+      _spendData.push(firstDay.getTime());
+      _estimateData.push(estimateValForLogical);
+      _spendData.push(estimateValForReal);
+    } else {
+      firstDay.setDate(firstDay.getDate() + 1);
+      _estimateData.push(firstDay.getTime());
+      _spendData.push(firstDay.getTime());
+
+      if(firstDay.getDate() === today.getDate()) stopflag = true;
+
+      estimateValForLogical -= (memCount*8);
+      console.log(estimateValForLogical);
+      if(MOBILE_PART['date_spend'][firstDay.getDate()] !== undefined) {
+        estimateValForReal -= MOBILE_PART['date_spend'][firstDay.getDate()];
+      }
+
+      _estimateData.push(estimateValForLogical);
+      _spendData.push(estimateValForReal);
+    }
+    _dataObj['spendG'].push(_estimateData);
+    if(!stopflag) _dataObj['estimateG'].push(_spendData);
+  }
+
+  console.log(_dataObj);
+
+  $.plot($("#flot-line-chart-multi"), [{
+        data: _dataObj['estimateG'],
+        label: "LOGICAL ESTIMATE GRAPH"
+    }, {
+        data: _dataObj['spendG'],
+        label: "ACTUAL ESTIMATE GRAPH",
+        yaxis: 1
+    }], {
+        xaxes: [{
+            mode: 'time'
+        }],
+        yaxes: [{
+            min: -300
+        }],
+        legend: {
+            position: 'sw'
+        },
+        grid: {
+            hoverable: true //IMPORTANT! this is needed for tooltip to work
+        },
+        tooltip: true,
+        tooltipOpts: {
+            content: "%s for %x was %y",
+            xDateFormat: "%y-%0m-%0d",
+
+            onHover: function(flotItem, $tooltipEl) {
+                // console.log(flotItem, $tooltipEl);
+            }
+        }
+
+    });
+
+
 }
 
 var showlogMemberResource = function() {
@@ -365,23 +448,23 @@ var getBoardInfo = function(boardID) {
       break;
     case "3UZJ3kPG" : 
       _obj['board'] = "ipolis";
-      _obj['name'] = "IPOLIS MOBILE";
+      _obj['name'] = "iPOLiS mobile";
       break;
     case "g0DBnhdi" :
       _obj['board'] = "ssm";
-      _obj['name'] = "SSM MOBILE";
+      _obj['name'] = "SSM mobile";
       break;
     case "nisQ181R" : 
       _obj['board'] = "smartcam";
-      _obj['name'] = "SMARTCAM MOBILE";
+      _obj['name'] = "SmartCam mobile";
       break;
     case "duBw0VfK" :
       _obj['board'] = "wisenet";
-      _obj['name'] = "WISENET MOBILE";
+      _obj['name'] = "WiseNet mobile";
       break;
     case "u6SqfXJ9" :
       _obj['board'] = "argus";
-      _obj['name'] = "ARGUS MOBILE";
+      _obj['name'] = "Argus";
       break;
     default : break;
   }
@@ -410,67 +493,92 @@ var getSNE = function(boardID, cards) {
       if(_action.data.text !== null && _action.data.text.indexOf('plus!') !== -1) {
         var _commentText = _action.data.text.substring(6);
         var _commentInfo = _commentText.split(' '),
-          _member = _action.memberCreator.username,
+          duplicatedFlag = false,
+          // _member = new Array(_action.memberCreator.username),
+          _member = new Array(),
           _date = new Date(_action.date);
 
+        if(boardID === COMMON_ID) console.log(_action.data.text);
         for( var k = 0; k < _commentInfo.length; k++) {
           if(_commentInfo[k].indexOf('@') !== -1) {
             // S&E Member Setting
-            _member = _commentInfo[k].substring(1);
+            duplicatedFlag = false;
+            if(_commentInfo[k].substring(1) === "me") {
+              _member.push(_action.memberCreator.username);
+            } else {
+              _member.push(_commentInfo[k].substring(1));
+            }
           } else if (_commentInfo[k].indexOf('d') !== -1) {
             // S&E Date Setting
             _date.setDate(_date.getDate() + parseInt(_commentInfo[k].substring(0, 2)));
-          } else if (_commentInfo[k].indexOf('/') !== -1) {
-            var _timeArr = _commentInfo[k].split('/');
+          } else if ((_commentInfo[k].indexOf('/') !== -1 || parseFloat(_commentInfo[k]) !== NaN) && _commentInfo[k] !== '') {
+            // var _timeArr = _commentInfo[k].split('/');
+            var _timeArr = [];
+            if(_commentInfo[k].indexOf('/') !== -1 ) {
+              _timeArr = _commentInfo[k].split('/');
+            } else {
+              _timeArr[0] = _commentInfo[k];
+              _timeArr[1] = 0;
+            }
             var spendValue = parseFloat(_timeArr[0]),
               estimateValue = parseFloat(_timeArr[1]);
 
-            // console.log(_card['name'] + " " + _member + " " + _commentInfo[k]);
+            // if dont have @username, that S
+            if(_member.length === 0) _member.push(_action.memberCreator.username);
 
-            // add info in card
-            if(_card['spend'] === undefined) _card['spend'] = 0;
-            if(_card['estimate'] === undefined) _card['estimate'] = 0;
-            if(_card['date_spend'] === undefined) _card['date_spend'] = {};
+            // for double S&E in one comment line
+            if(!duplicatedFlag) {
+              // add info in card
+              if(_card['spend'] === undefined) _card['spend'] = 0;
+              if(_card['estimate'] === undefined) _card['estimate'] = 0;
+              if(_card['date_spend'] === undefined) _card['date_spend'] = {};
 
-            // add member in card
-            if(_card['members'] === undefined) _card['members'] = {};
-            if(_card['members'][_member] === undefined)  _card['members'][_member] = {};
-            if(_card['members'][_member]['date_spend'] === undefined) _card['members'][_member]['date_spend'] = {};
-            if(_card['members'][_member]['spend'] === undefined)  _card['members'][_member]['spend'] = 0;
-            if(_card['members'][_member]['estimate'] === undefined) _card['members'][_member]['estimate'] = 0;
+              if(i === 0) console.log("task member length : " + _member.length);
+              for (var m = 0; m < _member.length; m++) {
+                if (i === 0) console.log(_member[m]);
+                if (i === 0) console.log(spendValue);
+                // add member in card
+                if(_card['members'] === undefined) _card['members'] = {};
+                if(_card['members'][_member[m]] === undefined)  _card['members'][_member[m]] = {};
+                if(_card['members'][_member[m]]['date_spend'] === undefined) _card['members'][_member[m]]['date_spend'] = {};
+                if(_card['members'][_member[m]]['spend'] === undefined)  _card['members'][_member[m]]['spend'] = 0;
+                if(_card['members'][_member[m]]['estimate'] === undefined) _card['members'][_member[m]]['estimate'] = 0;
 
-            // add member in card
-            if(MOBILE_PART['members'] === undefined) MOBILE_PART['members'] = {};
-            if(MOBILE_PART['members'][_member] === undefined)  MOBILE_PART['members'][_member] = {};
-            if(MOBILE_PART['members'][_member]['date_spend'] === undefined) MOBILE_PART['members'][_member]['date_spend'] = {};
-            if(MOBILE_PART['members'][_member]['spend'] === undefined)  MOBILE_PART['members'][_member]['spend'] = 0;
-            if(MOBILE_PART['members'][_member]['estimate'] === undefined) MOBILE_PART['members'][_member]['estimate'] = 0;
+                // add member in card
+                if(MOBILE_PART['members'] === undefined) MOBILE_PART['members'] = {};
+                if(MOBILE_PART['members'][_member[m]] === undefined)  MOBILE_PART['members'][_member[m]] = {};
+                if(MOBILE_PART['members'][_member[m]]['date_spend'] === undefined) MOBILE_PART['members'][_member[m]]['date_spend'] = {};
+                if(MOBILE_PART['members'][_member[m]]['spend'] === undefined)  MOBILE_PART['members'][_member[m]]['spend'] = 0;
+                if(MOBILE_PART['members'][_member[m]]['estimate'] === undefined) MOBILE_PART['members'][_member[m]]['estimate'] = 0;
 
-            if(parseFloat(_timeArr[0]) !== NaN) {
-              // add spend in member in card
-              if(_card['members'][_member]['date_spend'][_date.getDate()]  === undefined) 
-                _card['members'][_member]['date_spend'][_date.getDate()] = 0;
-              if(_card['date_spend'][_date.getDate()] === undefined) 
-                _card['date_spend'][_date.getDate()] = 0;
-              if(MOBILE_PART['members'][_member]['date_spend'][_date.getDate()] === undefined) 
-                MOBILE_PART['members'][_member]['date_spend'][_date.getDate()] = 0;
+                if(parseFloat(_timeArr[0]) !== NaN) {
+                  // add spend in member in card
+                  if(_card['members'][_member[m]]['date_spend'][_date.getDate()]  === undefined) 
+                    _card['members'][_member[m]]['date_spend'][_date.getDate()] = 0;
+                  if(_card['date_spend'][_date.getDate()] === undefined) 
+                    _card['date_spend'][_date.getDate()] = 0;
+                  if(MOBILE_PART['members'][_member[m]]['date_spend'][_date.getDate()] === undefined) 
+                    MOBILE_PART['members'][_member[m]]['date_spend'][_date.getDate()] = 0;
 
-              _card['members'][_member]['date_spend'][_date.getDate()] += spendValue;
-              _card['date_spend'][_date.getDate()] += spendValue;
-              _card['members'][_member]['spend'] += spendValue;
-              _card['spend'] += spendValue
+                  _card['members'][_member[m]]['date_spend'][_date.getDate()] += spendValue;
+                  _card['date_spend'][_date.getDate()] += spendValue;
+                  _card['members'][_member[m]]['spend'] += spendValue;
+                  _card['spend'] += spendValue
 
-              MOBILE_PART['members'][_member]['date_spend'][_date.getDate()] += spendValue;
-              MOBILE_PART['members'][_member]['spend'] += spendValue;
+                  MOBILE_PART['members'][_member[m]]['date_spend'][_date.getDate()] += spendValue;
+                  MOBILE_PART['members'][_member[m]]['spend'] += spendValue;
+                }
+
+                if(parseFloat(_timeArr[1]) !== NaN) {
+                  // add estimate in member in card
+                  _card['members'][_member[m]]['estimate'] += estimateValue;
+                  _card['estimate'] += estimateValue
+
+                  MOBILE_PART['members'][_member[m]]['estimate'] += estimateValue;
+                }
+              } // for (m) : member counter
+              duplicatedFlag = true;
             }
-
-            if(parseFloat(_timeArr[1]) !== NaN) {
-              // add estimate in member in card
-              _card['members'][_member]['estimate'] += estimateValue;
-              _card['estimate'] += estimateValue
-
-              MOBILE_PART['members'][_member]['estimate'] += estimateValue;
-            }          
           }
         } // for (k)
       } // if (check 'plus!' about S & E comment)
@@ -549,6 +657,7 @@ var calcStart = function() {
     function(res1, res2, res3, res4, res5) {
       showMemberResource();
       showProjectResource();
+      showMemberResourceToGraph();
       console.log("%c @@@@@@@@@@  ALL ACTION IS CALCULATED!! @@@@@@@@@@", 'background: #222; color: #bada55'); 
     }
   );
@@ -649,6 +758,11 @@ var initializing = function() {
   $.when(getMember()).done(
     function(members) {
       MOBILE_PART.members = members;
+
+      MOBILE_PART['estimate'] = 0;
+      MOBILE_PART['spend'] = 0;
+      MOBILE_PART['date_spend'] = {};
+
       showMemberCheckBox(members);
       console.log("%c MEMBER INFORMATION IS LOADED!!", 'color: #228B22');
 

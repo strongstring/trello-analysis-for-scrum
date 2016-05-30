@@ -20,6 +20,9 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script src="https://trello.com/1/client.js?key=129a907b7a37f2e3d1e84386fab4549f"></script>
+    <script src="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/flot/excanvas.min.js"></script>
+    <script src="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/flot/jquery.flot.js"></script>
+    <script src="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/flot/jquery.flot.time.js"></script>
     <script src="javascripts/trello_client.js"></script>
   </head>
   <body>
@@ -66,23 +69,25 @@
               </div>
             </div>
           </div>
-          <!-- <div class="panel panel-default">
+          <div class="panel panel-default">
             <div class="panel-heading">
               <h4 class="panel-title">
-                <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">Collapsible Group 3</a>
+                <a data-toggle="collapse" data-parent="#accordion" href="#collapse2"> S & E Graph</a>
               </h4>
             </div>
-            <div id="collapse3" class="panel-collapse collapse">
-              <div class="panel-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-              sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-              quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div>
+            <div id="collapse3" class="panel-collapse collapse in">
+              <div class="panel-body">
+                <div class="flot-chart">
+                    <div class="flot-chart-content" id="flot-line-chart-multi"></div>
+                </div>
+              </div>
             </div>
-          </div> -->
+          </div>
         </div> 
       </div>
       <div class="row">
-        <div class="col-lg-12">
-          <div class="panel panel-default" id="projectDashBoard">
+        <div class="col-lg-12" id="projectDashBoard">
+          <div class="panel panel-default">
             <div class="panel-heading panel-title">
               Total Project Resource
             </div>
