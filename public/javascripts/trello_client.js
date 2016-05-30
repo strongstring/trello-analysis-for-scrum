@@ -112,16 +112,32 @@ var getMember = function() {
 
 // INTERFACE
 var getSelectedMember = function() {
-  var _obj = [],
+  var _arr = [],
     _checkedID = $('#memberSelectForm div input:checked');
 
-  for(var i = 0; i < MOBILE_PART.members.length; i++) {
+  for(member in MOBILE_PART['members']) {
     for(var j = 0; j <_checkedID.length; j++) {
-      if(MOBILE_PART.members[i].id === _checkedID[j].value) _obj.push(MOBILE_PART.members[i]);
+      if(member === _checkedID[j].value) _arr.push(member);
     }
   }
-  return _obj;
+  // for(var i = 0; i < MOBILE_PART.members.length; i++) {
+  //   for(var j = 0; j <_checkedID.length; j++) {
+  //     if(MOBILE_PART.members[i].id === _checkedID[j].value) _obj.push(MOBILE_PART.members[i]);
+  //   }
+  // }
+  return _arr;
 };
+
+var isSelectedMember = function(memberName) {
+  var members = getSelectedMember(),
+    isSelected = false;
+
+  for(var i = 0; i < members.length; i++) {
+    if(members[i] === memberName) isSelected = true;
+  }
+
+  return isSelected;
+}
 
 var getMemberIndex = function(userName) {
     
@@ -141,7 +157,7 @@ var showMemberCheckBox = function(members) {
   for(memberName in members) {
     memberSelector.append(
       '<div class="checkbox col-md-6" style="margin-top:0px;"><label>'
-      + '<input type="checkbox" checked value="'+ members[memberName]['id'] +'">' 
+      + '<input type="checkbox" checked value="'+ memberName +'">' 
       + memberName + '</label></div>'
     );
   }
@@ -215,60 +231,70 @@ var showProjectResource = function() {
 
     for(var j = 0; j < _project['cards'].length; j++) {
       var _card = _project['cards'][j];
+
       var memCount = 0;
-      
+
       for(members in _card['members']) {
         if(_card['members'][members]['estimate'] !== undefined && _card['members'][members]['estimate'] > 0) {
-          memCount++;
-        }
-      }
-
-      if(_card['estimate'] !== undefined && _card['estimate'] !== 0) {
-        if(_card['spend'] === _card['estimate']) {
-          _resouceTable += '<tr class="taskDone"><td rowspan="'+memCount+'" class="textLabel">' + _card['name'] + '</td>';
-        } else if (_card['spend'] !== undefined && _card['spend'] > 0) { 
-          _resouceTable += '<tr class="taskDoing"><td rowspan="'+memCount+'" class="textLabel">' + _card['name'] + '</td>';
-        } else {
-          _resouceTable += '<tr><td rowspan="'+memCount+'" class="textLabel">' + _card['name'] + '</td>';
-        }
-
-        var memLineCount = 0;
-        for(memberName in _card['members']) {
-          var _date = new Date($('#iterationStartDay').val());
-
-          if(_card['members'][memberName]['estimate'] !== undefined && _card['members'][memberName]['estimate'] > 0.0) {
-
-            if(memLineCount === 0) {
-              // _resouceTable += '<tr>'
-              _resouceTable += '<td class="textLabel">' + memberName + '</td><td>'+ _card['members'][memberName]['estimate'].toFixed(1) +'</td>';
-            } else {
-              if(_card['members'][memberName]['spend'] === _card['members'][memberName]['estimate']) {
-                _resouceTable += '<tr class="taskDone"><td class="textLabel">' + memberName + '</td><td>'+ _card['members'][memberName]['estimate'].toFixed(1) +'</td>';
-              } else if (_card['members'][memberName]['spend'] !== undefined && _card['members'][memberName]['spend'] > 0) {
-                _resouceTable += '<tr class="taskDoing"><td class="textLabel">' + memberName + '</td><td>'+ _card['members'][memberName]['estimate'].toFixed(1) +'</td>';
-              } else {
-                _resouceTable += '<tr><td class="textLabel">' + memberName + '</td><td>'+ _card['members'][memberName]['estimate'].toFixed(1) +'</td>';
-              }
-            }
-
-            for(var k = 0; k < 14; k++) {
-              var _dateSpend = _card['members'][memberName]['date_spend'][_date.getDate()];
-              _dateSpend = (_dateSpend === undefined) ? ' ' : _dateSpend.toFixed(1);
-              if(_dateSpend < 0.1) _dateSpend = ' ';
-
-              if(_date.getDate() === workDay.getDate()) {
-                _resouceTable += '<td style="border-left:solid 2px; border-right:solid 2px;">' + _dateSpend + '</td>';
-              } else {
-                _resouceTable += '<td>' + _dateSpend + '</td>'
-              }
-              _date.setDate(_date.getDate() + 1);
-            }
-
-            _resouceTable += '<td>'+ (_card['members'][memberName]['estimate'] - _card['members'][memberName]['spend']).toFixed(1) +'</td></tr>';
-            memLineCount ++;
+          // memCount++;
+          for(var m = 0; m < getSelectedMember().length; m++) {
+            if(members === getSelectedMember()[m]) memCount++;
           }
         }
       }
+
+      if(memCount > 0) {
+        if(_card['estimate'] !== undefined && _card['estimate'] !== 0) {
+          if(_card['spend'] === _card['estimate']) {
+            _resouceTable += '<tr class="taskDone"><td rowspan="'+memCount+'" class="textLabel">' + _card['name'] + '</td>';
+          } else if (_card['spend'] !== undefined && _card['spend'] > 0) { 
+            _resouceTable += '<tr class="taskDoing"><td rowspan="'+memCount+'" class="textLabel">' + _card['name'] + '</td>';
+          } else {
+            _resouceTable += '<tr><td rowspan="'+memCount+'" class="textLabel">' + _card['name'] + '</td>';
+          }
+
+          var memLineCount = 0;
+          for(memberName in _card['members']) {
+            if(isSelectedMember(memberName)) {
+              var _date = new Date($('#iterationStartDay').val());
+
+              if(_card['members'][memberName]['estimate'] !== undefined && _card['members'][memberName]['estimate'] > 0.0) {
+
+                if(memLineCount === 0) {
+                  // _resouceTable += '<tr>'
+                  _resouceTable += '<td class="textLabel">' + memberName + '</td><td>'+ _card['members'][memberName]['estimate'].toFixed(1) +'</td>';
+                } else {
+                  if(_card['members'][memberName]['spend'] === _card['members'][memberName]['estimate']) {
+                    _resouceTable += '<tr class="taskDone"><td class="textLabel">' + memberName + '</td><td>'+ _card['members'][memberName]['estimate'].toFixed(1) +'</td>';
+                  } else if (_card['members'][memberName]['spend'] !== undefined && _card['members'][memberName]['spend'] > 0) {
+                    _resouceTable += '<tr class="taskDoing"><td class="textLabel">' + memberName + '</td><td>'+ _card['members'][memberName]['estimate'].toFixed(1) +'</td>';
+                  } else {
+                    _resouceTable += '<tr><td class="textLabel">' + memberName + '</td><td>'+ _card['members'][memberName]['estimate'].toFixed(1) +'</td>';
+                  }
+                }
+
+                for(var k = 0; k < 14; k++) {
+                  var _dateSpend = _card['members'][memberName]['date_spend'][_date.getDate()];
+                  _dateSpend = (_dateSpend === undefined) ? ' ' : _dateSpend.toFixed(1);
+                  if(_dateSpend < 0.1) _dateSpend = ' ';
+
+                  if(_date.getDate() === workDay.getDate()) {
+                    _resouceTable += '<td style="border-left:solid 2px; border-right:solid 2px;">' + _dateSpend + '</td>';
+                  } else {
+                    _resouceTable += '<td>' + _dateSpend + '</td>'
+                  }
+                  _date.setDate(_date.getDate() + 1);
+                }
+
+                _resouceTable += '<td>'+ (_card['members'][memberName]['estimate'] - _card['members'][memberName]['spend']).toFixed(1) +'</td></tr>';
+                memLineCount ++;
+              }
+            }
+          }
+        }
+      }
+
+      
     }
     _resouceTable += '</table></div></div>';
     $('#projectDashBoard').append(_resouceTable);
@@ -667,11 +693,19 @@ var searchSNE = function() {
   var deferred = $.Deferred();
 
   if(MOBILE_PART.project['common']['spend'] !== undefined) {
-    $.when(initializing()).done(
-      function() {
-        calcStart();
-      }
-    );
+    // $.when(initializing()).done(
+    //   function() {
+    //     calcStart();
+    //   }
+    // );
+    for(member in MOBILE_PART['members']) {
+      MOBILE_PART['members'][members]['spend'] = 0;
+      MOBILE_PART['members'][members]['estimate'] = 0;
+    }
+    MOBILE_PART['estimate'] = 0;
+    MOBILE_PART['spend'] = 0;
+    MOBILE_PART['date_spend'] = {};
+    calcStart();
   } else {
     calcStart();
   }
