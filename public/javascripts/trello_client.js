@@ -685,30 +685,27 @@ var calcStart = function() {
       showProjectResource();
       showMemberResourceToGraph();
       console.log("%c @@@@@@@@@@  ALL ACTION IS CALCULATED!! @@@@@@@@@@", 'background: #222; color: #bada55'); 
+      $('#indicator').css('display', 'none');
     }
   );
 }
 
 var searchSNE = function() {
-  var deferred = $.Deferred();
+  $('#indicator').css('display', 'block');
+    clearMemeber();
+    calcStart();
+}
 
-  if(MOBILE_PART.project['common']['spend'] !== undefined) {
-    // $.when(initializing()).done(
-    //   function() {
-    //     calcStart();
-    //   }
-    // );
+var clearMemeber = function() {
+  if(MOBILE_PART['members'] === undefined) MOBILE_PART['members'] = {};
     for(member in MOBILE_PART['members']) {
-      MOBILE_PART['members'][members]['spend'] = 0;
-      MOBILE_PART['members'][members]['estimate'] = 0;
+      MOBILE_PART['members'][member]['spend'] = 0;
+      MOBILE_PART['members'][member]['estimate'] = 0;
+      MOBILE_PART['members'][member]['date_spend'] = {};
     }
     MOBILE_PART['estimate'] = 0;
     MOBILE_PART['spend'] = 0;
     MOBILE_PART['date_spend'] = {};
-    calcStart();
-  } else {
-    calcStart();
-  }
 }
 
 var getBoardData = function(boardID) {
