@@ -33,8 +33,9 @@
     </nav>
 
     <div id="page-wrapper">
-      <div class=""><h3>Mobile Part H/Resource</h3></div>
-      <div class="">
+      <div class="col-md-9 titleHeader"><h3>Mobile Part H/Resource</h3></div>
+      <div class="col-md-3 searchBtn"><button type="button" class="btn btn-info" onClick="searchSNE()">SEARCH</button></div>
+      <div class="col-md-12">
         <div class="panel-group" id="accordion">
           <div class="panel panel-default">
             <div class="panel-heading">
@@ -52,20 +53,20 @@
                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Detail Search</a>
               </h4>
             </div>
-            <div id="collapse2" class="panel-collapse collapse in">
+            <div id="collapse2" class="panel-collapse collapse">
               <div class="panel-body">
                 <div class="col-md-3 font_resizing">
                   <h4>Iteration Start : </h4>
                 </div>
-                <div class="col-md-2 font_resizing">
+                <div class="col-md-2 font_resizing" style="margin: 10px 0px;">
                     <input class="form-control" id="iterationStartDay" placeholder="2016-05-01"/></div>
-                <div class="col-md-3 font_resizing">
+                <div class="col-md-3 font_resizing" style="margin: 10px 0px;">
                   <h4>Work Day : </h4>
                 </div>
-                <div class="col-md-2 font_resizing">
+                <div class="col-md-2 font_resizing" style="margin: 10px 0px;">
                     <input class="form-control" id="workDay" placeholder="2016-05-02" /></div>
-                <div class="col-md-2 font_resizing">
-                    <button type="button" class="btn btn-info" onClick="searchSNE()">SEARCH</button>
+                <div class="col-md-2 font_resizing" style="margin: 10px 0px;">
+                    <button type="button" class="btn btn-info" onClick="reDrawTask()">DRAW</button>
                 </div>
               </div>
             </div>
@@ -73,7 +74,7 @@
           <div class="panel panel-default">
             <div class="panel-heading">
               <h4 class="panel-title">
-                <a data-toggle="collapse" data-parent="#accordion" href="#collapse2"> S & E Graph</a>
+                <a data-toggle="collapse" data-parent="#accordion" href="#collapse3"> S & E Graph</a>
               </h4>
             </div>
             <div id="collapse3" class="panel-collapse collapse in">
@@ -86,43 +87,16 @@
           </div>
         </div> 
       </div>
-      <div class="row">
-        <div class="col-lg-12" id="projectDashBoard">
+        <div class="col-md-12" id="projectDashBoard">
           <div class="panel panel-default">
             <div class="panel-heading panel-title">
               Total Project Resource
             </div>
             <div class="panel-body" id="total_resource">
-            <!-- </div> -->
-                <!-- <div class="row show-grid" id="total_resource"> -->
-                    <!-- <div class="col-md-5 font_resizing">NO COMMENT<br />NO COMMENT</div>
-                    <div class="col-md-1 font_resizing">SAMPLE1<br />1 / 1</div>
-                    <div class="col-md-1 font_resizing">SAMPLE1<br />1 / 1</div>
-                    <div class="col-md-1 font_resizing">SAMPLE1<br />1 / 1</div>
-                    <div class="col-md-1 font_resizing">SAMPLE1<br />1 / 1</div>
-                    <div class="col-md-1 font_resizing">SAMPLE1<br />1 / 1</div>
-                    <div class="col-md-1 font_resizing">SAMPLE1<br />1 / 1</div>
-                    <div class="col-md-1 font_resizing">SAMPLE1<br />1 / 1</div> -->
-                <!-- </div> -->
-                <!-- <div class="row show-grid">
-                    <div class="col-md-8">.col-md-8</div>
-                    <div class="col-md-4">.col-md-4</div>
-                </div>
-                <div class="row show-grid">
-                    <div class="col-md-4">.col-md-4</div>
-                    <div class="col-md-4">.col-md-4</div>
-                    <div class="col-md-4">.col-md-4</div>
-                </div>
-                <div class="row show-grid">
-                    <div class="col-md-6">.col-md-6</div>
-                    <div class="col-md-6">.col-md-6</div>
-                </div> -->
             </div>
           </div>
         </div>
-        <!-- /.col-lg-12 -->
-      </div>
-      <!-- /.row -->
+        <!-- /.col-md-12 -->
     </div>
   </div>
   </body>

@@ -69,3 +69,18 @@ td.taskDoing {
     background-color: rgba(255,255,255,0.7);
     display: none;
 }
+
+a:hover {
+	cursor:help;
+}
+
+div.titleHeader {
+	height: 60px;
+	line-height: 60px;
+}
+
+div.searchBtn {
+	height: 60px;
+	text-align: right;
+	line-height: 60px;
+}

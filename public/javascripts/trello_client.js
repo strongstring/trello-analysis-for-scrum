@@ -23,22 +23,23 @@ var objectCopy = function(obj) {
  return JSON.parse(JSON.stringify(obj));
 }
 
+var openWindow = function( url ) {
+  window.open(url, '_blank');
+  window.focus();
+}
 
 var authorizeToTrello = function() {
 
-  var authenticationSuccess = function() { console.log("Successful authentication"); };
-  var authenticationFailure = function() { console.log("Failed authentication"); };
+  var deferred = $.Deferred();
+  var onAuthorize = function() { console.log("Successful authentication"); deferred.resolve();};
+  var authenticationFailure = function() { console.log("Failed authentication"); deferred.reject();};
 
   Trello.authorize({
-    type: "popup",
-    name: "Getting Started Application",
-    scope: {
-      read: true,
-      write: true },
-    expiration: "never",
-    success: authenticationSuccess,
-    error: authenticationFailure
+      type: "popup",
+      success: onAuthorize
   });
+
+  return deferred.promise();
 };
 
 // get this week
@@ -92,7 +93,7 @@ var getDayFromDate = function(date) {
 }
 
 // LOGICAL
-var getMember = function() {
+var getMemberInformation = function() {
   var deferred = $.Deferred(),
     _memberObj = {};
 
@@ -120,11 +121,6 @@ var getSelectedMember = function() {
       if(member === _checkedID[j].value) _arr.push(member);
     }
   }
-  // for(var i = 0; i < MOBILE_PART.members.length; i++) {
-  //   for(var j = 0; j <_checkedID.length; j++) {
-  //     if(MOBILE_PART.members[i].id === _checkedID[j].value) _obj.push(MOBILE_PART.members[i]);
-  //   }
-  // }
   return _arr;
 };
 
@@ -156,17 +152,19 @@ var showMemberCheckBox = function(members) {
 
   for(memberName in members) {
     memberSelector.append(
-      '<div class="checkbox col-md-6" style="margin-top:0px;"><label>'
+      '<div class="checkbox col-md-3" style="margin-top:0px;"><label>'
       + '<input type="checkbox" checked value="'+ memberName +'">' 
       + memberName + '</label></div>'
     );
   }
+
+  memberSelector.append('<div class="col-md-12" ><button type="button" class="btn btn-info" onClick="reDrawTask()">DRAW</button></div>');
 }
 
 var showMemberResource = function() {
   $('#projectDashBoard').empty();
   $('#projectDashBoard').append('<div class="panel panel-default"><div class="panel-heading panel-title">Total Project Resource</div><div class="panel-body" id="total_resource"></div>');
-  var _resouceTable = '<table class="table"><tr class="primary">'
+  var _resouceTable = '<table class="table col-md-12"><tr class="primary">'
     + '<td>Member</td><td>E</td>';
 
   var firstDay = new Date($('#iterationStartDay').val()),
@@ -213,8 +211,8 @@ var showProjectResource = function() {
     var _project = MOBILE_PART['project'][projectName];
 
     var _resouceTable = '<div class="panel panel-default"><div class="panel-heading panel-title">' + MOBILE_PART['project'][projectName]['name'] + '</div><div class="panel-body">'
-      + '<table class="table"><tr class="primary">' + '<td>Task</td><td>Member</td><td>E</td>';
-    console.log("project : " + projectName + ", cardLength : " + _project['cards'].length);
+      + '<table class="table ol-md-12"><tr class="primary">' + '<td>Task</td><td>Member</td><td>E</td>';
+    if(DEBUG_MODE) console.log("project : " + projectName + ", cardLength : " + _project['cards'].length);
 
     var firstDay = new Date($('#iterationStartDay').val()),
       workDay = new Date($('#workDay').val());
@@ -246,11 +244,11 @@ var showProjectResource = function() {
       if(memCount > 0) {
         if(_card['estimate'] !== undefined && _card['estimate'] !== 0) {
           if(_card['spend'] === _card['estimate']) {
-            _resouceTable += '<tr class="taskDone"><td rowspan="'+memCount+'" class="textLabel">' + _card['name'] + '</td>';
+            _resouceTable += '<tr class="taskDone"><td rowspan="'+memCount+'" class="textLabel"><a onClick="openWindow(\''+_card['url']+'\')">' + _card['name'] + '</a></td>';
           } else if (_card['spend'] !== undefined && _card['spend'] > 0) { 
-            _resouceTable += '<tr class="taskDoing"><td rowspan="'+memCount+'" class="textLabel">' + _card['name'] + '</td>';
+            _resouceTable += '<tr class="taskDoing"><td rowspan="'+memCount+'" class="textLabel"><a onClick="openWindow(\''+_card['url']+'\')">' + _card['name'] + '</a></td>';
           } else {
-            _resouceTable += '<tr><td rowspan="'+memCount+'" class="textLabel">' + _card['name'] + '</td>';
+            _resouceTable += '<tr><td rowspan="'+memCount+'" class="textLabel"><a onClick="openWindow(\''+_card['url']+'\')">' + _card['name'] + '</a></td>';
           }
 
           var memLineCount = 0;
@@ -309,12 +307,12 @@ var showMemberResourceToGraph = function() {
 
   firstDay.setDate(firstDay.getDate() - 1);
 
-  var memCount = 6;
-  // for(member in MOBILE_PART['members']) {
-  //   memCount ++;
-  // }
+  var memCount = 0;
+  for(member in MOBILE_PART['members']) {
+    memCount ++;
+  }
 
-  console.log("member is " + memCount);
+  if (DEBUG_MODE) console.log("member is " + memCount);
 
   var estimateValForLogical = MOBILE_PART['estimate'],
     estimateValForReal = MOBILE_PART['estimate'];
@@ -337,7 +335,6 @@ var showMemberResourceToGraph = function() {
       if(firstDay.getDate() === today.getDate()) stopflag = true;
 
       estimateValForLogical -= (memCount*8);
-      console.log(estimateValForLogical);
       if(MOBILE_PART['date_spend'][firstDay.getDate()] !== undefined) {
         estimateValForReal -= MOBILE_PART['date_spend'][firstDay.getDate()];
       }
@@ -349,13 +346,11 @@ var showMemberResourceToGraph = function() {
     if(!stopflag) _dataObj['estimateG'].push(_spendData);
   }
 
-  console.log(_dataObj);
-
   $.plot($("#flot-line-chart-multi"), [{
-        data: _dataObj['estimateG'],
+        data: _dataObj['spendG'],
         label: "LOGICAL ESTIMATE GRAPH"
     }, {
-        data: _dataObj['spendG'],
+        data: _dataObj['estimateG'],
         label: "ACTUAL ESTIMATE GRAPH",
         yaxis: 1
     }], {
@@ -380,60 +375,7 @@ var showMemberResourceToGraph = function() {
                 // console.log(flotItem, $tooltipEl);
             }
         }
-
     });
-
-
-}
-
-var showlogMemberResource = function() {
-  for(var i = 0; i < MOBILE_PART.members.length; i++) {
-    console.log('name : ' + MOBILE_PART.members[i].username);
-    console.log('estimate : '+ MOBILE_PART.members[i].estimate);
-    console.log('spend : '+ MOBILE_PART.members[i].spend);
-    for( spendDate in MOBILE_PART.members[i]['date_spend']) {
-      console.log('date_spend : ' + spendDate +  ' : ' + MOBILE_PART.members[i]['date_spend'][spendDate]);
-    }
-  }
-}
-
-var showlogMemberResourceFromBoard = function(boardID) {
-  var _obj = {"members" : {}, "cards" : [], "spend" : 0, "estimate" : 0, "date_spend" : []},
-    targetBoardName = "common";
-
-  switch(boardID) {
-    case "I02GmIoD" : targetBoardName = "common"; break;
-    case "3UZJ3kPG" : targetBoardName = "ipolis"; break;
-    case "g0DBnhdi" : targetBoardName = "ssm"; break;
-    case "nisQ181R" : targetBoardName = "smartcam"; break;
-    case "duBw0VfK" : targetBoardName = "wisenet"; break;
-    case "u6SqfXJ9" : targetBoardName = "argus"; break;
-    default : break;
-  }
-
-  var _targetBoard = MOBILE_PART['project'][targetBoardName];
-  for(var i = 0; i < _targetBoard['cards'].length; i++) {
-    var _card = _targetBoard['cards'][i];
-
-    _card['spend'] = 0;
-    _card['estimate'] = 0;
-    _card['date_spend'] = {};
-    console.log("=======================");
-    console.log("card" + i + ": " + _card['name']);
-
-    if(_card.members !== undefined) {
-      for(var mName in _card['members']) {
-        console.log("member : " + mName + " spend : " + _card['members'][mName]['spend'] + " estimate : " + _card['members'][mName]['estimate']);
-        if(_card['members'][mName]['date_spend'] !== undefined)
-          for(var key in _card['members'][mName]['date_spend']) {
-            console.log("date_spend " + key + ", " + _card['members'][mName]['date_spend'][key]);
-          }
-      }
-    }
-
-    MOBILE_PART['project'][targetBoardName]['cards'][i] = _card;
-  }
-  console.log(_obj);
 }
 
 var showProjectResouce = function() {
@@ -524,7 +466,6 @@ var getSNE = function(boardID, cards) {
           _member = new Array(),
           _date = new Date(_action.date);
 
-        if(boardID === COMMON_ID) console.log(_action.data.text);
         for( var k = 0; k < _commentInfo.length; k++) {
           if(_commentInfo[k].indexOf('@') !== -1) {
             // S&E Member Setting
@@ -559,10 +500,7 @@ var getSNE = function(boardID, cards) {
               if(_card['estimate'] === undefined) _card['estimate'] = 0;
               if(_card['date_spend'] === undefined) _card['date_spend'] = {};
 
-              if(i === 0) console.log("task member length : " + _member.length);
               for (var m = 0; m < _member.length; m++) {
-                if (i === 0) console.log(_member[m]);
-                if (i === 0) console.log(spendValue);
                 // add member in card
                 if(_card['members'] === undefined) _card['members'] = {};
                 if(_card['members'][_member[m]] === undefined)  _card['members'][_member[m]] = {};
@@ -662,7 +600,7 @@ var getActionToBoard = function(boardID) {
   Trello.get('/boards/' + boardID 
     + '/cards/?field=&actions=commentCard&actions_limit=1000&action_memberCreator_fields=fullName,initials,username,url,idPremOrgsAdmin&checklists=none&cards=visible',
     function(res) {
-      console.log(res);
+      if(DEBUG_MODE) console.log(res);
       $.when(getSNE(boardID, res)).done(function(){
         console.log("%c " + getBoardInfo(boardID)['name'] + " IS GAIN !!", 'color: #228B22');
         $.when(calcSNE(boardID)).done(function() {
@@ -690,12 +628,6 @@ var calcStart = function() {
   );
 }
 
-var searchSNE = function() {
-  $('#indicator').css('display', 'block');
-    clearMemeber();
-    calcStart();
-}
-
 var clearMemeber = function() {
   if(MOBILE_PART['members'] === undefined) MOBILE_PART['members'] = {};
     for(member in MOBILE_PART['members']) {
@@ -707,72 +639,6 @@ var clearMemeber = function() {
     MOBILE_PART['spend'] = 0;
     MOBILE_PART['date_spend'] = {};
 }
-
-var getBoardData = function(boardID) {
-  var _obj = {};
-
-  Trello.get('/boards/' + IPOLIS_ID, function(res) {
-    console.log(res);
-  }, function(error) {
-    console.log(error);
-  });
-
-  return _obj
-}
-
-var getMemberInformation = function() {
-    getMember(IPOLIS_ID);
-}
-
-var getMemberName = function(index) {
-  var _name = "unknown";
-
-  for(p in MOBILE_PART.member) {
-    if(MOBILE_PART.member[p]['index'] == index) _name = p;
-  }
-  return _name;
-}
-
-var getMamberTime = function(board, index) {
-  var _targetName = getMemberName(index);
-
-  if(board.member.hasOwnProperty(_targetName)) {
-      return _targetName + "<br />" + board.member[_targetName]['spend'] + " / " + board.member[_targetName]['estimate'];
-  } else {
-    return " <br /> ";
-  }
-}
-
-var makeTask = function(project) {
-  var panel = $('.panel-body');
-
-  for(var i=0; i<project.length; i++) {
-    // create header
-    panel.append('<div class="panel panel-info"><div class="row panel-heading">'
-      + '<div class="col-md-5 font_resizing">'+project[i].name+'<br />'+ project[i]['spend'] +' / '+ project[i]['estimate'] +'</div>'
-      + '<div class="col-md-1 font_resizing">'+getMamberTime(project[i], 1)+'</div>'
-      + '<div class="col-md-1 font_resizing">'+getMamberTime(project[i], 2)+'</div>'
-      + '<div class="col-md-1 font_resizing">'+getMamberTime(project[i], 3)+'</div>'
-      + '<div class="col-md-1 font_resizing">'+getMamberTime(project[i], 4)+'</div>'
-      + '<div class="col-md-1 font_resizing">'+getMamberTime(project[i], 5)+'</div>'
-      + '<div class="col-md-1 font_resizing">'+getMamberTime(project[i], 6)+'</div>'
-      + '<div class="col-md-1 font_resizing">'+getMamberTime(project[i], 7)+'</div>');
-
-    for(t in project[i].task) {
-      var tName = (t.length > 50) ? (t.substring(0, 50) + "...") : t ;
-      panel.append('<div class="row"><div class="col-md-5 tast_cell" style="font-size:13px;"><p style="float:left;">'+tName+'</p><p class="rightPont">( / )</p></div>'
-        + '<div class="col-md-1 font_resizing tast_cell"> <br />  </div>'
-        + '<div class="col-md-1 font_resizing tast_cell"> <br />  </div>'
-        + '<div class="col-md-1 font_resizing tast_cell"> <br />  </div>'
-        + '<div class="col-md-1 font_resizing tast_cell"> <br />  </div>'
-        + '<div class="col-md-1 font_resizing tast_cell"> <br />  </div>'
-        + '<div class="col-md-1 font_resizing tast_cell"> <br />  </div>'
-        + '<div class="col-md-1 font_resizing tast_cell"> <br />  </div></div>');
-    }
-
-    panel.append('</div></div>');
-  }
-};
 
 var dateMaker = function() {
   var _workday = new Date;
@@ -786,7 +652,7 @@ var dateMaker = function() {
 var initializing = function() {
   var deferred = $.Deferred();
 
-  $.when(getMember()).done(
+  $.when(getMemberInformation()).done(
     function(members) {
       MOBILE_PART.members = members;
 
@@ -804,10 +670,26 @@ var initializing = function() {
   return deferred.promise();
 }
 
+var reDrawTask = function() {
+  $('#projectDashBoard').empty();
+  showMemberResource();
+  showProjectResource();
+}
+
+var searchSNE = function() {
+  $('#indicator').css('display', 'block');
+    clearMemeber();
+    calcStart();
+}
+
 $(function() {
-  authorizeToTrello();
-  $.when(initializing()).done(function() {
-    dateMaker();
-    console.log("%c @@@@@@@@@@ SCRUM IS READY!! @@@@@@@@@@", 'background: #222; color: #bada55'); 
-  });
+  $.when(authorizeToTrello()).done(
+    function() {
+      $('#indicator').css('display', 'block');
+      $.when(initializing()).done(function() {
+        dateMaker();
+        console.log("%c @@@@@@@@@@ SCRUM IS READY!! @@@@@@@@@@", 'background: #222; color: #bada55'); 
+        $('#indicator').css('display', 'none');
+      });
+    });
 });
