@@ -11,19 +11,19 @@
 					<key>kind</key>
 					<string>software-package</string>
 					<key>url</key>
-					<string>/ota/ipa/2.7_0524_2/iPOLiS%20Mobile.ipa</string>
+					<string>https://210.99.110.241:43210/ota/ipa/2.7_0524_2/iPOLiS%20Mobile.ipa</string>
 				</dict>
 				<dict>
 					<key>kind</key>
 					<string>display-image</string>
 					<key>url</key>
-					<string>/ota/Icon.png</string>
+					<string>https://210.99.110.241:43210ota/Icon.png</string>
 				</dict>
 				<dict>
 					<key>kind</key>
 					<string>full-size-image</string>
 					<key>url</key>
-					<string>/ota/Icon-512.png</string>
+					<string>https://210.99.110.241:43210/ota/Icon-512.png</string>
 				</dict>
 			</array>
 			<key>metadata</key>
