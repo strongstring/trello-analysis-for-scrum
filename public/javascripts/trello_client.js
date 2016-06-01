@@ -153,13 +153,16 @@ var showMemberCheckBox = function(members) {
   for(memberName in members) {
     memberSelector.append(
       '<div class="checkbox col-md-3" style="margin-top:0px;"><label>'
-      + '<input type="checkbox" checked value="'+ memberName +'">' 
+      + '<input class="checkbox" type="checkbox" checked value="'+ memberName +'">' 
       + memberName + '</label></div>'
     );
   }
 
-  memberSelector.append('<div class="col-md-12" ><button type="button" class="btn btn-info" onClick="reDrawTask()">DRAW</button></div>');
-}
+  $(".checkbox").change(function() {
+    // if(this.checked) {}
+    reDrawTask();
+  });
+};
 
 var showMemberResource = function() {
   $('#projectDashBoard').empty();
@@ -452,13 +455,14 @@ var getSNE = function(boardID, cards) {
     var _card = cards[i],
       _cardName;
 
+    if(boardID === WISENET_ID) console.log(_card);
     for ( var j = 0; j < _card.actions.length; j++) {
       var _action = _card.actions[j];
 
       if(j === 0) _card['name'] = _card.actions[j].data.card.name;
 
-      // check 'plus!' about S & E comment
-      if(_action.data.text !== null && _action.data.text.indexOf('plus!') !== -1) {
+      // check 'plus!' about S & E comment)
+      if(_action.type !== 'updateCard' && _action.data.text !== null && _action.data.text.indexOf('plus!') !== -1) {
         var _commentText = _action.data.text.substring(6);
         var _commentInfo = _commentText.split(' '),
           duplicatedFlag = false,
@@ -598,7 +602,7 @@ var getActionToBoard = function(boardID) {
     _obj = {};
 
   Trello.get('/boards/' + boardID 
-    + '/cards/?field=&actions=commentCard&actions_limit=1000&action_memberCreator_fields=fullName,initials,username,url,idPremOrgsAdmin&checklists=none&cards=visible',
+    + '/cards/?field=&actions=commentCard,updateCard:name&actions_limit=1000&action_memberCreator_fields=fullName,initials,username,url,idPremOrgsAdmin&checklists=none&cards=visible',
     function(res) {
       if(DEBUG_MODE) console.log(res);
       $.when(getSNE(boardID, res)).done(function(){

@@ -17,7 +17,7 @@
 					<key>kind</key>
 					<string>display-image</string>
 					<key>url</key>
-					<string>https://210.99.110.241:43210ota/Icon.png</string>
+					<string>https://210.99.110.241:43210/ota/Icon.png</string>
 				</dict>
 				<dict>
 					<key>kind</key>

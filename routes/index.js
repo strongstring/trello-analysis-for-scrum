@@ -10,4 +10,5 @@ router.get('/ipolis', function(req, res, next) {
 	res.render('ipolis_ota', { title: 'iPOLiS mobile test version Installer' });
 });
 
+
 module.exports = router;
