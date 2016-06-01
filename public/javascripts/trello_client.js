@@ -154,7 +154,7 @@ var showMemberCheckBox = function(members) {
     memberSelector.append(
       '<div class="checkbox col-md-3" style="margin-top:0px;"><label>'
       + '<input class="checkbox" type="checkbox" checked value="'+ memberName +'">' 
-      + memberName + '</label></div>'
+      + members[memberName]['fullName'] + '</label></div>'
     );
   }
 
@@ -188,7 +188,7 @@ var showMemberResource = function() {
     var _member = MOBILE_PART['members'][memberName],
       _date = new Date($('#iterationStartDay').val());
 
-    _resouceTable += '<tr><td class="textLabel">' + memberName + '</td><td>'+ _member['estimate'].toFixed(1) +'</td>';
+    _resouceTable += '<tr><td class="textLabel">' + _member['fullName'] + '</td><td>'+ _member['estimate'].toFixed(1) +'</td>';
     for(var j = 0; j < 14; j++) {
       var _dateSpend = _member['date_spend'][_date.getDate()];
       _dateSpend = (_dateSpend === undefined) ? ' ' : _dateSpend.toFixed(1);
@@ -263,14 +263,14 @@ var showProjectResource = function() {
 
                 if(memLineCount === 0) {
                   // _resouceTable += '<tr>'
-                  _resouceTable += '<td class="textLabel">' + memberName + '</td><td>'+ _card['members'][memberName]['estimate'].toFixed(1) +'</td>';
+                  _resouceTable += '<td class="textLabel">' + _card['members'][memberName]['fullName'] + '</td><td>'+ _card['members'][memberName]['estimate'].toFixed(1) +'</td>';
                 } else {
                   if(_card['members'][memberName]['spend'] === _card['members'][memberName]['estimate']) {
-                    _resouceTable += '<tr class="taskDone"><td class="textLabel">' + memberName + '</td><td>'+ _card['members'][memberName]['estimate'].toFixed(1) +'</td>';
+                    _resouceTable += '<tr class="taskDone"><td class="textLabel">' + _card['members'][memberName]['fullName'] + '</td><td>'+ _card['members'][memberName]['estimate'].toFixed(1) +'</td>';
                   } else if (_card['members'][memberName]['spend'] !== undefined && _card['members'][memberName]['spend'] > 0) {
-                    _resouceTable += '<tr class="taskDoing"><td class="textLabel">' + memberName + '</td><td>'+ _card['members'][memberName]['estimate'].toFixed(1) +'</td>';
+                    _resouceTable += '<tr class="taskDoing"><td class="textLabel">' + _card['members'][memberName]['fullName'] + '</td><td>'+ _card['members'][memberName]['estimate'].toFixed(1) +'</td>';
                   } else {
-                    _resouceTable += '<tr><td class="textLabel">' + memberName + '</td><td>'+ _card['members'][memberName]['estimate'].toFixed(1) +'</td>';
+                    _resouceTable += '<tr><td class="textLabel">' + _card['members'][memberName]['fullName'] + '</td><td>'+ _card['members'][memberName]['estimate'].toFixed(1) +'</td>';
                   }
                 }
 
@@ -381,18 +381,6 @@ var showMemberResourceToGraph = function() {
     });
 }
 
-var showProjectResouce = function() {
-  var _resouceTable = '<tbody>'
-
-  for(project in MOBILE_PART.project) {
-    var _projectTable = "";
-
-    _projectTable += '<td>'+project+'<br />(' + _member['spend'] +" / "+ _member['estimate'] + ')</td>';
-
-    _resouceTable += '<td>'+_userName+'<br />(' + _member['spend'] +" / "+ _member['estimate'] + ')</td>';
-  }
-};
-
 // LOGICAL
 var getCard = function(boardID, All) {
   var deferred = $.Deferred(),
@@ -455,7 +443,6 @@ var getSNE = function(boardID, cards) {
     var _card = cards[i],
       _cardName;
 
-    if(boardID === WISENET_ID) console.log(_card);
     for ( var j = 0; j < _card.actions.length; j++) {
       var _action = _card.actions[j];
 
@@ -508,13 +495,14 @@ var getSNE = function(boardID, cards) {
                 // add member in card
                 if(_card['members'] === undefined) _card['members'] = {};
                 if(_card['members'][_member[m]] === undefined)  _card['members'][_member[m]] = {};
+                if(_card['members'][_member[m]]['fullName'] === undefined) _card['members'][_member[m]]['fullName'] = MOBILE_PART['members'][_member[m]]['fullName'];
                 if(_card['members'][_member[m]]['date_spend'] === undefined) _card['members'][_member[m]]['date_spend'] = {};
                 if(_card['members'][_member[m]]['spend'] === undefined)  _card['members'][_member[m]]['spend'] = 0;
                 if(_card['members'][_member[m]]['estimate'] === undefined) _card['members'][_member[m]]['estimate'] = 0;
 
                 // add member in card
                 if(MOBILE_PART['members'] === undefined) MOBILE_PART['members'] = {};
-                if(MOBILE_PART['members'][_member[m]] === undefined)  MOBILE_PART['members'][_member[m]] = {};
+                if(MOBILE_PART['members'][_member[m]] === undefined) MOBILE_PART['members'][_member[m]] = {};
                 if(MOBILE_PART['members'][_member[m]]['date_spend'] === undefined) MOBILE_PART['members'][_member[m]]['date_spend'] = {};
                 if(MOBILE_PART['members'][_member[m]]['spend'] === undefined)  MOBILE_PART['members'][_member[m]]['spend'] = 0;
                 if(MOBILE_PART['members'][_member[m]]['estimate'] === undefined) MOBILE_PART['members'][_member[m]]['estimate'] = 0;
