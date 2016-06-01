@@ -4,22 +4,19 @@
     <title><%= title %></title>
 
     <link rel='stylesheet' href='/stylesheets/style.css' />
-    <!-- Bootstrap Core CSS -->
     <link href="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- MetisMenu CSS -->
     <link href="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
-    <!-- Timeline CSS -->
+    <link href="/stylesheets/bootstrap_datepicker.css" rel="stylesheet">
     <link href="/stylesheets/startbootstrap-sb-admin-2-1.0.8/dist/css/timeline.css" rel="stylesheet">
-    <!-- Custom CSS -->
     <link href="/stylesheets/startbootstrap-sb-admin-2-1.0.8/dist/css/sb-admin-2.css" rel="stylesheet">
-    <!-- Morris Charts CSS -->
     <link href="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/morrisjs/morris.css" rel="stylesheet">
-    <!-- Custom Fonts -->
     <link href="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    <script src="/javascripts/moment.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script src="https://trello.com/1/client.js?key=129a907b7a37f2e3d1e84386fab4549f"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
     <script src="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/flot/excanvas.min.js"></script>
     <script src="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/flot/jquery.flot.js"></script>
     <script src="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/flot/jquery.flot.time.js"></script>
@@ -59,16 +56,15 @@
                 <div class="col-md-3 font_resizing">
                   <h4>Iteration Start : </h4>
                 </div>
-                <div class="col-md-2 font_resizing" style="margin: 10px 0px;">
-                    <input class="form-control" id="iterationStartDay" placeholder="2016-05-01"/></div>
+                <div class="col-md-3 font_resizing" style="margin: 10px 0px;" >
+                  <input class="form-control" placeholder="2016-05-01" id="datetimepicker1"/>
+                </div>
                 <div class="col-md-3 font_resizing" style="margin: 10px 0px;">
                   <h4>Work Day : </h4>
                 </div>
-                <div class="col-md-2 font_resizing" style="margin: 10px 0px;">
-                    <input class="form-control" id="workDay" placeholder="2016-05-02" /></div>
-                <div class="col-md-2 font_resizing" style="margin: 10px 0px;">
-                    <button type="button" class="btn btn-info" onClick="reDrawTask()">DRAW</button>
-                </div>
+                <div class="col-md-3 font_resizing" style="margin: 10px 0px;">
+                    <input class="form-control" id="datetimepicker2" placeholder="2016-05-02" />
+                  </div>
               </div>
             </div>
           </div>

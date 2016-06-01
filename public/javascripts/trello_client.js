@@ -19,6 +19,9 @@ var MOBILE_PART = {
   },
 };
 
+var iterationStartDay = "#datetimepicker1";
+var iterationWorkDay = "#datetimepicker2";
+
 var objectCopy = function(obj) {
  return JSON.parse(JSON.stringify(obj));
 }
@@ -170,8 +173,8 @@ var showMemberResource = function() {
   var _resouceTable = '<table class="table col-md-12"><tr class="primary">'
     + '<td>Member</td><td>E</td>';
 
-  var firstDay = new Date($('#iterationStartDay').val()),
-    workDay = new Date($('#workDay').val());
+  var firstDay = new Date($(iterationStartDay).data()['date']),
+    workDay = new Date($(iterationWorkDay).data()['date']);
 
   for(var i = 0; i < 14; i++) {
     if(firstDay.getDate() === workDay.getDate()) {
@@ -186,7 +189,7 @@ var showMemberResource = function() {
 
   for (memberName in MOBILE_PART.members) {
     var _member = MOBILE_PART['members'][memberName],
-      _date = new Date($('#iterationStartDay').val());
+      _date = new Date($(iterationStartDay).data()['date']);
 
     _resouceTable += '<tr><td class="textLabel">' + _member['fullName'] + '</td><td>'+ _member['estimate'].toFixed(1) +'</td>';
     for(var j = 0; j < 14; j++) {
@@ -217,8 +220,8 @@ var showProjectResource = function() {
       + '<table class="table ol-md-12"><tr class="primary">' + '<td>Task</td><td>Member</td><td>E</td>';
     if(DEBUG_MODE) console.log("project : " + projectName + ", cardLength : " + _project['cards'].length);
 
-    var firstDay = new Date($('#iterationStartDay').val()),
-      workDay = new Date($('#workDay').val());
+    var firstDay = new Date($(iterationStartDay).data()['date']),
+      workDay = new Date($(iterationWorkDay).data()['date']);
 
     for(var i = 0; i < 14; i++) {
       if(firstDay.getDate() === workDay.getDate()) {
@@ -257,7 +260,7 @@ var showProjectResource = function() {
           var memLineCount = 0;
           for(memberName in _card['members']) {
             if(isSelectedMember(memberName)) {
-              var _date = new Date($('#iterationStartDay').val());
+              var _date = new Date($(iterationStartDay).data()['date']);
 
               if(_card['members'][memberName]['estimate'] !== undefined && _card['members'][memberName]['estimate'] > 0.0) {
 
@@ -304,7 +307,7 @@ var showProjectResource = function() {
 
 var showMemberResourceToGraph = function() {
   var _dataObj = {"estimateG" : [], "spendG" : []},
-    firstDay = new Date($('#iterationStartDay').val()),
+    firstDay = new Date($(iterationStartDay).data()['date']),
     today = new Date();
     targetElement = $('#flot-line-chart-multi');
 
@@ -633,12 +636,26 @@ var clearMemeber = function() {
 }
 
 var dateMaker = function() {
-  var _workday = new Date;
+  var _workday = new Date();
   _workday.setDate(_workday.getDate() -1);
 
-  $('#iterationStartDay').val("2016-05-23");
-  $('#workDay').val(getDateString(_workday));
+  $(iterationStartDay).datetimepicker({
+    defaultDate: "2016-05-23"
+  });
+  $(iterationWorkDay).datetimepicker({
+    defaultDate : getDateString(_workday)
+  });
 
+  $(iterationStartDay).on("dp.change", function(e) {
+    reDrawTask();
+  });
+
+  $(iterationWorkDay).on("dp.change", function(e) {
+    reDrawTask();
+  });
+
+  // iterationStartDay = new Date($('#datetimepicker1').data()['date']);
+  // iterationWorkDay = new Date($('#datetimepicker2').data()['date']);
 }
 
 var initializing = function() {
