@@ -1,5 +1,4 @@
 body {
-  padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
@@ -83,4 +82,26 @@ div.searchBtn {
 	height: 60px;
 	text-align: right;
 	line-height: 60px;
+}
+
+nav#title {
+	width : 100%;
+	position: fixed;
+}
+
+a.back-to-top {
+	display: none;
+	width: 60px;
+	height: 60px;
+	text-indent: -9999px;
+	position: fixed;
+	z-index: 999;
+	right: 20px;
+	bottom: 20px;
+	background: #27AE61 url("up-arrow.png") no-repeat center 0.1%;
+	/* background-position-y: -20px; */
+	background-size: cover;
+	-webkit-border-radius: 30px;
+	-moz-border-radius: 30px;
+	border-radius: 30px;
 }

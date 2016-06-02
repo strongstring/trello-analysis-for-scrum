@@ -216,9 +216,10 @@ var showProjectResource = function() {
   for(projectName in MOBILE_PART['project']) {
     var _project = MOBILE_PART['project'][projectName];
 
-    var _resouceTable = '<div class="panel panel-default"><div class="panel-heading panel-title">' + MOBILE_PART['project'][projectName]['name'] + '</div><div class="panel-body">'
+    var _resouceTable = '<div class="panel panel-default" id="'+ MOBILE_PART['project'][projectName]['name']
+      +'"><div class="panel-heading panel-title">' + MOBILE_PART['project'][projectName]['name'] + '</div><div class="panel-body">'
       + '<table class="table ol-md-12"><tr class="primary">' + '<td>Task</td><td>Member</td><td>E</td>';
-    if(DEBUG_MODE) console.log("project : " + projectName + ", cardLength : " + _project['cards'].length);
+    if(DEBUG_MODE) console.log("project : " + projectName + ", cardLength : " + _projstyleect['cards'].length);
 
     var firstDay = new Date($(iterationStartDay).data()['date']),
       workDay = new Date($(iterationWorkDay).data()['date']);
@@ -383,6 +384,45 @@ var showMemberResourceToGraph = function() {
         }
     });
 }
+
+var showProjectPreview = function() {
+  var target = $('#projectPreview');
+
+  var loopInex = 0;
+  for(projectName in MOBILE_PART['project']) {
+    var _project = MOBILE_PART['project'][projectName];
+    var _progress = (_project['spend'] / _project['estimate'] * 100).toFixed(2),
+      _currentState;
+
+    if(_progress < 30) {
+      _currentState = "progress-bar-danger";
+    } else if(_progress > 75) {
+      _currentState = "progress-bar-success";
+    } else {
+      _currentState = "progress-bar-info";
+    }
+    var _li = '<li>'
+        + '<a href="#' + _project['name'] + '">'
+        +  '<div>'
+        +  '<p>'
+        +   '<strong>' + _project['name'] + '</strong>'
+        +      '<span class="pull-right text-muted">' + _progress + '% Complete</span>'
+        +    '</p>'
+        +    '<div class="progress progress-striped active">'
+        +      '<div class="progress-bar '+_currentState+'" role="progressbar" aria-valuenow="' + _progress + '" aria-valuemin="0" aria-valuemax="100" style="width: ' + _progress + '%">'
+        +        '<span class="sr-only">' + _progress + '% Complete</span>'
+        +      '</div>'
+        +    '</div>'
+        +  '</div>'
+        +'</a>'
+      +'</li>';
+
+    if(loopInex !== 0) {
+      target.append('<li class="divider"></li>');
+    }
+    target.append(_li);
+  }
+};
 
 // LOGICAL
 var getCard = function(boardID, All) {
@@ -617,6 +657,7 @@ var calcStart = function() {
       showMemberResource();
       showProjectResource();
       showMemberResourceToGraph();
+      showProjectPreview();
       console.log("%c @@@@@@@@@@  ALL ACTION IS CALCULATED!! @@@@@@@@@@", 'background: #222; color: #bada55'); 
       $('#indicator').css('display', 'none');
     }
@@ -653,9 +694,6 @@ var dateMaker = function() {
   $(iterationWorkDay).on("dp.change", function(e) {
     reDrawTask();
   });
-
-  // iterationStartDay = new Date($('#datetimepicker1').data()['date']);
-  // iterationWorkDay = new Date($('#datetimepicker2').data()['date']);
 }
 
 var initializing = function() {
@@ -689,6 +727,26 @@ var searchSNE = function() {
   $('#indicator').css('display', 'block');
     clearMemeber();
     calcStart();
+  $('#startSearch').css('display','none');
+}
+
+var backbuttoninit = function() {
+  var amountScrolled = 300;
+
+  $(window).scroll(function() {
+    if ( $(window).scrollTop() > amountScrolled ) {
+      $('a.back-to-top').fadeIn('slow');
+    } else {
+      $('a.back-to-top').fadeOut('slow');
+    }
+  });
+
+  $('a.back-to-top').click(function() {
+    $('html, body').animate({
+      scrollTop: 0
+    }, 700);
+    return false;
+  });
 }
 
 $(function() {
@@ -697,6 +755,7 @@ $(function() {
       $('#indicator').css('display', 'block');
       $.when(initializing()).done(function() {
         dateMaker();
+        backbuttoninit();
         console.log("%c @@@@@@@@@@ SCRUM IS READY!! @@@@@@@@@@", 'background: #222; color: #bada55'); 
         $('#indicator').css('display', 'none');
       });
