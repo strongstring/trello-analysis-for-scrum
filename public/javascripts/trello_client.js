@@ -492,7 +492,7 @@ var getSNE = function(boardID, cards) {
       if(j === 0) _card['name'] = _card.actions[j].data.card.name;
 
       // check 'plus!' about S & E comment)
-      if(_action.type !== 'updateCard' && _action.data.text !== null && _action.data.text.indexOf('plus!') !== -1) {
+      if(_action.type !== 'updateCard' && _action.data.text !== null && _action.data.text.indexOf('plus!') !== -1 && _action.data.text.indexOf('^resetsync') === -1) {
         var _commentText = _action.data.text.substring(6);
         var _commentInfo = _commentText.split(' '),
           duplicatedFlag = false,
