@@ -1,24 +1,3 @@
-var DEBUG_MODE = false;
-
-var COMMON_ID = "I02GmIoD",
-  IPOLIS_ID = "3UZJ3kPG",
-  SSM_ID = "g0DBnhdi",
-  SMARTCAM_ID = "nisQ181R",
-  WISENET_ID = "duBw0VfK",
-  ARGUS_ID = "u6SqfXJ9";
-
-var MOBILE_PART = {
-  members : {},
-  project : {
-    "common" : {}, 
-    "ipolis" : {},
-    "ssm" : {},
-    "smartcam" : {},
-    "wisenet" : {},
-    "argus" : {},
-  },
-};
-
 var iterationStartDay = "#datetimepicker1";
 var iterationWorkDay = "#datetimepicker2";
 
@@ -31,19 +10,18 @@ var openWindow = function( url ) {
   window.focus();
 }
 
-var authorizeToTrello = function() {
+var getIterationStartDay = function() {
+  var _now = new Date(),
+    _iterationDate,
+    _dumpDate = new Date(ITERATION_START_DATE);
 
-  var deferred = $.Deferred();
-  var onAuthorize = function() { console.log("Successful authentication"); deferred.resolve();};
-  var authenticationFailure = function() { console.log("Failed authentication"); deferred.reject();};
+  while (_dumpDate <= _now) {
+    _iterationDate = objectCopy(_dumpDate);
+    _dumpDate.setDate(_dumpDate.getDate() + ITERATION_PERIOD);
+  }
 
-  Trello.authorize({
-      type: "popup",
-      success: onAuthorize
-  });
-
-  return deferred.promise();
-};
+  return _iterationDate;
+}
 
 // get this week
 var getWeeksArea = function(firstday) {
@@ -60,57 +38,40 @@ var getWeeksArea = function(firstday) {
 }
 
 var getDateString = function(date) {
-  var _date;
-
   var dd = date.getDate(),
     mm = date.getMonth() + 1,
     yyyy = date.getFullYear();
 
-    if(dd<10){
-        dd='0'+dd
-    } 
-    if(mm<10){
-        mm='0'+mm
-    } 
-    _date = yyyy+'-'+mm+'-'+dd;
+  if(dd < 10) dd = '0' + dd;
+  if(mm < 10) mm = '0' + mm;
 
-    return _date;
-}
-
-var getDayFromDate = function(date) {
-  var _date;
-
-  var dd = date.getDate(),
-    mm = date.getMonth() + 1,
-    yyyy = date.getFullYear();
-
-    if(dd<10){
-        dd='0'+dd
-    } 
-    if(mm<10){
-        mm='0'+mm
-    } 
-    _date = yyyy+'-'+mm+'-'+dd;
-
-    return _date;
+  return _date = yyyy+'-'+mm+'-'+dd;
 }
 
 // LOGICAL
 var getMemberInformation = function() {
   var deferred = $.Deferred(),
+    deferredArr = [],
     _memberObj = {};
 
-  Trello.get('/boards/' + COMMON_ID + '/members/', 
-  function(members) {
-    for(var i = 0; i < members.length; i++) {
-      var _key = members[i]['username'];
-      _memberObj[_key] = members[i];
-    }
-    deferred.resolve(_memberObj);
-  }, function(error) {
-    console.log(error);
-  })
+  for(ProjectName in BOARD) {
+    deferredArr.push(
+      Trello.get('/boards/' + BOARD[ProjectName]['id'] + '/members/', 
+      function(members) {
+        for(var i = 0; i < members.length; i++) {
+          var _key = members[i]['username'];
+          if(_memberObj[_key] === undefined) _memberObj[_key] = members[i];
+        }
+      }, function(error) {
+        console.log(error);
+      })
+    );
+  }
 
+  $.when.apply($, deferredArr).done(function() {
+    deferred.resolve(_memberObj);
+  });
+  
   return deferred.promise();
 };
 
@@ -119,7 +80,7 @@ var getSelectedMember = function() {
   var _arr = [],
     _checkedID = $('#memberSelectForm div input:checked');
 
-  for(member in MOBILE_PART['members']) {
+  for(member in PART['members']) {
     for(var j = 0; j <_checkedID.length; j++) {
       if(member === _checkedID[j].value) _arr.push(member);
     }
@@ -138,16 +99,6 @@ var isSelectedMember = function(memberName) {
   return isSelected;
 }
 
-var getMemberIndex = function(userName) {
-    
-  var _index = -1;
-
-  for(var i = 0; i < MOBILE_PART.members.length; i++) {
-    if(MOBILE_PART.members[i].username === userName) _index = i;
-  }
-  return _index;
-};
-
 var showMemberCheckBox = function(members) {
   var memberSelector = $('#memberSelectForm');
 
@@ -161,22 +112,22 @@ var showMemberCheckBox = function(members) {
     );
   }
 
-  $(".checkbox").change(function() {
-    // if(this.checked) {}
-    reDrawTask();
-  });
+  $(".checkbox").change(reDrawTask);
 };
 
 var showMemberResource = function() {
   $('#projectDashBoard').empty();
-  $('#projectDashBoard').append('<div class="panel panel-default"><div class="panel-heading panel-title">Total Project Resource</div><div class="panel-body" id="total_resource"></div>');
-  var _resouceTable = '<table class="table col-md-12"><tr class="primary">'
-    + '<td>Member</td><td>E</td>';
+  $('#projectDashBoard').append(
+    '<div class="panel panel-default">'
+    + '<div class="panel-heading panel-title">Total Project Resource</div>'
+    + '<div class="panel-body" id="total_resource"></div>'
+  );
+  var _resouceTable = '<table class="table col-md-12"><tr class="primary"><td>Member</td><td>E</td>';
 
   var firstDay = new Date($(iterationStartDay).data()['date']),
     workDay = new Date($(iterationWorkDay).data()['date']);
 
-  for(var i = 0; i < 14; i++) {
+  for(var i = 0; i < ITERATION_PERIOD; i++) {
     if(firstDay.getDate() === workDay.getDate()) {
       _resouceTable += '<td style="border-left:solid 2px; border-right:solid 2px;">' + firstDay.getDate() + '</td>';
     } else {
@@ -187,12 +138,12 @@ var showMemberResource = function() {
 
   _resouceTable += '<td>R</td></tr>';
 
-  for (memberName in MOBILE_PART.members) {
-    var _member = MOBILE_PART['members'][memberName],
+  for (memberName in PART.members) {
+    var _member = PART['members'][memberName],
       _date = new Date($(iterationStartDay).data()['date']);
 
     _resouceTable += '<tr><td class="textLabel">' + _member['fullName'] + '</td><td>'+ _member['estimate'].toFixed(1) +'</td>';
-    for(var j = 0; j < 14; j++) {
+    for(var j = 0; j < ITERATION_PERIOD; j++) {
       var _dateSpend = _member['date_spend'][_date.getDate()];
       _dateSpend = (_dateSpend === undefined) ? ' ' : _dateSpend.toFixed(1);
       if(_dateSpend < 0.1) _dateSpend = ' ';
@@ -213,18 +164,18 @@ var showMemberResource = function() {
 
 var showProjectResource = function() {
 
-  for(projectName in MOBILE_PART['project']) {
-    var _project = MOBILE_PART['project'][projectName];
+  for(projectName in PART['project']) {
+    var _project = PART['project'][projectName];
 
-    var _resouceTable = '<div class="panel panel-default" id="'+ MOBILE_PART['project'][projectName]['name']
-      +'"><div class="panel-heading panel-title">' + MOBILE_PART['project'][projectName]['name'] + '</div><div class="panel-body">'
+    var _resouceTable = '<div class="panel panel-default" id="'+ projectName
+      +'"><div class="panel-heading panel-title">' + _project['name'] + '</div><div class="panel-body">'
       + '<table class="table ol-md-12"><tr class="primary">' + '<td>Task</td><td>Member</td><td>E</td>';
-    if(DEBUG_MODE) console.log("project : " + projectName + ", cardLength : " + _projstyleect['cards'].length);
+    if(DEBUG_MODE) console.log("project : " + projectName + ", cardLength : " + _project['cards'].length);
 
     var firstDay = new Date($(iterationStartDay).data()['date']),
       workDay = new Date($(iterationWorkDay).data()['date']);
 
-    for(var i = 0; i < 14; i++) {
+    for(var i = 0; i < ITERATION_PERIOD; i++) {
       if(firstDay.getDate() === workDay.getDate()) {
         _resouceTable += '<td style="border-left:solid 2px; border-right:solid 2px;">' + firstDay.getDate() + '</td>';
       } else {
@@ -248,58 +199,55 @@ var showProjectResource = function() {
         }
       }
 
-      if(memCount > 0) {
-        if(_card['estimate'] !== undefined && _card['estimate'] !== 0) {
-          if(_card['spend'] === _card['estimate']) {
-            _resouceTable += '<tr class="taskDone"><td rowspan="'+memCount+'" class="textLabel"><a onClick="openWindow(\''+_card['url']+'\')">' + _card['name'] + '</a></td>';
-          } else if (_card['spend'] !== undefined && _card['spend'] > 0) { 
-            _resouceTable += '<tr class="taskDoing"><td rowspan="'+memCount+'" class="textLabel"><a onClick="openWindow(\''+_card['url']+'\')">' + _card['name'] + '</a></td>';
-          } else {
-            _resouceTable += '<tr><td rowspan="'+memCount+'" class="textLabel"><a onClick="openWindow(\''+_card['url']+'\')">' + _card['name'] + '</a></td>';
-          }
+      if(memCount > 0 && _card['estimate'] !== undefined && _card['estimate'] !== 0) {
+        if(_card['spend'] === _card['estimate']) {
+          _resouceTable += '<tr class="taskDone">';
+        } else if (_card['spend'] !== undefined && _card['spend'] > 0) { 
+          _resouceTable += '<tr class="taskDoing">';
+        } else {
+          _resouceTable += '<tr>';
+        }
 
-          var memLineCount = 0;
-          for(memberName in _card['members']) {
-            if(isSelectedMember(memberName)) {
-              var _date = new Date($(iterationStartDay).data()['date']);
+        _resouceTable += '<td rowspan="'+memCount+'" class="textLabel"><a onClick="openWindow(\''+_card['url']+'\')">' + _card['name'] + '</a></td>';
 
-              if(_card['members'][memberName]['estimate'] !== undefined && _card['members'][memberName]['estimate'] > 0.0) {
+        var memLineCount = 0;
+        for(memberName in _card['members']) {
+          if(isSelectedMember(memberName)) {
+            var _date = new Date($(iterationStartDay).data()['date']),
+              _member = _card['members'][memberName];
 
-                if(memLineCount === 0) {
-                  // _resouceTable += '<tr>'
-                  _resouceTable += '<td class="textLabel">' + _card['members'][memberName]['fullName'] + '</td><td>'+ _card['members'][memberName]['estimate'].toFixed(1) +'</td>';
+            if(_member['estimate'] !== undefined && _member['estimate'] > 0.0) {
+
+              if(memLineCount !== 0) {
+                if(_member['spend'] === _member['estimate']) {
+                  _resouceTable += '<tr class="taskDone">';
+                } else if (_member['spend'] !== undefined && _member['spend'] > 0) {
+                  _resouceTable += '<tr class="taskDoing">';
                 } else {
-                  if(_card['members'][memberName]['spend'] === _card['members'][memberName]['estimate']) {
-                    _resouceTable += '<tr class="taskDone"><td class="textLabel">' + _card['members'][memberName]['fullName'] + '</td><td>'+ _card['members'][memberName]['estimate'].toFixed(1) +'</td>';
-                  } else if (_card['members'][memberName]['spend'] !== undefined && _card['members'][memberName]['spend'] > 0) {
-                    _resouceTable += '<tr class="taskDoing"><td class="textLabel">' + _card['members'][memberName]['fullName'] + '</td><td>'+ _card['members'][memberName]['estimate'].toFixed(1) +'</td>';
-                  } else {
-                    _resouceTable += '<tr><td class="textLabel">' + _card['members'][memberName]['fullName'] + '</td><td>'+ _card['members'][memberName]['estimate'].toFixed(1) +'</td>';
-                  }
+                  _resouceTable += '<tr>';
                 }
-
-                for(var k = 0; k < 14; k++) {
-                  var _dateSpend = _card['members'][memberName]['date_spend'][_date.getDate()];
-                  _dateSpend = (_dateSpend === undefined) ? ' ' : _dateSpend.toFixed(1);
-                  if(_dateSpend < 0.1) _dateSpend = ' ';
-
-                  if(_date.getDate() === workDay.getDate()) {
-                    _resouceTable += '<td style="border-left:solid 2px; border-right:solid 2px;">' + _dateSpend + '</td>';
-                  } else {
-                    _resouceTable += '<td>' + _dateSpend + '</td>'
-                  }
-                  _date.setDate(_date.getDate() + 1);
-                }
-
-                _resouceTable += '<td>'+ (_card['members'][memberName]['estimate'] - _card['members'][memberName]['spend']).toFixed(1) +'</td></tr>';
-                memLineCount ++;
               }
+               _resouceTable += '<td class="textLabel">' + _member['fullName'] + '</td><td>'+ _member['estimate'].toFixed(1) +'</td>';
+
+              for(var k = 0; k < ITERATION_PERIOD; k++) {
+                var _dateSpend = _member['date_spend'][_date.getDate()];
+                _dateSpend = (_dateSpend === undefined) ? ' ' : _dateSpend.toFixed(1);
+                if(_dateSpend < 0.1) _dateSpend = ' ';
+
+                if(_date.getDate() === workDay.getDate()) {
+                  _resouceTable += '<td style="border-left:solid 2px; border-right:solid 2px;">' + _dateSpend + '</td>';
+                } else {
+                  _resouceTable += '<td>' + _dateSpend + '</td>'
+                }
+                _date.setDate(_date.getDate() + 1);
+              }
+
+              _resouceTable += '<td>'+ (_member['estimate'] - _member['spend']).toFixed(1) +'</td></tr>';
+              memLineCount ++;
             }
           }
         }
       }
-
-      
     }
     _resouceTable += '</table></div></div>';
     $('#projectDashBoard').append(_resouceTable);
@@ -315,14 +263,14 @@ var showMemberResourceToGraph = function() {
   firstDay.setDate(firstDay.getDate() - 1);
 
   var memCount = 0;
-  for(member in MOBILE_PART['members']) {
+  for(member in PART['members']) {
     memCount ++;
   }
 
   if (DEBUG_MODE) console.log("member is " + memCount);
 
-  var estimateValForLogical = MOBILE_PART['estimate'],
-    estimateValForReal = MOBILE_PART['estimate'];
+  var estimateValForLogical = PART['estimate'],
+    estimateValForReal = PART['estimate'];
 
   var stopflag = false;
   for(var i = 0; i < 15; i++) {
@@ -342,8 +290,8 @@ var showMemberResourceToGraph = function() {
       if(firstDay.getDate() === today.getDate()) stopflag = true;
 
       estimateValForLogical -= (memCount*8);
-      if(MOBILE_PART['date_spend'][firstDay.getDate()] !== undefined) {
-        estimateValForReal -= MOBILE_PART['date_spend'][firstDay.getDate()];
+      if(PART['date_spend'][firstDay.getDate()] !== undefined) {
+        estimateValForReal -= PART['date_spend'][firstDay.getDate()];
       }
 
       _estimateData.push(estimateValForLogical);
@@ -389,8 +337,8 @@ var showProjectPreview = function() {
   var target = $('#projectPreview');
 
   var loopInex = 0;
-  for(projectName in MOBILE_PART['project']) {
-    var _project = MOBILE_PART['project'][projectName];
+  for(projectName in PART['project']) {
+    var _project = PART['project'][projectName];
     var _progress = (_project['spend'] / _project['estimate'] * 100).toFixed(2),
       _currentState;
 
@@ -422,53 +370,19 @@ var showProjectPreview = function() {
     }
     target.append(_li);
   }
+
+  $('.resourceMenu').css('display', 'block');
 };
-
-// LOGICAL
-var getCard = function(boardID, All) {
-  var deferred = $.Deferred(),
-    _isAll = (All === undefined || All === false) ? 'visible' : 'all';
-
-  Trello.get('/board/' + boardID + "/cards/" + _isAll,
-    function(cards) {
-      // console.log(cards);
-      deferred.resolve(cards);
-    }, function(error) {
-      console.log(error);
-    }
-  );
-
-  return deferred.promise();
-}
 
 var getBoardInfo = function(boardID) {
   var _obj = {};
-  switch(boardID) {
-    case "I02GmIoD" : 
-      _obj['board'] = "common";
-      _obj['name'] = "COMMON"
+
+  for (boardName in BOARD) {
+    if (BOARD[boardName]['id'] === boardID) {
+      _obj['board'] = boardName;
+      _obj['name'] = BOARD[boardName]['name'];
       break;
-    case "3UZJ3kPG" : 
-      _obj['board'] = "ipolis";
-      _obj['name'] = "iPOLiS mobile";
-      break;
-    case "g0DBnhdi" :
-      _obj['board'] = "ssm";
-      _obj['name'] = "SSM mobile";
-      break;
-    case "nisQ181R" : 
-      _obj['board'] = "smartcam";
-      _obj['name'] = "SmartCam mobile";
-      break;
-    case "duBw0VfK" :
-      _obj['board'] = "wisenet";
-      _obj['name'] = "WiseNet mobile";
-      break;
-    case "u6SqfXJ9" :
-      _obj['board'] = "argus";
-      _obj['name'] = "Argus";
-      break;
-    default : break;
+    }
   }
 
   return _obj;
@@ -478,8 +392,9 @@ var getSNE = function(boardID, cards) {
   var deferred = $.Deferred(),
   targetBoardName = getBoardInfo(boardID)['board'];
 
-  MOBILE_PART.project[targetBoardName]['name'] = getBoardInfo(boardID)['name'];
-  MOBILE_PART.project[targetBoardName]['cards'] = [];
+  if(PART['project'][targetBoardName] === undefined) PART['project'][targetBoardName] = {};
+  PART.project[targetBoardName]['name'] = getBoardInfo(boardID)['name'];
+  PART.project[targetBoardName]['cards'] = [];
 
   // calculate comment S&E
   for (var i = 0; i < cards.length; i++) {
@@ -538,17 +453,17 @@ var getSNE = function(boardID, cards) {
                 // add member in card
                 if(_card['members'] === undefined) _card['members'] = {};
                 if(_card['members'][_member[m]] === undefined)  _card['members'][_member[m]] = {};
-                if(_card['members'][_member[m]]['fullName'] === undefined) _card['members'][_member[m]]['fullName'] = MOBILE_PART['members'][_member[m]]['fullName'];
+                if(_card['members'][_member[m]]['fullName'] === undefined) _card['members'][_member[m]]['fullName'] = PART['members'][_member[m]]['fullName'];
                 if(_card['members'][_member[m]]['date_spend'] === undefined) _card['members'][_member[m]]['date_spend'] = {};
                 if(_card['members'][_member[m]]['spend'] === undefined)  _card['members'][_member[m]]['spend'] = 0;
                 if(_card['members'][_member[m]]['estimate'] === undefined) _card['members'][_member[m]]['estimate'] = 0;
 
                 // add member in card
-                if(MOBILE_PART['members'] === undefined) MOBILE_PART['members'] = {};
-                if(MOBILE_PART['members'][_member[m]] === undefined) MOBILE_PART['members'][_member[m]] = {};
-                if(MOBILE_PART['members'][_member[m]]['date_spend'] === undefined) MOBILE_PART['members'][_member[m]]['date_spend'] = {};
-                if(MOBILE_PART['members'][_member[m]]['spend'] === undefined)  MOBILE_PART['members'][_member[m]]['spend'] = 0;
-                if(MOBILE_PART['members'][_member[m]]['estimate'] === undefined) MOBILE_PART['members'][_member[m]]['estimate'] = 0;
+                if(PART['members'] === undefined) PART['members'] = {};
+                if(PART['members'][_member[m]] === undefined) PART['members'][_member[m]] = {};
+                if(PART['members'][_member[m]]['date_spend'] === undefined) PART['members'][_member[m]]['date_spend'] = {};
+                if(PART['members'][_member[m]]['spend'] === undefined)  PART['members'][_member[m]]['spend'] = 0;
+                if(PART['members'][_member[m]]['estimate'] === undefined) PART['members'][_member[m]]['estimate'] = 0;
 
                 if(parseFloat(_timeArr[0]) !== NaN) {
                   // add spend in member in card
@@ -556,16 +471,16 @@ var getSNE = function(boardID, cards) {
                     _card['members'][_member[m]]['date_spend'][_date.getDate()] = 0;
                   if(_card['date_spend'][_date.getDate()] === undefined) 
                     _card['date_spend'][_date.getDate()] = 0;
-                  if(MOBILE_PART['members'][_member[m]]['date_spend'][_date.getDate()] === undefined) 
-                    MOBILE_PART['members'][_member[m]]['date_spend'][_date.getDate()] = 0;
+                  if(PART['members'][_member[m]]['date_spend'][_date.getDate()] === undefined) 
+                    PART['members'][_member[m]]['date_spend'][_date.getDate()] = 0;
 
                   _card['members'][_member[m]]['date_spend'][_date.getDate()] += spendValue;
                   _card['date_spend'][_date.getDate()] += spendValue;
                   _card['members'][_member[m]]['spend'] += spendValue;
                   _card['spend'] += spendValue
 
-                  MOBILE_PART['members'][_member[m]]['date_spend'][_date.getDate()] += spendValue;
-                  MOBILE_PART['members'][_member[m]]['spend'] += spendValue;
+                  PART['members'][_member[m]]['date_spend'][_date.getDate()] += spendValue;
+                  PART['members'][_member[m]]['spend'] += spendValue;
                 }
 
                 if(parseFloat(_timeArr[1]) !== NaN) {
@@ -573,7 +488,7 @@ var getSNE = function(boardID, cards) {
                   _card['members'][_member[m]]['estimate'] += estimateValue;
                   _card['estimate'] += estimateValue
 
-                  MOBILE_PART['members'][_member[m]]['estimate'] += estimateValue;
+                  PART['members'][_member[m]]['estimate'] += estimateValue;
                 }
               } // for (m) : member counter
               duplicatedFlag = true;
@@ -582,7 +497,7 @@ var getSNE = function(boardID, cards) {
         } // for (k)
       } // if (check 'plus!' about S & E comment)
     } // for (j)
-    MOBILE_PART.project[targetBoardName]['cards'].push(_card);
+    PART.project[targetBoardName]['cards'].push(_card);
   } // for (i)
 
   deferred.resolve();
@@ -590,12 +505,12 @@ var getSNE = function(boardID, cards) {
 };
 
 var calcSNE = function(boardID) {
-  var targetBoard = MOBILE_PART['project'][getBoardInfo(boardID)['board']];
+  var targetBoard = PART['project'][getBoardInfo(boardID)['board']];
 
   // to team
-  if(MOBILE_PART['spend'] === undefined) MOBILE_PART['spend'] = 0;
-  if(MOBILE_PART['estimate'] === undefined) MOBILE_PART['estimate'] = 0;
-  if(MOBILE_PART['date_spend'] === undefined) MOBILE_PART['date_spend'] = {};
+  if(PART['spend'] === undefined) PART['spend'] = 0;
+  if(PART['estimate'] === undefined) PART['estimate'] = 0;
+  if(PART['date_spend'] === undefined) PART['date_spend'] = {};
 
   // to project
   if(targetBoard['spend'] === undefined) targetBoard['spend'] = 0;
@@ -606,21 +521,21 @@ var calcSNE = function(boardID) {
     var _card = targetBoard['cards'][i];
 
     if(_card['spend'] !== undefined) {
-      MOBILE_PART['spend'] += _card['spend'];
+      PART['spend'] += _card['spend'];
       targetBoard['spend'] += _card['spend'];
     }
 
     if(_card['estimate'] !== undefined) {
-      MOBILE_PART['estimate'] += _card['estimate'];
+      PART['estimate'] += _card['estimate'];
       targetBoard['estimate'] += _card['estimate'];
     }
     
     if(_card['date_spend'] !== undefined) {
       for(_dateKey in _card['date_spend']) {
-        if(MOBILE_PART['date_spend'][_dateKey] === undefined) MOBILE_PART['date_spend'][_dateKey] = 0;
+        if(PART['date_spend'][_dateKey] === undefined) PART['date_spend'][_dateKey] = 0;
         if(targetBoard['date_spend'][_dateKey] === undefined) targetBoard['date_spend'][_dateKey] = 0;
 
-        MOBILE_PART['date_spend'][_dateKey] += _card['date_spend'][_dateKey];
+        PART['date_spend'][_dateKey] += _card['date_spend'][_dateKey];
         targetBoard['date_spend'][_dateKey] += _card['date_spend'][_dateKey];
       }
     }
@@ -651,71 +566,83 @@ var getActionToBoard = function(boardID) {
 }
 
 var calcStart = function() {
-  $.when(getActionToBoard(COMMON_ID), getActionToBoard(IPOLIS_ID), getActionToBoard(SSM_ID), getActionToBoard(SMARTCAM_ID), 
-    getActionToBoard(WISENET_ID), getActionToBoard(ARGUS_ID)).done(
-    function(res1, res2, res3, res4, res5) {
+  var deferred = [];
+
+  // var count = 0;
+  for(boardName in BOARD) {
+    // if(count === 2) break;
+    console.log("push board data " + BOARD[boardName]['name']);
+    deferred.push(getActionToBoard(BOARD[boardName]['id']));
+    // count++;
+  }
+
+  $.when.apply($, deferred).done(
+    function() {
+      showProjectPreview();
+      showMemberResourceToGraph();
       showMemberResource();
       showProjectResource();
-      showMemberResourceToGraph();
-      showProjectPreview();
+      prepareExcel();
+      $('#exportExcel').removeClass('disabled');
       console.log("%c @@@@@@@@@@  ALL ACTION IS CALCULATED!! @@@@@@@@@@", 'background: #222; color: #bada55'); 
       $('#indicator').css('display', 'none');
-    }
-  );
+  });
+
 }
 
 var clearMemeber = function() {
-  if(MOBILE_PART['members'] === undefined) MOBILE_PART['members'] = {};
-    for(member in MOBILE_PART['members']) {
-      MOBILE_PART['members'][member]['spend'] = 0;
-      MOBILE_PART['members'][member]['estimate'] = 0;
-      MOBILE_PART['members'][member]['date_spend'] = {};
-    }
-    MOBILE_PART['estimate'] = 0;
-    MOBILE_PART['spend'] = 0;
-    MOBILE_PART['date_spend'] = {};
-}
-
-var dateMaker = function() {
-  var _workday = new Date();
-  _workday.setDate(_workday.getDate() -1);
-
-  $(iterationStartDay).datetimepicker({
-    defaultDate: "2016-05-23"
-  });
-  $(iterationWorkDay).datetimepicker({
-    defaultDate : getDateString(_workday)
-  });
-
-  $(iterationStartDay).on("dp.change", function(e) {
-    reDrawTask();
-  });
-
-  $(iterationWorkDay).on("dp.change", function(e) {
-    reDrawTask();
-  });
-}
-
-var initializing = function() {
-  var deferred = $.Deferred();
 
   $.when(getMemberInformation()).done(
     function(members) {
-      MOBILE_PART.members = members;
+      for(member in members) {
+        PART['members'][member] = {};
+        PART['members'][member]['fullName'] = members[member]['fullName'];
+        PART['members'][member]['estimate'] = 0;
+        PART['members'][member]['spend'] = 0;
+        PART['members'][member]['date_spend'] = {};
+      }
 
-      MOBILE_PART['estimate'] = 0;
-      MOBILE_PART['spend'] = 0;
-      MOBILE_PART['date_spend'] = {};
+      PART['estimate'] = 0;
+      PART['spend'] = 0;
+      PART['date_spend'] = {};
+    });
+}
 
-      showMemberCheckBox(members);
-      console.log("%c MEMBER INFORMATION IS LOADED!!", 'color: #228B22');
+var iterationPeriodCalculator = function() {
+  var _workday = new Date(),
+    _baseIterationDate = getIterationStartDay();
+    // _baseIterationDate = "2016-05-30";
 
-      deferred.resolve();
-    }
-  );
+  _workday.setDate(_workday.getDate() -1);
+
+  $(iterationStartDay).datetimepicker({
+    defaultDate: _baseIterationDate,
+    format: 'YYYY-MM-DD'
+  });
+  $(iterationWorkDay).datetimepicker({
+    defaultDate : getDateString(_workday),
+    format: 'YYYY-MM-DD'
+  });
+
+  $(iterationStartDay).on("dp.change", reDrawTask);
+  $(iterationWorkDay).on("dp.change", reDrawTask);
+
+  $('#exportExcel').attr('download', 'HResouce_'+getDateString(new Date(_baseIterationDate))+'.xls');
+}
+
+var authorizeToTrello = function() {
+
+  var deferred = $.Deferred();
+  var onAuthorize = function() { console.log("Successful authentication"); deferred.resolve();};
+  var authenticationFailure = function() { console.log("Failed authentication"); deferred.reject();};
+
+  Trello.authorize({
+      type: "popup",
+      success: onAuthorize
+  });
 
   return deferred.promise();
-}
+};
 
 var reDrawTask = function() {
   $('#projectDashBoard').empty();
@@ -727,10 +654,10 @@ var searchSNE = function() {
   $('#indicator').css('display', 'block');
     clearMemeber();
     calcStart();
-  $('#startSearch').css('display','none');
+  $('#startSearch').css('display', 'none');
 }
 
-var backbuttoninit = function() {
+var topButtonEventListener = function() {
   var amountScrolled = 300;
 
   $(window).scroll(function() {
@@ -749,13 +676,98 @@ var backbuttoninit = function() {
   });
 }
 
+var prepareExcel = function() {
+  var _printArea = $('#printDump'),
+    taskArr = [],
+    _dataTable = "";
+
+  for(boardName in PART['project']) {
+    var _object = {},
+      _project = PART['project'][boardName];
+
+    _object['name'] = _project['name'];
+    for(var i = 0; i < _project['cards'].length; i++ ) {
+      var _card = _project['cards'][i];
+
+      if(_card['labels'][0] !== undefined) {
+        if(_object[_card['labels'][0]['name']] === undefined)  _object[_card['labels'][0]['name']] = [];
+        _object[_card['labels'][0]['name']].push(_card);
+      }
+    }
+
+    taskArr.push(_object);
+  }
+
+  console.log(taskArr);
+
+  for(var i = 0; i < taskArr.length; i++) {
+    _dataTable += '<tr><td colspan=\'6\' style=\'background-color: green;\'> ' + taskArr[i]['name'] + ' </td></tr>';
+
+    for(labelName in taskArr[i]) {
+      if(labelName !== 'name') {
+        _dataTable += '<tr><td  colspan=\'6\' style=\'background-color: yellow;\'>' + labelName + '</td></tr>';
+
+        for(var j = 0; j < taskArr[i][labelName].length; j++) {
+          var _card = taskArr[i][labelName][j];
+
+          if(_card['estimate'] > 0) {
+            _dataTable += '<tr><td colspan=\'3\'>' + _card['name'] + '</td><td colspan=\'2\'>';
+
+            var memCount = 0;
+            for(member in _card['members']) {
+              _dataTable += (memCount === 0) ? member : ", " + member;
+              memCount++;
+            }
+            _dataTable += '</td>';
+
+            if(_card['estimate'] === _card['spend']) {
+              _dataTable += '<td>DONE</td>';
+            } else if (_card['spend'] > 0) {
+              _dataTable += '<td>DOING</td>';
+            } else {
+              _dataTable += '<td>  </td>'; 
+            }
+
+            _dataTable += '</tr>';
+          }
+        }
+      }
+    }
+    _dataTable += '<tr><td></td></tr>';
+  }
+
+  _printArea.html(_dataTable);
+  
+}
+
+var initializing = function() {
+  var deferred = $.Deferred();
+
+  $.when(getMemberInformation()).done(
+    function(members) {
+      PART.members = members;
+
+      PART['estimate'] = 0;
+      PART['spend'] = 0;
+      PART['date_spend'] = {};
+
+      showMemberCheckBox(members);
+      iterationPeriodCalculator();
+      topButtonEventListener();
+      console.log("%c MEMBER INFORMATION IS LOADED!!", 'color: #228B22');
+
+      deferred.resolve();
+    }
+  );
+
+  return deferred.promise();
+}
+
 $(function() {
   $.when(authorizeToTrello()).done(
     function() {
       $('#indicator').css('display', 'block');
       $.when(initializing()).done(function() {
-        dateMaker();
-        backbuttoninit();
         console.log("%c @@@@@@@@@@ SCRUM IS READY!! @@@@@@@@@@", 'background: #222; color: #bada55'); 
         $('#indicator').css('display', 'none');
       });
