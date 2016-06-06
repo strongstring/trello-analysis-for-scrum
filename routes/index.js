@@ -6,6 +6,10 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Analysis Work' });
 });
 
+router.get('/dashboard', function(req, res, next) {
+  res.render('dashboard', { title: 'Analysis Work' });
+});
+
 router.get('/ipolis', function(req, res, next) {
 	res.render('ipolis_ota', { title: 'iPOLiS mobile test version Installer' });
 });

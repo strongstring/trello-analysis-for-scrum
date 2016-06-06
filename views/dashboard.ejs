@@ -26,7 +26,7 @@
     <script src="javascripts/trello/defines.js"></script>
     <script src="javascripts/trello/utils.js"></script>
     <script src="javascripts/trello/calculator.js"></script>
-    <script src="javascripts/trello/index.js"></script>
+    <script src="javascripts/trello/dashboard.js"></script>
   </head>
   <body>
   <nav class="navbar navbar-default navbar-static-top" id="title" role="navigation" style="margin-bottom: 0">
@@ -57,73 +57,38 @@
   <div id="indicator"></div>
   <div id="wrapper" style="padding-top:50px;">
     <div id="page-wrapper">
-      <div class="col-md-9 titleHeader">
-        <h3 style="float:left;">Mobile Part H/Resource</h3>
-        <table id="printDump" style="display:none;"></table>
-        <a style="margin-left : 20px;" download="MobilePart.xls" href="#" class="btn btn-success disabled" id="exportExcel" onClick="return ExcellentExport.excel(this, 'printDump', 'MobilePart');"> EXCEL </a>
-      </div>
-      <div class="col-md-3 searchBtn"><button type="button" id="startSearch" class="btn btn-info" onClick="searchSNE()">SEARCH</button></div>
-      <div class="col-md-12">
-        <div class="panel-group" id="accordion">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <h4 class="panel-title">
-                <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Member</a>
-              </h4>
-            </div>
-            <div id="collapse1" class="panel-collapse collapse">
-              <div class="panel-body" id="memberSelectForm"></div>
+      <div class="col-lg-6">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            Part Label Rating
+          </div>
+          <!-- /.panel-heading -->
+          <div class="panel-body">
+            <div class="flot-chart">
+              <div class="flot-chart-content" id="flot-part-pie-chart"></div>
             </div>
           </div>
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <h4 class="panel-title">
-                <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Detail Search</a>
-              </h4>
-            </div>
-            <div id="collapse2" class="panel-collapse collapse">
-              <div class="panel-body">
-                <div class="col-md-3 font_resizing">
-                  <h4>Iteration Start : </h4>
-                </div>
-                <div class="col-md-3 font_resizing" style="margin: 10px 0px;" >
-                  <input class="form-control" placeholder="2016-05-01" id="datetimepicker1"/>
-                </div>
-                <div class="col-md-3 font_resizing" style="margin: 10px 0px;">
-                  <h4>Work Day : </h4>
-                </div>
-                <div class="col-md-3 font_resizing" style="margin: 10px 0px;">
-                    <input class="form-control" id="datetimepicker2" placeholder="2016-05-02" />
-                  </div>
-              </div>
-            </div>
-          </div>
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <h4 class="panel-title">
-                <a data-toggle="collapse" data-parent="#accordion" href="#collapse3"> S & E Graph</a>
-              </h4>
-            </div>
-            <div id="collapse3" class="panel-collapse collapse in">
-              <div class="panel-body">
-                <div class="flot-chart">
-                    <div class="flot-chart-content" id="flot-line-chart-multi"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> 
-      </div>
-        <div class="col-md-12" id="projectDashBoard">
-          <div class="panel panel-default">
-            <div class="panel-heading panel-title">
-              Total Project Resource
-            </div>
-            <div class="panel-body" id="total_resource">
-            </div>
-          </div>
+          <!-- /.panel-body -->
         </div>
-        <!-- /.col-md-12 -->
+        <!-- /.panel -->
+      </div>
+      <!-- /.col-lg-6 -->
+      <div class="col-lg-6">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            Part Label Rating
+          </div>
+          <!-- /.panel-heading -->
+          <div class="panel-body">
+            <div class="flot-chart">
+              <div class="flot-chart-content" id="flot-part-bar-chart"></div>
+            </div>
+          </div>
+          <!-- /.panel-body -->
+        </div>
+        <!-- /.panel -->
+      </div>
+      <!-- /.col-lg-6 -->
     </div>
   </div>
   <a href="#" class="back-to-top"><p class="fa fa-arrow-circle-o-up"></p></a>
