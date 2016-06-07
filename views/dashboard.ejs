@@ -4,25 +4,21 @@
     <title><%= title %></title>
 
     <link rel='stylesheet' href='/stylesheets/style.css' />
-    <link href="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
-    <link href="/stylesheets/bootstrap_datepicker.css" rel="stylesheet">
-    <link href="/stylesheets/startbootstrap-sb-admin-2-1.0.8/dist/css/timeline.css" rel="stylesheet">
-    <link href="/stylesheets/startbootstrap-sb-admin-2-1.0.8/dist/css/sb-admin-2.css" rel="stylesheet">
-    <link href="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/morrisjs/morris.css" rel="stylesheet">
-    <link href="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-
-    <link href="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/font-awesome/css/font-awesome.css" rel="stylesheet" type="text/css">
+    <link href="stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="stylesheets/bootstrap_datepicker.css" rel="stylesheet">
+    <link href="stylesheets/startbootstrap-sb-admin-2-1.0.8/dist/css/timeline.css" rel="stylesheet">
+    <link href="stylesheets/startbootstrap-sb-admin-2-1.0.8/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/morrisjs/morris.css" rel="stylesheet">
+    <link href="stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/font-awesome/css/font-awesome.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="stylesheets/morris.js-0.5.1/morris.css">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
-    <script src="/javascripts/moment.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script src="https://trello.com/1/client.js?key=129a907b7a37f2e3d1e84386fab4549f"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
-    <script src="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/flot/excanvas.min.js"></script>
-    <script src="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/flot/jquery.flot.js"></script>
-    <script src="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/flot/jquery.flot.time.js"></script>
-    <script src="javascripts/excellentexport.min.js"></script>
+    <script src="javascripts/raphael-min.js"></script>
+    <script src="stylesheets/morris.js-0.5.1/morris.min.js"></script>
     <script src="javascripts/trello/defines.js"></script>
     <script src="javascripts/trello/utils.js"></script>
     <script src="javascripts/trello/calculator.js"></script>
@@ -79,9 +75,9 @@
             Part Label Rating
           </div>
           <!-- /.panel-heading -->
-          <div class="panel-body">
+          <div class="panel-body" style="overflow : scroll;">
             <div class="flot-chart">
-              <div class="flot-chart-content" id="flot-part-bar-chart"></div>
+              <div class="flot-chart-content" id="flot-part-table"></div>
             </div>
           </div>
           <!-- /.panel-body -->

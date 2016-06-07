@@ -107,7 +107,8 @@ var getSNE = function(boardID, cards) {
                 // add member in card
                 if(_card['members'] === undefined) _card['members'] = {};
                 if(_card['members'][_member[m]] === undefined)  _card['members'][_member[m]] = {};
-                if(_card['members'][_member[m]]['fullName'] === undefined) _card['members'][_member[m]]['fullName'] = PART['members'][_member[m]]['fullName'];
+                if(_card['members'][_member[m]]['fullName'] === undefined && PART['members'][_member[m]] !== undefined) 
+                  _card['members'][_member[m]]['fullName'] = PART['members'][_member[m]]['fullName'];
                 if(_card['members'][_member[m]]['date_spend'] === undefined) _card['members'][_member[m]]['date_spend'] = {};
                 if(_card['members'][_member[m]]['spend'] === undefined)  _card['members'][_member[m]]['spend'] = 0;
                 if(_card['members'][_member[m]]['estimate'] === undefined) _card['members'][_member[m]]['estimate'] = 0;

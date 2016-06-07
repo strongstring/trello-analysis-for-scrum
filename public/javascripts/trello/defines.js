@@ -6,6 +6,16 @@ var PART = {
   project : {}
 };
 
+var labelColor = { 
+  "blue" : "#0079BF",
+  "orange" : "#FFAB4A",
+  "red" : "#EB5A46",
+  "black" : "#4D4D4D",
+  "green" : "#61BD4F",
+  "yellow" : "#F2D600",
+  "purple" : "#C377E0",
+};
+
 // Custom Typing board
 var BOARD = {
   "COMMON" : {
@@ -32,7 +42,7 @@ var BOARD = {
     "id" : "u6SqfXJ9",
     "name" : "Argus"
   },
-}
+};
 
 // Iteration period
 var ITERATION_START_DATE = "2016-05-23",
