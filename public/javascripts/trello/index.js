@@ -126,7 +126,11 @@ var showProjectResource = function() {
 
       if(memCount > 0 && _card['estimate'] !== undefined && _card['estimate'] !== 0) {
         if(_card['spend'] === _card['estimate']) {
-          _resouceTable += '<tr class="taskDone">';
+          if(_card['date_spend'][workDay.getDate()] !== undefined && _card['date_spend'][workDay.getDate()] > 0.1) {
+            _resouceTable += '<tr class="taskFinish">';
+          } else {
+            _resouceTable += '<tr class="taskDone">';
+          }
         } else if (_card['spend'] !== undefined && _card['spend'] > 0) { 
           _resouceTable += '<tr class="taskDoing">';
         } else {
@@ -145,7 +149,11 @@ var showProjectResource = function() {
 
               if(memLineCount !== 0) {
                 if(_member['spend'] === _member['estimate']) {
-                  _resouceTable += '<tr class="taskDone">';
+                  if(_member['date_spend'][workDay.getDate()] !== undefined && _member['date_spend'][workDay.getDate()] > 0.1) {
+                    _resouceTable += '<tr class="taskFinish">';
+                  } else {
+                    _resouceTable += '<tr class="taskDone">';
+                  }
                 } else if (_member['spend'] !== undefined && _member['spend'] > 0) {
                   _resouceTable += '<tr class="taskDoing">';
                 } else {
