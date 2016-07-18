@@ -51,11 +51,13 @@ var getSNE = function(boardID, cards) {
   PART.project[targetBoardName]['cards'] = [];
 
   // calculate comment S&E
-  for (var i = 0; i < cards.length; i++) {
+  var cardsLength = cards.length;
+  for (var i = 0; i < cardsLength; i++) {
     var _card = cards[i],
       _cardName;
 
-    for ( var j = 0; j < _card.actions.length; j++) {
+    var cardActionsLength = _card.actions.length;
+    for ( var j = 0; j < cardActionsLength; j++) {
       var _action = _card.actions[j];
 
       if(j === 0) _card['name'] = _card.actions[j].data.card.name;
@@ -69,7 +71,8 @@ var getSNE = function(boardID, cards) {
           _member = new Array(),
           _date = new Date(_action.date);
 
-        for( var k = 0; k < _commentInfo.length; k++) {
+        var commentInfoLength = _commentInfo.length;
+        for( var k = 0; k < commentInfoLength; k++) {
           if(_commentInfo[k].indexOf('@') !== -1) {
             // S&E Member Setting
             duplicatedFlag = false;
@@ -103,7 +106,8 @@ var getSNE = function(boardID, cards) {
               if(_card['estimate'] === undefined) _card['estimate'] = 0;
               if(_card['date_spend'] === undefined) _card['date_spend'] = {};
 
-              for (var m = 0; m < _member.length; m++) {
+              var memberLength = _member.length;
+              for (var m = 0; m < memberLength; m++) {
                 // add member in card
                 if(_card['members'] === undefined) _card['members'] = {};
                 if(_card['members'][_member[m]] === undefined)  _card['members'][_member[m]] = {};
@@ -172,7 +176,8 @@ var calcSNE = function(boardID) {
   if(targetBoard['estimate'] === undefined) targetBoard['estimate'] = 0;
   if(targetBoard['date_spend'] === undefined) targetBoard['date_spend'] = {};
 
-  for (var i = 0; i < targetBoard['cards'].length; i++) {
+  var cardsLEngth = targetBoard.cards.length;
+  for (var i = 0; i < cardsLEngth; i++) {
     var _card = targetBoard['cards'][i];
 
     if(_card['spend'] !== undefined) {
