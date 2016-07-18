@@ -137,7 +137,18 @@ var showProjectResource = function() {
           _resouceTable += '<tr>';
         }
 
-        _resouceTable += '<td rowspan="'+memCount+'" class="textLabel"><a onClick="openWindow(\''+_card['url']+'\')">' + _card['name'] + '</a></td>';
+        var _cardName = _card.name;
+        var hashIndex = _cardName.indexOf('#');
+        if(hashIndex !== -1) {
+          if(hashIndex === 0) {
+            _hashLength = _cardName.split(' ')[0].length;
+            _cardName = _cardName.substr(_hashLength+1, _cardName.length);
+          } else {
+            _cardName = _cardName.substr(0, hashIndex);
+          }
+        }
+
+        _resouceTable += '<td rowspan="'+memCount+'" class="textLabel"><a onClick="openWindow(\''+_card['url']+'\')">' + _cardName + '</a></td>';
 
         var memLineCount = 0;
         for(memberName in _card['members']) {
@@ -222,7 +233,7 @@ var showMemberResourceToGraph = function() {
 
       if(firstDay.getDate() === today.getDate()) stopflag = true;
 
-      estimateValForLogical -= (memCount*8);
+      estimateValForLogical -= (memCount*5.75);
       if(PART['date_spend'][firstDay.getDate()] !== undefined) {
         estimateValForReal -= PART['date_spend'][firstDay.getDate()];
       }

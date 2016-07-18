@@ -23,9 +23,16 @@ var showPartLabel = function() {
   });
 }
 
-var showParCardTable = function(labelName) {
-  console.log($('#flot-part-pie-chart tspan:eq(0)').html());
+var showMemberChartWithTable = function() {
+  var targetElement = $('#float-member-content');
 
+  for(memName in PART['members']) {
+
+  }
+};
+
+var showParCardTable = function(labelName) {
+  // console.log($('#flot-part-pie-chart tspan:eq(0)').html());
   var target = $('#flot-part-table'),
     _resourceTable = '<table class="table ol-md-12"><tr class="primary"><td>Task</td><td>Time</td></tr>';
       
@@ -44,7 +51,7 @@ var showParCardTable = function(labelName) {
       var _card = PART['labels'][_findLabelIndex]['cards'][i];
 
       _resourceTable += '<tr><td><a onClick="openWindow(\'' + _card['url'] + '\')">' + _card['name']
-        + '</a></td><td>' + _card['estimate'] + '</td></tr>';
+        + '</a></td><td>' + _card['estimate'].toFixed(1) + '</td></tr>';
     }
 
     _resourceTable += '</table>';
@@ -77,6 +84,10 @@ var calcPartLabel = function() {
         _label = _project['cards'][i]['labels'][0];
 
       if(PART['labels']['totalVal'] === undefined) PART['labels']['totalVal'] = 0;
+      for(memName in _card['members']) {
+        if(PART['members'][memName]['labels'] === undefined) PART['members'][memName]['labels'] = [];
+        if(PART['members'][memName]['labels'] === undefined) PART['members'][memName]['labels'] = [];
+      }
       if(_label !== undefined && _card['estimate'] !== undefined) {
         var findIndex = -1;
         for(var j = 0 ; j < PART['labels'].length; j++) {
@@ -125,9 +136,10 @@ var initializing = function() {
 
   PART = getStorage(LOCALSTORAGE_KEY);
 
-  $.when(drawChart()).done(
-    function(success) {
+  $.when(drawChart(), getMemberInformation()).done(
+    function(result) {
       deferred.resolve();
+      console.log(result[0], result[1]);
     }
   );
 
@@ -137,9 +149,13 @@ var initializing = function() {
 $(function() {
   $('#indicator').css('display', 'block');
 
-  $.when(initializing()).done(
-    function(res) {
-      $('#indicator').css('display', 'none');
+  $.when(authorizeToTrello()).done(
+    function() {
+      $.when(initializing()).done(
+        function(res) {
+          $('#indicator').css('display', 'none');
+        }
+      );
     }
-  )
+  );
 });

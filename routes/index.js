@@ -14,5 +14,16 @@ router.get('/ipolis', function(req, res, next) {
 	res.render('ipolis_ota', { title: 'iPOLiS mobile test version Installer' });
 });
 
+router.get('/comment', function(req, res, next) {
+	res.render('comment', { title: 'comment test page' });
+});
+
+router.get('/product', function(req, res, next) {
+	res.render('product', { title: 'product test page' });
+});
+
+router.get('/people_task', function(req, res, next) {
+	res.render('people_task', { title: 'product test page' });
+});
 
 module.exports = router;

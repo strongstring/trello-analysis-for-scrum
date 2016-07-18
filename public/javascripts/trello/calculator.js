@@ -6,7 +6,7 @@ var authorizeToTrello = function() {
   var authenticationFailure = function() { console.log("Failed authentication"); deferred.reject();};
 
   Trello.authorize({
-      type: "popup",
+      type: "redirect",
       success: onAuthorize
   });
 
