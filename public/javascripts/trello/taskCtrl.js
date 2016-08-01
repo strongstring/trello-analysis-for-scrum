@@ -569,19 +569,20 @@ angular.module('MyApp', []).controller('AppCtrl', function($q, $timeout, $scope)
 		var drawData = $scope.members[member_index].labels;
 		var total_value = drawData.total_label_value;
 	  var length = drawData.length;
+	  var dumpData = objectCopy(drawData);
 	  $scope.selected_model = $scope.members[member_index];
 	  console.log($scope.selected_model);
 
 	  // calculate percentage
 	  for(var i = 0; i < length; i++) {
 	    var lable_value = objectCopy(drawData[i].value);
-	    drawData[i].value =  ((lable_value / total_value)*100).toFixed(2);
+	    dumpData[i].value =  ((lable_value / total_value)*100).toFixed(2);
 	  } // (for) calculate percentage
-	  console.log(drawData);
+	  console.log(dumpData);
 
 	  Morris.Donut({
 	    element: 'memberDounut',
-	    data : drawData,
+	    data : dumpData,
 	    backgroundColor: '#ffffff',
 	    labelColor: '#4d4d4d',
 	    formatter: function (x) { return x + "%"}
