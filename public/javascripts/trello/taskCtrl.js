@@ -290,76 +290,141 @@ angular.module('MyApp', []).controller('AppCtrl', function($q, $timeout, $scope)
 	  }
 
 	  // calc hash task
-	  var length = $scope.boards.length;
-	  for(var i = 0; i < length; i++) {
-	  	if($scope.boards[i].hash !== undefined) {
-	  		var task = $scope.boards[i].hash;
-	  		var task_length = task.length;
-	  		var member_task_index;
+  	if(board.hash !== undefined) {
+  		var task = board.hash;
+  		var task_length =task.length;
 
-	  		for(var j = 0; j < task_length; j++) {
-	  			for(member_name in task[j].members) {
-		  			var member_index = getIndexInArr($scope.members, 'username', member_name);
-		  			var member_task = $scope.members[member_index].hash;
-		  			var memberInfo = task[j].members[member_name];
+  		for(var j = 0 ; j < task_length; j++) {
+  			var card_length = task[j].cards.length;
 
-		  			if(member_task.length > 0) {
-		  				member_task_index = getIndexInArr(member_task, 'name', task[j].name);
-		  			} else {
-		  				member_task_index = -1;
-		  			}
+  			for(k = 0; k < card_length; k++) {
+  				var card = task[j].cards[k];
 
-	  				if(member_task_index === -1) {
-	  					member_task.push({
-	  						name : task[j].name,
-		  					estimate : 0,
-		  					spend : 0,
-		  					cards : [],
-	  					});
-	  					member_task_index = member_task.length - 1;
-	  				}
+  				for(member_name in card.members) {
+  					var member_index = getIndexInArr($scope.members, 'username', member_name);
+  					var member_task = $scope.members[member_index].hash;
+  					var member_info = card.members[member_name];
+  					var member_task_index = -1;
+
+  					if(member_task.length > 0) {
+  						member_task_index = getIndexInArr(member_task, 'name', task[j].name);
+  					} else {
+  						member_task_index = -1;
+  					}
+
+  					if(member_task_index === -1) {
+  						member_task.push({
+  							name : task[j].name,
+  							estimate : 0,
+  							spend : 0,
+  							cards : [],
+  							date_spend : {}
+  						});
+
+  						member_task_index = member_task.length - 1;
+  					}
+
+  					if(member_info.spend !== undefined) {
+  						member_task[member_task_index].spend += member_info.spend;
+  						task[j].spend += member_info.spend;
+  					}	
+
+  					if(member_info.estimate !== undefined) {
+  						member_task[member_task_index].estimate += member_info.estimate;
+  						task[j].estimate += member_info.estimate;
+  					}
+
+  					member_task[member_task_index].date_spend = member_info.date_spend;
+
+  					var card_name = card.name;
+		        var hashIndex = card_name.indexOf('#');
+	          if(hashIndex === 0) {
+	            var _hashLength = card_name.split(' ')[0].length;
+	            card_name = card_name.substr(_hashLength+1, card_name.length);
+	          } else {
+	            card_name = card_name.substr(0, hashIndex);
+	          }
+  					member_task[member_task_index].cards.push({
+  						name : card_name,
+  						spend : member_info.spend,
+  						estimate : member_info.estimate,
+  						date_spend : member_info.date_spend,
+  					});
+  				}
+  			}
+  		}
+  	}
+	  // var length = $scope.boards.length;
+	  // for(var i = 0; i < length; i++) {
+	  // 	if($scope.boards[i].hash !== undefined) {
+	  // 		var task = $scope.boards[i].hash;
+	  // 		var task_length = task.length;
+	  // 		var member_task_index;
+
+	  // 		for(var j = 0; j < task_length; j++) {
+	  // 			for(member_name in task[j].members) {
+		 //  			var member_index = getIndexInArr($scope.members, 'username', member_name);
+		 //  			var member_task = $scope.members[member_index].hash;
+		 //  			var memberInfo = task[j].members[member_name];
+
+		 //  			if(member_task.length > 0) {
+		 //  				member_task_index = getIndexInArr(member_task, 'name', task[j].name);
+		 //  			} else {
+		 //  				member_task_index = -1;
+		 //  			}
+
+	  // 				if(member_task_index === -1) {
+	  // 					member_task.push({
+	  // 						name : task[j].name,
+		 //  					estimate : 0,
+		 //  					spend : 0,
+		 //  					cards : [],
+	  // 					});
+	  // 					member_task_index = member_task.length - 1;
+	  // 				}
 
 	  				
-	  				var card_length = task[j].cards.length;
-	  				for(var k = 0; k < card_length; k++) {
-	  					var _cardName = task[j].cards[k].name
-			        var hashIndex = _cardName.indexOf('#');
-		          if(hashIndex === 0) {
-		            _hashLength = _cardName.split(' ')[0].length;
-		            _cardName = _cardName.substr(_hashLength+1, _cardName.length);
-		          } else {
-		            _cardName = _cardName.substr(0, hashIndex);
-		          }
+	  // 				var card_length = task[j].cards.length;
+	  // 				for(var k = 0; k < card_length; k++) {
+	  // 					var _cardName = task[j].cards[k].name
+			//         var hashIndex = _cardName.indexOf('#');
+		 //          if(hashIndex === 0) {
+		 //            _hashLength = _cardName.split(' ')[0].length;
+		 //            _cardName = _cardName.substr(_hashLength+1, _cardName.length);
+		 //          } else {
+		 //            _cardName = _cardName.substr(0, hashIndex);
+		 //          }
 
-			        var card_index = getIndexInArr(member_task[member_task_index].cards, 'name', _cardName);
-			        if(card_index === -1) {
-			        	member_task[member_task_index].cards.push({
-			        		name : _cardName,
-			        		spend : 0,
-			        		estimate : 0,
-			        		date_spend : {}
-			        	});
-			        	card_index = member_task[member_task_index].cards.length -1;
-			        }
-			        if(task[j].cards[k].estimate !== undefined) {
-			  				member_task[member_task_index].cards[card_index].estimate += task[j].cards[k].members[member_name].estimate;
-			  			}
+			//         var card_index = getIndexInArr(member_task[member_task_index].cards, 'name', _cardName);
+			//         if(card_index === -1) {
+			//         	member_task[member_task_index].cards.push({
+			//         		name : _cardName,
+			//         		spend : 0,
+			//         		estimate : 0,
+			//         		date_spend : {}
+			//         	});
+			//         	card_index = member_task[member_task_index].cards.length -1;
+			//         }
+			//         if(task[j].cards[k].estimate !== undefined) {
+			//   				member_task[member_task_index].cards[card_index].estimate += task[j].cards[k].members[member_name].estimate;
+			//   			}
 
-			  			if(task[j].cards[k].spend !== undefined) {
-			  				member_task[member_task_index].cards[card_index].spend += task[j].cards[k].members[member_name].spend;
-			  				member_task[member_task_index].cards[card_index].date_spend = task[j].cards[k].members[member_name].date_spend;
-			  			}
-	  				}
-	  				if(memberInfo.estimate !== undefined) {
-		  				member_task[member_task_index].estimate += memberInfo.estimate;
-		  			}
-	  				if(memberInfo.spend !== undefined) {
-	  					member_task[member_task_index].spend += memberInfo.spend;
-	  				}
-		  		}
-	  		}
-	  	}
-	  }
+			//   			if(task[j].cards[k].spend !== undefined) {
+			//   				console.log("add spend", task[j].name, _cardName, task[j].cards[k].members[member_name], task[j].cards[k].members[member_name].spend)
+			//   				member_task[member_task_index].cards[card_index].spend += task[j].cards[k].members[member_name].spend;
+			//   				member_task[member_task_index].cards[card_index].date_spend = task[j].cards[k].members[member_name].date_spend;
+			//   			}
+	  // 				}
+	  // 				if(memberInfo.estimate !== undefined) {
+		 //  				member_task[member_task_index].estimate += memberInfo.estimate;
+		 //  			}
+	  // 				if(memberInfo.spend !== undefined) {
+	  // 					member_task[member_task_index].spend += memberInfo.spend;
+	  // 				}
+		 //  		}
+	  // 		}
+	  // 	}
+	  // }
 
 	  $timeout(function() {
 	  	deferred.resolve();
@@ -414,8 +479,8 @@ angular.module('MyApp', []).controller('AppCtrl', function($q, $timeout, $scope)
 
 					// var card_member_length = card.members.length;
 
-					for(member in card.members) {
-						var member_index = getIndexInArr($scope.members, 'username', member);
+					for(member_name in card.members) {
+						var member_index = getIndexInArr($scope.members, 'username', member_name);
 						var member_label_index = getIndexInArr($scope.members[member_index].labels, 'label', label.name);
 
 						if(member_label_index === -1) {
@@ -430,8 +495,8 @@ angular.module('MyApp', []).controller('AppCtrl', function($q, $timeout, $scope)
 						}
 
 						$scope.members[member_index].labels[member_label_index].cards.push(card);
-						$scope.members[member_index].labels[member_label_index].value += card.estimate;
-						$scope.members[member_index].labels.total_label_value += card.estimate;
+						$scope.members[member_index].labels[member_label_index].value += card.members[member_name].estimate;
+						$scope.members[member_index].labels.total_label_value += card.members[member_name].estimate;
 					}
 				}
 			}
@@ -520,7 +585,22 @@ angular.module('MyApp', []).controller('AppCtrl', function($q, $timeout, $scope)
 	    backgroundColor: '#ffffff',
 	    labelColor: '#4d4d4d',
 	    formatter: function (x) { return x + "%"}
+	  }).on('click', function(i, row) {
+
+	  	console.log(row);
+	  	var length = row.cards.length;
+	  	var result = "";
+
+	  	for(var i = 0; i < length; i++) {
+	  		result += row.cards[i].name + "\n";
+	  	}
+
+	  	alert(result);
 	  });
+
+	  // $('#memberDounut').click(function(event) {
+	  // 	console.log(event);
+	  // });
 	}
 
 	$scope.stylePercentage = function(card) {
@@ -540,6 +620,9 @@ angular.module('MyApp', []).controller('AppCtrl', function($q, $timeout, $scope)
 
 		var min_date = 99;
 		var max_date = 0;
+		var date = new Date();
+		var month = date.getMonth() + 1;
+		var day = date.getDate();
 		for(date in card.date_spend) {
 			if(date > max_date) {
 				max_date = date;
@@ -548,10 +631,24 @@ angular.module('MyApp', []).controller('AppCtrl', function($q, $timeout, $scope)
 				min_date = date;
 			}
 		}
+
+		if(min_date <= day) {
+			min_date = month + "/" + min_date;
+		} else {
+			min_date = (month-1) + "/" + min_date;
+		}
+
+		if(max_date <= day) {
+			max_date = month + "/" + max_date;
+		} else {
+			max_date = (month-1) + "/" + max_date;
+		}
+
+
 		if(card.spend === card.estimate) {
 			task_lable += "date : " + min_date + " ~ " + max_date;
 		} else {
-			if(card.spend > 0) task_lable += "date : " + min_date + " ~ ";
+			if(card.spend > 0) task_lable += "     date : " + min_date + " ~ ";
 		}
 
 		return task_lable;
