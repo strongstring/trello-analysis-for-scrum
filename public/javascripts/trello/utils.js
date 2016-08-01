@@ -63,3 +63,23 @@ var getStorage = function(key) {
     return {};
   }
 };
+
+// @@@@@@@@@@@@@@ UTIL METHOD @@@@@@@@@@@@@ //
+  var getObjInArr = function(arr, key, value) {
+    return arr.filter(function(obj) { return obj[key] === value; });
+  };
+
+  var getIndexInArr = function(arr, key, value) {
+    return arr.findIndex(function(obj) { return obj[key] === value; });
+  };
+
+  var getObjInRows = function(resultSet) {
+    var length = resultSet.rows.length;
+    var result = [];
+
+    for(var i = 0; i < length; i++) {
+      result[i] = resultSet.rows.item(i);
+    }
+
+    return result;
+  }

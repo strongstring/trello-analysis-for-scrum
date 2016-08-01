@@ -36,79 +36,67 @@
 //       + members[memberName]['fullName'] + '</label></div>'
 //     );
 //   }
+var Singleton = {
+  member : null,
+}
 
-var MemberBox = React.createClass({
-  loadCommentsFromServer : function() {
-
+var Member = React.createClass({
+  reDrawTask : function() {
+    $('#projectDashBoard').empty();
+    showMemberResource();
+    showProjectResource();
   },
-  componentDidMount : function() {
-
-  },
-  render: function() {
+  render : function() {
     return (
-      <div className="memberBox">
-        
+      <div className="checkbox col-md-3" style={{margin: '0px'}}>
+        <label>
+          <input className="checkbox" type="checkbox" value={this.props.username} onChange={this.reDrawTask} />
+          {this.props.fullName}
+        </label>
       </div>
-    );
+    )
   }
 });
-ReactDOM.render(
-  <MemberBox />,
-  document.getElementById('memberSelectForm')
-);
 
+var MemberContainer = React.createClass({
+  componentDidMount : function() {
+    _memberObj = {};
 
-var authorizeToTrello = function() {
+  for(ProjectName in BOARD) {
+    deferredArr.push(
+      Trello.get('/boards/' + BOARD[ProjectName]['id'] + '/members/', 
+      function(members) {
+        for(var i = 0; i < members.length; i++) {
+          var _key = members[i]['username'];
+          if(_memberObj[_key] === undefined) _memberObj[_key] = members[i];
+        }
+      }, function(error) {
+        console.log(error);
+      })
+    );
+  }
 
-  var deferred = $.Deferred();
-  var onAuthorize = function() { console.log("Successful authentication"); deferred.resolve();};
-  var authenticationFailure = function() { console.log("Failed authentication"); deferred.reject();};
-
-  Trello.authorize({
-      type: "popup",
-      success: onAuthorize
+  $.when.apply($, deferredArr).done(function() {
+    deferred.resolve(_memberObj);
   });
-
-  return deferred.promise();
-};
-
-
-var data;
-
-var UserGist = React.createClass({
-  getInitialState: function() {
-    return {
-      data : [];
-    };
-  },
-
-  componentDidMount: function() {
-    // this.serverRequest = $.get(this.props.source, function (result) {
-    //   var lastGist = result[0];
-    //   this.setState({
-    //     username: lastGist.owner.login,
-    //     lastGistUrl: lastGist.html_url
-    //   });
-    // }.bind(this));
-  },
-
-  componentWillUnmount: function() {
-    this.serverRequest.abort();
-  },
-
-  render: function() {
+  }
+  render : function() {
+    Singleton.members.map(function(member) {
+      return (
+        <Member username={this.members}
+      )
+    });
     return (
       <div>
-        {this.state.username} s last gist is
-        <a href={this.state.lastGistUrl}>here</a>.
+        <Member username="kim" fullName="KIM" />
       </div>
-    );
+    )
   }
 });
 
 ReactDOM.render(
-  <UserGist source="https://api.github.com/users/octocat/gists" />,
-  mountNode
+  <MemberContainer />,
+  document.getElementById('memberSelectForm')
 );
 
 

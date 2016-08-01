@@ -22,8 +22,8 @@ router.get('/product', function(req, res, next) {
 	res.render('product', { title: 'product test page' });
 });
 
-router.get('/people_task', function(req, res, next) {
-	res.render('people_task', { title: 'product test page' });
+router.get('/task', function(req, res, next) {
+	res.render('task', { title: 'product test page' });
 });
 
 module.exports = router;

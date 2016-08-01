@@ -1,3 +1,4 @@
+var BoardInformation = [];
 
 var Board = React.createClass({
 	getInitialState : function() {
@@ -76,6 +77,8 @@ var BoardTable = React.createClass({
 			success : function(data) {
 				this.setState({boards : data});
 				this.updateBoard();
+				BoardInformation = data;
+				console.log(BoardInformation);
 			}.bind(this),
 			error : function(xhr, status, err) {
 				console.log(this.props.url, status, err.toString());

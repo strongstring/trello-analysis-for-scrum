@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>People task</title>
+    <link href="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="/stylesheets/bootstrap_datepicker.css" rel="stylesheet">
+    <link href="/stylesheets/startbootstrap-sb-admin-2-1.0.8/dist/css/timeline.css" rel="stylesheet">
+    <link href="/stylesheets/startbootstrap-sb-admin-2-1.0.8/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/morrisjs/morris.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0-rc2/angular-material.min.css">
+    <link rel="stylesheet" href="stylesheets/techwin/icons.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-animate.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-aria.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-messages.min.js"></script>
+    <script src="https://trello.com/1/client.js?key=129a907b7a37f2e3d1e84386fab4549f"></script>
+    <script src="javascripts/raphael-min.js"></script>
+    <script src="stylesheets/morris.js-0.5.1/morris.min.js"></script>
+
+    <!-- Angular Material Library -->
+    <script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0-rc2/angular-material.min.js"></script>
+    <script src="javascripts/trello/defines.js"></script>
+    <script src="javascripts/trello/utils.js"></script>
+    <script src="javascripts/trello/calculator.js"></script>
+    <script src="javascripts/trello/taskCtrl.js"></script>
+    <style>   
+      #indicator {
+        background-image: url(/images/indicator.gif);
+        background-repeat: no-repeat;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        z-index: 9999;
+        background-position: center;
+        background-color: rgba(255,255,255,0.7);
+        display: none;
+    }
+    </style>
+  </head>
+  <body>
+    <div id="indicator"></div>
+    <div ng-controller="AppCtrl" ng-cloak ng-app="MyApp">
+      <div class="col-md-12">
+        <div class="col-md-6">
+          <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4 class="panel-title">
+              <a>Mobile Part</a>
+            </h4>
+          </div>
+          <div class="panel-collapse">
+            <div class="panel-body" id="partDounut" style="height:300px;">
+            </div>
+          </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4 class="panel-title">
+              <select id="memberSelector" ng-model="selected_member" ng-change="changeMember()">
+                <option ng-repeat="member in members" value="{{member.username}}">
+                  {{member.fullName}}
+                </option>
+              </select>
+            </h4>
+          </div>
+          <div class="panel-collapse">
+            <div class="panel-body" id="memberDounut" style="height:300px;">
+            </div>
+          </div>
+        </div>
+        </div>
+        <div ng-repeat="task in selected_model.hash" class="col-md-6">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h4 class="panel-title">
+                <a>{{task.name}} {{(task.spend / task.estimate * 100).toFixed(1)}}%</a>
+              </h4>
+            </div>
+            <div class="panel-collapse">
+              <div class="panel-body">
+                <div ng-repeat="card in task.cards">
+                  <span ng-style="stylePercentage(card)">{{makeTaskLable(card)}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

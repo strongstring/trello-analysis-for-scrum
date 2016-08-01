@@ -43,10 +43,10 @@ var getMemberInformation = function() {
 
 // Card S&E
 var getSNE = function(boardID, cards) {
-  var deferred = $.Deferred(),
-  targetBoardName = getBoardInfo(boardID)['board'];
+  var deferred = $.Deferred();
+  var targetBoardName = getBoardInfo(boardID).board;
 
-  if(PART['project'][targetBoardName] === undefined) PART['project'][targetBoardName] = {};
+  if(PART.project[targetBoardName] === undefined) PART.project[targetBoardName] = {};
   PART.project[targetBoardName]['name'] = getBoardInfo(boardID)['name'];
   PART.project[targetBoardName]['cards'] = [];
 
@@ -164,39 +164,40 @@ var getSNE = function(boardID, cards) {
 };
 
 var calcSNE = function(boardID) {
-  var targetBoard = PART['project'][getBoardInfo(boardID)['board']];
+  var boardInfo = getBoardInfo(boardID);
+  var targetBoard = PART.project[boardInfo.board];
 
   // to team
-  if(PART['spend'] === undefined) PART['spend'] = 0;
-  if(PART['estimate'] === undefined) PART['estimate'] = 0;
-  if(PART['date_spend'] === undefined) PART['date_spend'] = {};
+  if(PART.spend === undefined) PART.spend = 0;
+  if(PART.estimate=== undefined) PART.estimate = 0;
+  if(PART.date_spend === undefined) PART.date_spend = {};
 
   // to project
-  if(targetBoard['spend'] === undefined) targetBoard['spend'] = 0;
-  if(targetBoard['estimate'] === undefined) targetBoard['estimate'] = 0;
-  if(targetBoard['date_spend'] === undefined) targetBoard['date_spend'] = {};
+  if(targetBoard.spend === undefined) targetBoard.spend = 0;
+  if(targetBoard.estimate === undefined) targetBoard.estimate = 0;
+  if(targetBoard.date_spend === undefined) targetBoard.date_spend = {};
 
   var cardsLEngth = targetBoard.cards.length;
   for (var i = 0; i < cardsLEngth; i++) {
-    var _card = targetBoard['cards'][i];
+    var _card = targetBoard.cards[i];
 
-    if(_card['spend'] !== undefined) {
-      PART['spend'] += _card['spend'];
-      targetBoard['spend'] += _card['spend'];
+    if(_card.spend !== undefined) {
+      PART.spend += _card.spend;
+      targetBoard.spend += _card.spend;
     }
 
-    if(_card['estimate'] !== undefined) {
-      PART['estimate'] += _card['estimate'];
-      targetBoard['estimate'] += _card['estimate'];
+    if(_card.estimate !== undefined) {
+      PART.estimate += _card.estimate;
+      targetBoard.estimate += _card.estimate;
     }
     
-    if(_card['date_spend'] !== undefined) {
-      for(_dateKey in _card['date_spend']) {
-        if(PART['date_spend'][_dateKey] === undefined) PART['date_spend'][_dateKey] = 0;
-        if(targetBoard['date_spend'][_dateKey] === undefined) targetBoard['date_spend'][_dateKey] = 0;
+    if(_card.date_spend !== undefined) {
+      for(_dateKey in _card.date_spend) {
+        if(PART.date_spend[_dateKey] === undefined) PART.date_spend[_dateKey] = 0;
+        if(targetBoard.date_spend[_dateKey] === undefined) targetBoard.date_spend[_dateKey] = 0;
 
-        PART['date_spend'][_dateKey] += _card['date_spend'][_dateKey];
-        targetBoard['date_spend'][_dateKey] += _card['date_spend'][_dateKey];
+        PART.date_spend[_dateKey] += _card.date_spend[_dateKey];
+        targetBoard.date_spend[_dateKey] += _card.date_spend[_dateKey];
       }
     }
   }
@@ -228,9 +229,9 @@ var getBoardInfo = function(boardID) {
   var _obj = {};
 
   for (boardName in BOARD) {
-    if (BOARD[boardName]['id'] === boardID) {
-      _obj['board'] = boardName;
-      _obj['name'] = BOARD[boardName]['name'];
+    if (BOARD[boardName].id === boardID) {
+      _obj.board = boardName;
+      _obj.name = BOARD[boardName].name;
       break;
     }
   }
