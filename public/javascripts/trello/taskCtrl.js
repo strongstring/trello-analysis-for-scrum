@@ -344,11 +344,16 @@ angular.module('MyApp', []).controller('AppCtrl', function($q, $timeout, $scope)
 	          } else {
 	            card_name = card_name.substr(0, hashIndex);
 	          }
+
+	          var card_desc = card.desc
+	          card_desc = card_desc.split('---')[0];
+
   					member_task[member_task_index].cards.push({
   						name : card_name,
   						spend : member_info.spend,
   						estimate : member_info.estimate,
   						date_spend : member_info.date_spend,
+  						desc : card_desc,
   					});
   				}
   			}
@@ -598,6 +603,12 @@ angular.module('MyApp', []).controller('AppCtrl', function($q, $timeout, $scope)
 
 	  	alert(result);
 	  });
+
+	  // $('[data-toggle="tooltip"]').tooltip(); 
+
+	 	$timeout(function() {
+	 		$('[data-toggle="tooltip"]').tooltip(); 
+	 	});
 
 	  // $('#memberDounut').click(function(event) {
 	  // 	console.log(event);
