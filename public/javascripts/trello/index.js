@@ -26,19 +26,19 @@ var isSelectedMember = function(memberName) {
 }
 
 var showMemberCheckBox = function(members) {
-  // var memberSelector = $('#memberSelectForm');
+  var memberSelector = $('#memberSelectForm');
 
-  // memberSelector.empty();
+  memberSelector.empty();
 
-  // for(memberName in members) {
-  //   memberSelector.append(
-  //     '<div class="checkbox col-md-3" style="margin-top:0px;"><label>'
-  //     + '<input class="checkbox" type="checkbox" checked value="'+ memberName +'">' 
-  //     + members[memberName]['fullName'] + '</label></div>'
-  //   );
-  // }
+  for(memberName in members) {
+    memberSelector.append(
+      '<div class="checkbox col-md-3" style="margin-top:0px;"><label>'
+      + '<input class="checkbox" type="checkbox" checked value="'+ memberName +'">' 
+      + members[memberName]['fullName'] + '</label></div>'
+    );
+  }
 
-  // $(".checkbox").change(reDrawTask);
+  $(".checkbox").change(reDrawTask);
 };
 
 var showMemberResource = function() {
