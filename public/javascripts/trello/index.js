@@ -319,7 +319,7 @@ var showProjectPreview = function() {
   target.append(
     '<li class="divider"></li>'
      + '<li>'
-      + '<a class="text-center" href="/dashboard">'
+      + '<a class="text-center" href="/task">'
       + '<strong>See Dashboard    </strong>'
       + '<i class="fa fa-angle-right"></i>'
       + '</a>'

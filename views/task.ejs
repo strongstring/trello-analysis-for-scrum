@@ -53,6 +53,7 @@
           <div class="panel-heading">
             <h4 class="panel-title">
               <a>Mobile Part</a>
+              <a ng-show="memberMode" ng-click="showAllHash()" style="float:right; color:#0079BF">Show All Project</a>
             </h4>
           </div>
           <div class="panel-collapse">
@@ -78,11 +79,11 @@
           </div>
         </div>
         </div>
-        <div ng-repeat="task in selected_model.hash" class="col-md-6">
+        <div ng-show="memberMode" ng-repeat="task in selected_model.hash" class="col-md-6">
           <div class="panel panel-default">
             <div class="panel-heading">
               <h4 class="panel-title">
-                <a>{{task.name}} {{(task.spend / task.estimate * 100).toFixed(1)}}%</a>
+                <a>{{task.board_name}} -> {{task.name}} {{(task.spend / task.estimate * 100).toFixed(1)}}%</a>
               </h4>
             </div>
             <div class="panel-collapse">
@@ -95,6 +96,26 @@
               </div>
             </div>
           </div>
+        </div>
+        <div ng-show="!memberMode" ng-repeat="board in boards" class="col-md-6">
+          <div ng-repeat="task in board.hash">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h4 class="panel-title">
+                <a>{{task.board_name}} -> {{task.name | uppercase}} {{(task.spend / task.estimate * 100).toFixed(1)}}%</a>
+              </h4>
+            </div>
+            <div class="panel-collapse">
+              <div class="panel-body">
+                <div ng-repeat="card in task.cards">
+                  <span>
+                    <a ng-style="stylePercentage(card)" data-toggle="tooltip" title="{{card.desc}}">{{makeTaskLable(card)}}</a>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
         </div>
       </div>
     </div>
