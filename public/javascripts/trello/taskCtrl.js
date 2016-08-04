@@ -106,6 +106,7 @@ angular.module('MyApp', []).controller('AppCtrl', function($q, $timeout, $scope)
 
 					if(hash_index === -1) {
 						board.hash.push({
+							board_name : board.name,
 							name : hash,
 							cards : [],
 							spend : 0,
@@ -314,6 +315,7 @@ angular.module('MyApp', []).controller('AppCtrl', function($q, $timeout, $scope)
 
   					if(member_task_index === -1) {
   						member_task.push({
+  							board_name : task[j].board_name,
   							name : task[j].name,
   							estimate : 0,
   							spend : 0,
@@ -354,82 +356,12 @@ angular.module('MyApp', []).controller('AppCtrl', function($q, $timeout, $scope)
   						estimate : member_info.estimate,
   						date_spend : member_info.date_spend,
   						desc : card_desc,
+  						url : card.url,
   					});
   				}
   			}
   		}
   	}
-	  // var length = $scope.boards.length;
-	  // for(var i = 0; i < length; i++) {
-	  // 	if($scope.boards[i].hash !== undefined) {
-	  // 		var task = $scope.boards[i].hash;
-	  // 		var task_length = task.length;
-	  // 		var member_task_index;
-
-	  // 		for(var j = 0; j < task_length; j++) {
-	  // 			for(member_name in task[j].members) {
-		 //  			var member_index = getIndexInArr($scope.members, 'username', member_name);
-		 //  			var member_task = $scope.members[member_index].hash;
-		 //  			var memberInfo = task[j].members[member_name];
-
-		 //  			if(member_task.length > 0) {
-		 //  				member_task_index = getIndexInArr(member_task, 'name', task[j].name);
-		 //  			} else {
-		 //  				member_task_index = -1;
-		 //  			}
-
-	  // 				if(member_task_index === -1) {
-	  // 					member_task.push({
-	  // 						name : task[j].name,
-		 //  					estimate : 0,
-		 //  					spend : 0,
-		 //  					cards : [],
-	  // 					});
-	  // 					member_task_index = member_task.length - 1;
-	  // 				}
-
-	  				
-	  // 				var card_length = task[j].cards.length;
-	  // 				for(var k = 0; k < card_length; k++) {
-	  // 					var _cardName = task[j].cards[k].name
-			//         var hashIndex = _cardName.indexOf('#');
-		 //          if(hashIndex === 0) {
-		 //            _hashLength = _cardName.split(' ')[0].length;
-		 //            _cardName = _cardName.substr(_hashLength+1, _cardName.length);
-		 //          } else {
-		 //            _cardName = _cardName.substr(0, hashIndex);
-		 //          }
-
-			//         var card_index = getIndexInArr(member_task[member_task_index].cards, 'name', _cardName);
-			//         if(card_index === -1) {
-			//         	member_task[member_task_index].cards.push({
-			//         		name : _cardName,
-			//         		spend : 0,
-			//         		estimate : 0,
-			//         		date_spend : {}
-			//         	});
-			//         	card_index = member_task[member_task_index].cards.length -1;
-			//         }
-			//         if(task[j].cards[k].estimate !== undefined) {
-			//   				member_task[member_task_index].cards[card_index].estimate += task[j].cards[k].members[member_name].estimate;
-			//   			}
-
-			//   			if(task[j].cards[k].spend !== undefined) {
-			//   				console.log("add spend", task[j].name, _cardName, task[j].cards[k].members[member_name], task[j].cards[k].members[member_name].spend)
-			//   				member_task[member_task_index].cards[card_index].spend += task[j].cards[k].members[member_name].spend;
-			//   				member_task[member_task_index].cards[card_index].date_spend = task[j].cards[k].members[member_name].date_spend;
-			//   			}
-	  // 				}
-	  // 				if(memberInfo.estimate !== undefined) {
-		 //  				member_task[member_task_index].estimate += memberInfo.estimate;
-		 //  			}
-	  // 				if(memberInfo.spend !== undefined) {
-	  // 					member_task[member_task_index].spend += memberInfo.spend;
-	  // 				}
-		 //  		}
-	  // 		}
-	  // 	}
-	  // }
 
 	  $timeout(function() {
 	  	deferred.resolve();
@@ -665,6 +597,10 @@ angular.module('MyApp', []).controller('AppCtrl', function($q, $timeout, $scope)
 
 		return task_lable;
 	};
+
+	$scope.openCard = function(card) {
+		return openWindow(card.url);
+	}
 
 	var init = function() {
 		$('#indicator').css('display', 'block');

@@ -82,14 +82,14 @@
           <div class="panel panel-default">
             <div class="panel-heading">
               <h4 class="panel-title">
-                <a>{{task.name}} {{(task.spend / task.estimate * 100).toFixed(1)}}%</a>
+                <a>{{task.board_name}} -> {{task.name}} {{(task.spend / task.estimate * 100).toFixed(1)}}%</a>
               </h4>
             </div>
             <div class="panel-collapse">
               <div class="panel-body">
                 <div ng-repeat="card in task.cards">
                   <span>
-                    <a ng-style="stylePercentage(card)" data-toggle="tooltip" title="{{card.desc}}">{{makeTaskLable(card)}}</a>
+                    <a ng-click="openCard(card)" ng-style="stylePercentage(card)" data-toggle="tooltip" title="{{card.desc}}">{{makeTaskLable(card)}}</a>
                   </span>
                 </div>
               </div>
