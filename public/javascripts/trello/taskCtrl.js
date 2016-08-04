@@ -1,4 +1,9 @@
-angular.module('MyApp', []).controller('AppCtrl', function($q, $timeout, $scope) {
+angular.module('MyApp', []).filter('uppercase', function() {
+	return function(input) {
+		return input.toUpperCase();
+		// return (!!input) ? input.charAt(0).toUpperCase() + input.substr(1).toLowerCase() : '';
+	}
+}).controller('AppCtrl', function($q, $timeout, $scope) {
 
 	$scope.boards = [ 
 		{id : "I02GmIoD", name : "COMMON", spend : 0, estimate: 0, date_spend: {}, cards : [], hash : []},
@@ -12,6 +17,7 @@ angular.module('MyApp', []).controller('AppCtrl', function($q, $timeout, $scope)
 	$scope.part = {};
 	$scope.selected_member;
 	$scope.selected_model = $scope.members[0];
+	$scope.memberMode = false;
 
 	var auth = function() {
 		var deferred = $q.defer();
@@ -349,6 +355,7 @@ angular.module('MyApp', []).controller('AppCtrl', function($q, $timeout, $scope)
 
 	          var card_desc = card.desc
 	          card_desc = card_desc.split('---')[0];
+	          card.desc = objectCopy(card_desc);
 
   					member_task[member_task_index].cards.push({
   						name : card_name,
@@ -498,8 +505,16 @@ angular.module('MyApp', []).controller('AppCtrl', function($q, $timeout, $scope)
 	  // });
 	}
 
+	$scope.showAllHash = function() {
+		$scope.memberMode = false;
+		$timeout(function() {
+	 		$('[data-toggle="tooltip"]').tooltip(); 
+	 	});
+	};
+
 	$scope.changeMember = function(event) {
 		console.log($scope.selected_member);
+		$scope.memberMode = true;
 
 		angular.element('#memberDounut').empty();
 		var member_index = getIndexInArr($scope.members, "username", $scope.selected_member);
@@ -560,7 +575,18 @@ angular.module('MyApp', []).controller('AppCtrl', function($q, $timeout, $scope)
 	}
 
 	$scope.makeTaskLable = function(card) {
-		var task_lable = card.name + " " + "[" + card.spend + " / " + card.estimate + "]  ";
+		var card_name = card.name;
+    var hashIndex = card_name.indexOf('#');
+    if(hashIndex !== -1) {
+    	if(hashIndex === 0) {
+	      var _hashLength = card_name.split(' ')[0].length;
+	      card_name = card_name.substr(_hashLength+1, card_name.length);
+	    } else {
+	      card_name = card_name.substr(0, hashIndex);
+	    }
+    }
+
+		var task_lable = card_name + " " + "[" + card.spend + " / " + card.estimate + "]  ";
 
 		var min_date = 99;
 		var max_date = 0;
@@ -568,10 +594,10 @@ angular.module('MyApp', []).controller('AppCtrl', function($q, $timeout, $scope)
 		var month = date.getMonth() + 1;
 		var day = date.getDate();
 		for(date in card.date_spend) {
-			if(date > max_date) {
+			if(date > max_date && card.date_spend[date] > 0) {
 				max_date = date;
 			}
-			if(date < min_date) {
+			if(date < min_date && card.date_spend[date] > 0) {
 				min_date = date;
 			}
 		}
@@ -631,6 +657,9 @@ angular.module('MyApp', []).controller('AppCtrl', function($q, $timeout, $scope)
 								console.log("$scope.members", $scope.members);
 								console.log("$scope.boards", $scope.boards);
 								showPartLabel();
+								$timeout(function() {
+							 		$('[data-toggle="tooltip"]').tooltip(); 
+							 	});
 							// });
 							$('#indicator').css('display', 'none');
 						}, 2000);

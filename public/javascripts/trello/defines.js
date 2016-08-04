@@ -14,6 +14,7 @@ var labelColor = {
   "green" : "#61BD4F",
   "yellow" : "#F2D600",
   "purple" : "#C377E0",
+  "pink" : "#FF82CE",
 };
 
 // Custom Typing board
