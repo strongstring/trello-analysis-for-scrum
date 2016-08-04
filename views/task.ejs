@@ -109,7 +109,7 @@
               <div class="panel-body">
                 <div ng-repeat="card in task.cards">
                   <span>
-                    <a ng-style="stylePercentage(card)" data-toggle="tooltip" title="{{card.desc}}">{{makeTaskLable(card)}}</a>
+                    <a ng-click="openCard(card)" ng-style="stylePercentage(card)" data-toggle="tooltip" title="{{card.desc}}">{{makeTaskLable(card)}}</a>
                   </span>
                 </div>
               </div>
