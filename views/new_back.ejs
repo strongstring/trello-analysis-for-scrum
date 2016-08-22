@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0-rc2/angular-material.min.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic">
+
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-animate.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-aria.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-messages.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0-rc2/angular-material.min.js"></script>
+    </head>
+    <body ng-app="TryTrello">
+    <script>
+      var TT = angular.module('TryTrello',
+              ['ngMaterial', 'ngMessages','material.svgAssetsCache']);
+    </script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="https://trello.com/1/client.js?key=129a907b7a37f2e3d1e84386fab4549f"></script>
+    <script src="javascripts/raphael-min.js"></script>
+    <script src="stylesheets/morris.js-0.5.1/morris.min.js"></script>
+    <script src="javascripts/trello/defines.js"></script>
+    <script src="javascripts/trello/utils.js"></script>
+    <script src="javascripts/trello/calculator.js"></script>
+    <!--<script src="javascripts/trello/dashboard.js"></script>-->
+
+    <!--@@@@@@@@@@@@@@@@@@@@@ Controller @@@@@@@@@@@@@@@@@@@@@@@@-->
+    <script src="javascripts/trello/newCtrl.js"></script>
+
+    <!--@@@@@@@@@@@@@@@@@@@@@@@ Service @@@@@@@@@@@@@@@@@@@@@@@@@@-->
+    <script src="javascripts/trello/TrelloConnectService.js"></script>
+    <script src="javascripts/trello/utilService.js"></script>
+
+  
+    <!-- <div ng-controller="MainCtrl" data-ng-init="init()"> -->
+    <div ng-controller="MainCtrl">
+     <md-content class="md-padding" layout="column">
+        <md-toolbar>
+          <h3>
+            MOBILE PART
+          </h3>
+        </md-toolbar>
+        <md-fab-speed-dial ng-hide="demo.hidden" md-direction="left" md-open="demo.isOpen"
+                           class="md-scale md-fab-top-right" ng-class="{ 'md-hover-full': demo.hover }"
+                           ng-mouseenter="demo.isOpen=true" ng-mouseleave="demo.isOpen=false">
+          <md-fab-trigger>
+            <md-button aria-label="menu" class="md-fab md-warn">
+              <md-tooltip md-direction="top" md-visible="tooltipVisible">Menu</md-tooltip>
+              <md-icon md-svg-src="/images/menu.svg" aria-label="menu"></md-icon>
+            </md-button>
+          </md-fab-trigger>
+          <md-fab-actions>
+            <div ng-repeat="item in demo.items">
+              <md-button aria-label="{{item.name}}" class="md-fab md-raised md-mini"
+                         ng-click="demo.openDialog($event, item)">
+                <md-tooltip md-direction="{{item.direction}}" md-visible="tooltipVisible"
+                            md-autohide="false">
+                  {{item.name}}
+                </md-tooltip>
+                <md-icon md-svg-src="{{item.icon}}" aria-label="{{item.name}}"></md-icon>
+              </md-button>
+            </div>
+          </md-fab-actions>
+        </md-fab-speed-dial>
+      </md-content>
+    </div>
+  </body>
+</html>

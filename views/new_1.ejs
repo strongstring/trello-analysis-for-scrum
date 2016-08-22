@@ -1,0 +1,178 @@
+<html lang="en" >
+<head>
+  <title> Angular Material </title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic">
+  <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0-rc2/angular-material.min.css">
+  <link href="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .indicator {
+      z-index : 999;
+      width : 100%;
+      height : 100%;
+      position: fixed;
+    }
+
+    .face {
+      border-radius: 30px;
+      border: 1px solid #ddd;
+      width: 48px;
+      margin: 16px; 
+    }
+
+    .taskCard {
+      height: 664px;
+    }
+
+    .taskTitle {
+      padding: 0px;
+    }
+
+    #checkList {
+      position: fixed;
+      height: 100%;
+    }
+
+    .dash_selector {
+      width: 100%;
+      height: 64px;
+      margin: 0px;
+      font-size: 16px;
+    }
+
+
+
+  </style>
+
+  <!-- Preload is (currently) only used for testing jQuery -->
+  <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-animate.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-aria.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-messages.min.js"></script>
+  <script src="/javascripts/angular/route.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0-rc2/angular-material.min.js"></script>
+
+  <script src="https://trello.com/1/client.js?key=129a907b7a37f2e3d1e84386fab4549f"></script>
+  <script>
+    var TT = angular.module('Trello', [
+      'ngRoute',
+      'ngMaterial',
+    ]);
+  </script>
+  <script src="/javascripts/trello/TrelloConnectService.js"></script>
+  <script src="/javascripts/trello/TrelloConfig.js"></script>
+  <script src="/javascripts/trello/newCtrl.js"></script>
+  
+
+</head>
+<body ng-app="Trello">
+<div ng-controller="MainCtrl as MC" data-ng-init="MC.init()">
+<md-content layout-padding style="z-index:999;" class="indicator" ng-show="MC.loading">
+  <div layout="row" layout-sm="column" layout-align="space-around" style="height:100%;">
+    <md-progress-circular ng-disabled="!MC.loading" md-mode="indeterminate" md-diameter="96" style="margin:auto;"></md-progress-circular>
+  </div>
+</md-content>
+<div layout="column" flex layout-fill ng-cloak>
+  <md-toolbar class="md-primary" md-theme="Trello">
+    <div class="md-toolbar-tools">MobilePart Scrum:dashboard</div>
+  </md-toolbar>
+
+  <div class="col-sm-12">
+    <div class="col-xs-8 col-sm-6" id="taskList">
+      <md-card md-theme-watch class="taskCard">
+        <md-card-title class="taskTitle">
+          <md-card-title-text>
+            <md-toolbar class="md-accent" md-theme="Trello">
+              <div class="md-toolbar-tools">Doing</div>
+            </md-toolbar>
+            <md-content style="height:600px;">
+              <section>
+                <md-subheader class="md-primary">Unread Messages</md-subheader>
+                <md-list layout-padding >
+                  <md-list-item class="md-3-line" style="height:30px;" ng-repeat="message in MC.messages">
+                    <img ng-src="{{message.face}}" class="face" alt="{{message.who}}">
+                    <div class="md-list-item-text">
+                      <h3>{{message.what}}</h3>
+                      <h4>{{message.who}}</h4>
+                      <p>
+                        {{message.notes}}
+                      </p>
+                    </div>
+                  </md-list-item>
+                </md-list>
+              </section>
+            </md-content>
+          </md-card-title-text>
+        </md-card-title>
+      </md-card>
+
+    </div>
+
+    <div class="col-xs-4 col-sm-6" style="height: 100%;">
+      <div id="checkList" style="width:40%">
+      <md-card md-theme-watch style="height: 60%;">
+        <md-card-title class="taskTitle">
+          <md-card-title-text>
+
+
+
+            <md-toolbar class="md-theme-light" >
+                 <md-button ng-click="MC.toggleRight()" ng-hide="MC.isOpenRight()" class="md-default dash_selector"> MOBILE </md-button>
+            </md-toolbar>
+           
+
+            <md-sidenav class="md-sidenav-right md-whiteframe-4dp" md-component-id="right">
+              <md-toolbar class="md-theme-light">
+                <h1 class="md-toolbar-tools">Setup</h1>
+              </md-toolbar>
+              <md-content ng-controller="RightCtrl as RC" layout-padding data-ng-init="RC.init()">
+
+                <h2>Member List</h2>
+                <md-divider></md-divider>
+                  <md-radio-group ng-model="RC.selectedUser" >
+                    <div ng-repeat='person in RC.member' class="row">
+                      <div flex layout='row' layout-padding layout-align="start center" style="padding-left:20px;">
+                        <md-radio-button flex
+                            ng-value="person.username"
+                            class="md-primary"
+                            style="margin-bottom: 0px;">
+                          {{person.fullName}}
+                        </md-radio-button>
+                      </div>
+                    </div>
+                  </md-radio-group>
+                <md-divider></md-divider>
+                <md-button ng-click="RC.close()" class="md-primary">OK</md-button>
+              </md-content>
+            </md-sidenav>
+
+              
+          </md-card-title-text>
+        </md-card-title>
+        <md-card-actions layout="row" layout-align="end center">
+          <md-button>Yesterday</md-button>
+          <md-button>Today</md-button>
+        </md-card-actions>
+      </md-card>
+      <md-card md-theme-watch style="height: 30%;">
+        <md-card-title>
+          <md-card-title-text>
+            
+          </md-card-title-text>
+        </md-card-title>
+        <md-card-actions layout="row" layout-align="end center">
+          <md-button>All Lable</md-button>
+          <md-button>Hash rating</md-button>
+        </md-card-actions>
+      </md-card>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+</body>
+</html>

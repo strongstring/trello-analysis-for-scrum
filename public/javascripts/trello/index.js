@@ -28,64 +28,72 @@ var isSelectedMember = function(memberName) {
 var showMemberCheckBox = function(members) {
   var memberSelector = $('#memberSelectForm');
 
-  memberSelector.empty();
+  // memberSelector.empty();
 
-  for(memberName in members) {
-    memberSelector.append(
-      '<div class="checkbox col-md-3" style="margin-top:0px;"><label>'
-      + '<input class="checkbox" type="checkbox" checked value="'+ memberName +'">' 
-      + members[memberName]['fullName'] + '</label></div>'
-    );
-  }
+  // for(memberName in members) {
+  //   memberSelector.append(
+  //     '<div class="checkbox col-md-3" style="margin-top:0px;"><label>'
+  //     + '<input class="checkbox" type="checkbox" checked value="'+ memberName +'">' 
+  //     + members[memberName]['fullName'] + '</label></div>'
+  //   );
+  // }
 
-  $(".checkbox").change(reDrawTask);
+  // memberSelector.append(
+  //   '<button class="btn btn-primary" style="margin-left:10px;" onClick="unCheck()">Uncheck</button>'
+  // );
+
+  // $(".checkbox").change(reDrawTask);
 };
 
+var unCheck = function() {
+  $('input.checkbox').attr('checked', false)
+}
+
 var showMemberResource = function() {
-  $('#projectDashBoard').empty();
-  $('#projectDashBoard').append(
-    '<div class="panel panel-default">'
-    + '<div class="panel-heading panel-title">Total Project Resource</div>'
-    + '<div class="panel-body" id="total_resource"></div>'
-  );
-  var _resouceTable = '<table class="table col-md-12"><tr class="primary"><td>Member</td><td>E</td>';
+  // $('#projectDashBoard').empty();
+  // $('#projectDashBoard').append(
+  //   '<div class="panel panel-default">'
+  //   + '<div class="panel-heading panel-title">Total Project Resource</div>'
+  //   + '<div class="panel-body" id="total_resource"></div>'
+  // );
+  // var _resouceTable = '<table class="table col-md-12"><tr class="primary"><td>Member</td><td>E</td>';
 
-  var firstDay = new Date($(iterationStartDay).data()['date']),
-    workDay = new Date($(iterationWorkDay).data()['date']);
+  // var firstDay = new Date($(iterationStartDay).data()['date']),
+  //   workDay = new Date($(iterationWorkDay).data()['date']);
 
-  for(var i = 0; i < ITERATION_PERIOD; i++) {
-    if(firstDay.getDate() === workDay.getDate()) {
-      _resouceTable += '<td style="border-left:solid 2px; border-right:solid 2px;">' + firstDay.getDate() + '</td>';
-    } else {
-      _resouceTable += '<td>' + firstDay.getDate() + '</td>';
-    }
-    firstDay.setDate(firstDay.getDate() + 1);
-  }
+  // for(var i = 0; i < ITERATION_PERIOD; i++) {
+  //   if(firstDay.getDate() === workDay.getDate()) {
+  //     _resouceTable += '<td style="border-left:solid 2px; border-right:solid 2px;">' + firstDay.getDate() + '</td>';
+  //   } else {
+  //     _resouceTable += '<td>' + firstDay.getDate() + '</td>';
+  //   }
+  //   firstDay.setDate(firstDay.getDate() + 1);
+  // }
 
-  _resouceTable += '<td>R</td></tr>';
+  // _resouceTable += '<td>R</td></tr>';
 
-  for (memberName in PART.members) {
-    var _member = PART['members'][memberName],
-      _date = new Date($(iterationStartDay).data()['date']);
+  // for (memberName in PART.members) {
+  //   var _member = PART['members'][memberName],
+  //     _date = new Date($(iterationStartDay).data()['date']);
 
-    _resouceTable += '<tr><td class="textLabel">' + _member['fullName'] + '</td><td>'+ _member['estimate'].toFixed(1) +'</td>';
-    for(var j = 0; j < ITERATION_PERIOD; j++) {
-      var _dateSpend = _member['date_spend'][_date.getDate()];
-      _dateSpend = (_dateSpend === undefined) ? ' ' : _dateSpend.toFixed(1);
-      if(_dateSpend < 0.1) _dateSpend = ' ';
+  //   _resouceTable += '<tr><td class="textLabel">' + _member['fullName'] + '</td><td>'+ _member['estimate'].toFixed(1) +'</td>';
+  //   for(var j = 0; j < ITERATION_PERIOD; j++) {
+  //     var _dateSpend = _member['date_spend'][_date.getDate()];
+  //     _dateSpend = (_dateSpend === undefined) ? ' ' : _dateSpend.toFixed(1);
+  //     if(_dateSpend < 0.1) _dateSpend = ' ';
 
-      if(parseInt(_date.getDate()) === parseInt(workDay.getDate())) {
-        _resouceTable += '<td style="border-left:solid 2px; border-right:solid 2px;">' + _dateSpend + '</td>';
-      } else {
-        _resouceTable += '<td>' + _dateSpend + '</td>'
-      }
-      _date.setDate(_date.getDate() + 1);
-    }
-    _resouceTable += '<td>'+ (_member['estimate'] - _member['spend']).toFixed(1) +'</td></tr>';
-  }
+  //     if(parseInt(_date.getDate()) === parseInt(workDay.getDate())) {
+  //       _resouceTable += '<td style="border-left:solid 2px; border-right:solid 2px;">' + _dateSpend + '</td>';
+  //     } else {
+  //       _resouceTable += '<td>' + _dateSpend + '</td>'
+  //     }
+  //     _date.setDate(_date.getDate() + 1);
+  //   }
+  //   _resouceTable += '<td>'+ (_member['estimate'] - _member['spend']).toFixed(1) +'</td></tr>';
+  // }
 
-  _resouceTable += '</table>';
-  $('#total_resource').append(_resouceTable);
+  // _resouceTable += '</table>';
+  // $('#total_resource').append(_resouceTable);
 }
 
 var showProjectResource = function() {
@@ -199,180 +207,13 @@ var showProjectResource = function() {
   }
 }
 
-var showMemberResourceToGraph = function() {
-  var _dataObj = {"estimateG" : [], "spendG" : []},
-    firstDay = new Date($(iterationStartDay).data()['date']),
-    today = new Date();
-    targetElement = $('#flot-line-chart-multi');
 
-  firstDay.setDate(firstDay.getDate() - 1);
 
-  var memCount = 0;
-  for(member in PART['members']) {
-    memCount ++;
-  }
-
-  if (DEBUG_MODE) console.log("member is " + memCount);
-
-  var estimateValForLogical = PART['estimate'],
-    estimateValForReal = PART['estimate'];
-
-  var stopflag = false;
-  for(var i = 0; i < 15; i++) {
-    var _estimateData = [],
-      _spendData = [];
-
-    if(i === 0) {
-      _estimateData.push(firstDay.getTime());
-      _spendData.push(firstDay.getTime());
-      _estimateData.push(estimateValForLogical);
-      _spendData.push(estimateValForReal);
-    } else {
-      firstDay.setDate(firstDay.getDate() + 1);
-      _estimateData.push(firstDay.getTime());
-      _spendData.push(firstDay.getTime());
-
-      if(firstDay.getDate() === today.getDate()) stopflag = true;
-
-      estimateValForLogical -= (memCount*5.75);
-      if(PART['date_spend'][firstDay.getDate()] !== undefined) {
-        estimateValForReal -= PART['date_spend'][firstDay.getDate()];
-      }
-
-      _estimateData.push(estimateValForLogical);
-      _spendData.push(estimateValForReal);
-    }
-    _dataObj['spendG'].push(_estimateData);
-    if(!stopflag) _dataObj['estimateG'].push(_spendData);
-  }
-
-  $.plot($("#flot-line-chart-multi"), [{
-        data: _dataObj['spendG'],
-        label: "LOGICAL ESTIMATE GRAPH"
-    }, {
-        data: _dataObj['estimateG'],
-        label: "ACTUAL ESTIMATE GRAPH",
-        yaxis: 1
-    }], {
-        xaxes: [{
-            mode: 'time'
-        }],
-        yaxes: [{
-            min: -300
-        }],
-        legend: {
-            position: 'sw'
-        },
-        grid: {
-            hoverable: true //IMPORTANT! this is needed for tooltip to work
-        },
-        tooltip: true,
-        tooltipOpts: {
-            content: "%s for %x was %y",
-            xDateFormat: "%y-%0m-%0d",
-
-            onHover: function(flotItem, $tooltipEl) {
-                // console.log(flotItem, $tooltipEl);
-            }
-        }
-    });
-}
-
-var showProjectPreview = function() {
-  var target = $('#projectPreview');
-
-  var loopInex = 0;
-  for(projectName in PART['project']) {
-    var _project = PART['project'][projectName];
-    var _progress = (_project['spend'] / _project['estimate'] * 100).toFixed(2),
-      _currentState;
-
-    if(_progress < 30) {
-      _currentState = "progress-bar-danger";
-    } else if(_progress > 75) {
-      _currentState = "progress-bar-success";
-    } else {
-      _currentState = "progress-bar-info";
-    }
-    var _li = '<li>'
-        + '<a href="#' + projectName + '">'
-        +  '<div>'
-        +  '<p>'
-        +   '<strong>' + _project['name'] + '</strong>'
-        +      '<span class="pull-right text-muted">' + _progress + '% Complete</span>'
-        +    '</p>'
-        +    '<div class="progress progress-striped active">'
-        +      '<div class="progress-bar '+_currentState+'" role="progressbar" aria-valuenow="' + _progress + '" aria-valuemin="0" aria-valuemax="100" style="width: ' + _progress + '%">'
-        +        '<span class="sr-only">' + _progress + '% Complete</span>'
-        +      '</div>'
-        +    '</div>'
-        +  '</div>'
-        +'</a>'
-      +'</li>';
-
-    if(loopInex !== 0) {
-      target.append('<li class="divider"></li>');
-    }
-    target.append(_li);
-  }
-
-  target.append(
-    '<li class="divider"></li>'
-     + '<li>'
-      + '<a class="text-center" href="/task">'
-      + '<strong>See Dashboard    </strong>'
-      + '<i class="fa fa-angle-right"></i>'
-      + '</a>'
-    + '</li>');
-
-  $('.resourceMenu').css('display', 'block');
-};
-
-var iterationPeriodCalculator = function() {
-  var _workday = new Date(),
-    _baseIterationDate = getIterationStartDay();
-    // _baseIterationDate = "2016-05-30";
-
-  _workday.setDate(_workday.getDate() -1);
-
-  $(iterationStartDay).datetimepicker({
-    defaultDate: _baseIterationDate,
-    format: 'YYYY-MM-DD'
-  });
-  $(iterationWorkDay).datetimepicker({
-    defaultDate : getDateString(_workday),
-    format: 'YYYY-MM-DD'
-  });
-
-  $(iterationStartDay).on("dp.change", reDrawTask);
-  $(iterationWorkDay).on("dp.change", reDrawTask);
-
-  $('#exportExcel').attr('download', 'HResouce_'+getDateString(new Date(_baseIterationDate))+'.xls');
-}
 
 var reDrawTask = function() {
   $('#projectDashBoard').empty();
   showMemberResource();
   showProjectResource();
-}
-
-var searchSNE = function() {
-  $('#indicator').css('display', 'block');
-  clearMemeber();
-  $.when(calculationStart()).done(
-    function(success) {
-      showProjectPreview();
-      showMemberResourceToGraph();
-      showMemberResource();
-      showProjectResource();
-      prepareExcel();
-      setStorage(LOCALSTORAGE_KEY, PART);
-      $('#exportExcel').removeClass('disabled');
-      $('#indicator').css('display', 'none');
-      $('#startSearch').css('display', 'none');
-      console.log("%c @@@@@@@@@@  ALL ACTION IS CALCULATED!! @@@@@@@@@@", 'background: #222; color: #bada55'); 
-    }
-  );
 }
 
 var topButtonEventListener = function() {
@@ -458,39 +299,277 @@ var prepareExcel = function() {
   
 }
 
-var initializing = function() {
-  var deferred = $.Deferred();
 
-  $.when(getMemberInformation()).done(
-    function(members) {
-      PART.members = members;
-
-      PART['estimate'] = 0;
-      PART['spend'] = 0;
-      PART['date_spend'] = {};
-
-      showMemberCheckBox(members);
-      iterationPeriodCalculator();
-      topButtonEventListener();
-      console.log("%c MEMBER INFORMATION IS LOADED!!", 'color: #228B22');
-
-      deferred.resolve();
+TT.filter('short', function() {
+  return function(input) {
+    if(input.length > 20) {
+      return input.substr(0, 20) + "...";
+    } else {
+      return input;
     }
-  );
-
-  return deferred.promise();
-}
-
-$(function() {
-  $.when(authorizeToTrello()).done(
-    function() {
-      $('#indicator').css('display', 'block');
-      $.when(initializing()).done(function() {
-        console.log("%c @@@@@@@@@@ SCRUM IS READY!! @@@@@@@@@@", 'background: #222; color: #bada55'); 
-        $('#indicator').css('display', 'none');
-      });
-    });
+  }
 });
 
+TT.filter('cutZero', function() {
+  return function(input) {
+    if(input === 0) {
+      return "";
+    } else {
+      return input;
+    }
+  }
+});
 
+TT.controller('TrelloController', 
+function($q, $timeout, $scope, $mdDialog, TrelloConnectService) {
+
+  var Ctrl = this;
+  var TC = new TrelloConnectService();
+
+  $scope.MEMBERS = [];
+  $scope.SEASON = 1;
+  $scope.ITERATION_Date = new Date();
+  $scope.WEEK = [];
+  $scope.DAY = [];
+  $scope.simple = true;
+  $scope.selectedMember = "";
+
+  var iterationCalc = function() {
+    // var firstDay = new Date($(iterationStartDay).data()['date']),
+    // workDay = new Date($(iterationWorkDay).data()['date']);
+    var workDay = new Date($(iterationWorkDay).data().date);
+    var first = new Date($(iterationStartDay).data().date);
+    var area = getWeeksArea(first);
+    var second = new Date(area.second);
+
+    console.log("area", area);
+    console.log("workDay", workDay);
+    console.log("first", first);
+    console.log("second", second);
+    if(workDay < second) {
+      $scope.SEASON = 1;
+      $scope.ITERATION_Date = first;
+    } else {
+      $scope.SEASON = 2;
+      $scope.ITERATION_Date = second;
+    }
+
+    DumpDate = angular.copy($scope.ITERATION_Date);
+    var dumpWeek = [];
+    var dumpDay = [];
+    for(var i = 0; i < 5; i++) {
+
+      dumpWeek[i] = DumpDate.getMonth() + 1 + '/' + DumpDate.getDate();
+      dumpDay[i] = DumpDate.getDate();
+      DumpDate.setDate(DumpDate.getDate() + 1);
+      console.log(dumpWeek);
+      console.log(dumpDay);
+    }
+    $scope.WEEK = angular.copy(dumpWeek);
+    $scope.DAY = angular.copy(dumpDay);
+
+    setTimeout(function() {
+      $scope.$apply();
+    });
+  };
+
+  var iterationPeriodCalculator = function() {
+    var _workday = new Date(),
+      _baseIterationDate = getIterationStartDay();
+
+    _workday.setDate(_workday.getDate() -1);
+
+    $(iterationStartDay).datetimepicker({
+      defaultDate: _baseIterationDate,
+      format: 'YYYY-MM-DD'
+    });
+    $(iterationWorkDay).datetimepicker({
+      defaultDate : getDateString(_workday),
+      format: 'YYYY-MM-DD'
+    });
+
+    $(iterationStartDay).on("dp.change", iterationCalc);
+    $(iterationWorkDay).on("dp.change", iterationCalc);
+
+    // $('#exportExcel').attr('download', 'HResouce_'+getDateString(new Date(_baseIterationDate))+'.xls');
+  }
+
+  Ctrl.getTaskState = function(card) {
+    if((card.estimate - card.spend) === 0) {
+      var yest = (new Date()).getDate() - 1;
+      if(card.date_spend[yest] > 0) {
+        return "taskFinish";
+      } else {
+        return "taskDone";
+      }
+    } else if(card.spend !== 0) {
+      return "taskDoing";
+    } else {
+      return "textLabel";
+    }
+  }
+
+  $scope.realTask = function(card) {
+
+    var isSelected = false;
+    if(card.members === undefined) return false;
+    if($scope.selectedMember !== "") {
+      var length = card.members.length;
+      for(var i = 0; i < length; i++) {
+        if(card.members[i].username === $scope.selectedMember) {
+          isSelected = true;
+          break;
+        }
+      }
+    } else {
+      isSelected = true;
+    }
+
+    if($scope.simple) {
+      if(card.estimate > 0 && card.estimate === card.spend){
+        var datee = (new Date()).getDate();
+        if(card.date_spend[datee-1] > 0 || card.date_spend[datee] > 0 ) {
+          return true;
+        } else {
+          return false;
+        }        
+      } else {
+        if(isSelected) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    } else {
+      if(card.estimate > 0 && isSelected){
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
+
+  var showMemberResourceToGraph = function() {
+    var _dataObj = {"estimateG" : [], "spendG" : []},
+      firstDay = new Date($(iterationStartDay).data().date),
+      today = new Date();
+      targetElement = $('#flot-line-chart-multi');
+      PART = angular.copy($scope.PART);
+
+    firstDay.setDate(firstDay.getDate() - 1);
+
+    if (DEBUG_MODE) console.log("member is " + $scope.MEMBERS.length);
+
+    var estimateValForLogical = PART['estimate'],
+      estimateValForReal = PART['estimate'];
+
+    var stopflag = false;
+    for(var i = 0; i < 15; i++) {
+      var _estimateData = [],
+        _spendData = [];
+
+      if(i === 0) {
+        _estimateData.push(firstDay.getTime());
+        _spendData.push(firstDay.getTime());
+        _estimateData.push(estimateValForLogical);
+        _spendData.push(estimateValForReal);
+      } else {
+        firstDay.setDate(firstDay.getDate() + 1);
+        _estimateData.push(firstDay.getTime());
+        _spendData.push(firstDay.getTime());
+
+        if(firstDay.getDate() === today.getDate()) stopflag = true;
+
+        estimateValForLogical -= ($scope.MEMBERS.length*5.75);
+        if(PART['date_spend'][firstDay.getDate()] !== undefined) {
+          estimateValForReal -= PART['date_spend'][firstDay.getDate()];
+        }
+
+        _estimateData.push(estimateValForLogical);
+        _spendData.push(estimateValForReal);
+      }
+      _dataObj['spendG'].push(_estimateData);
+      if(!stopflag) _dataObj['estimateG'].push(_spendData);
+    }
+
+    $.plot($("#flot-line-chart-multi"), [{
+          data: _dataObj['spendG'],
+          label: "LOGICAL ESTIMATE GRAPH"
+      }, {
+          data: _dataObj['estimateG'],
+          label: "ACTUAL ESTIMATE GRAPH",
+          yaxis: 1
+      }], {
+          xaxes: [{
+              mode: 'time'
+          }],
+          yaxes: [{
+              min: -300
+          }],
+          legend: {
+              position: 'sw'
+          },
+          grid: {
+              hoverable: true //IMPORTANT! this is needed for tooltip to work
+          },
+          tooltip: true,
+          tooltipOpts: {
+              content: "%s for %x was %y",
+              xDateFormat: "%y-%0m-%0d",
+
+              onHover: function(flotItem, $tooltipEl) {
+                  // console.log(flotItem, $tooltipEl);
+              }
+          }
+      });
+    }
+
+    Ctrl.showDesc = function(ev, card) {
+      $mdDialog.show(
+        $mdDialog.alert()
+          .parent(angular.element(document.querySelector('#popupContainer')))
+          .clickOutsideToClose(true)
+          .title(card.name)
+          .textContent(card.desc)
+          .ariaLabel('Alert Dialog Demo')
+          .ok('Got it!')
+          .targetEvent(ev)
+      );
+    };
+
+    Ctrl.getDesc = function(card) {
+      if(card.desc !== undefined && card.desc.length !== 0) {
+        return true;
+      } else {
+        return  false;
+      }
+    };
+
+    Ctrl.openWindow = function(card) {
+      window.open(card.url, '_blank');
+      window.focus();
+    }
+
+    Ctrl.init = function() {
+      $('#indicator').css('display', 'block');
+      TC.init().then(
+        function(results) {
+          console.log("%c @@@@@@@@@@ SCRUM IS READY!! @@@@@@@@@@", 'background: #222; color: #bada55'); 
+
+          $scope.MEMBERS = TC.MEMBERS;
+          $scope.BOARDS = TC.BOARDS;
+          $scope.PART = TC.PART;
+          // console.log("MEMBERS", $scope.MEMBERS);
+          console.log("BOARDS", $scope.BOARDS);
+          iterationPeriodCalculator();
+          iterationCalc(); 
+          // showMemberResourceToGraph();
+          $timeout(function() {
+            showMemberResourceToGraph();
+            $('#indicator').css('display', 'none');
+          }, 2000);
+        }
+      );
+    }
+});
 

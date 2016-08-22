@@ -1,9 +1,29 @@
-angular.module('MyApp', []).filter('uppercase', function() {
-	return function(input) {
-		return input.toUpperCase();
-		// return (!!input) ? input.charAt(0).toUpperCase() + input.substr(1).toLowerCase() : '';
-	}
-}).controller('AppCtrl', function($q, $timeout, $scope) {
+function export2Word( element ) {
+
+   var html, link, blob, url, css;
+
+   css = (
+     '<style>' +
+     '@page WordSection1{size: 841.95pt 595.35pt;mso-page-orientation: landscape;}' +
+     'div.WordSection1 {page: WordSection1;}' +
+     '</style>'
+   );
+
+   html = element.innerHTML;
+   blob = new Blob(['\ufeff', css + html], {
+     type: 'application/msword'
+   });
+   url = URL.createObjectURL(blob);
+   link = document.createElement('A');
+   link.href = url;
+   link.download = 'Document';  // default name without extension 
+   document.body.appendChild(link);
+   if (navigator.msSaveOrOpenBlob ) navigator.msSaveOrOpenBlob( blob, 'Document.word'); // IE10-11
+       else link.click();  // other browsers
+   document.body.removeChild(link);
+ };
+
+angular.module('MyApp', []).controller('AppCtrl', function($q, $timeout, $scope) {
 
 	$scope.boards = [ 
 		{id : "I02GmIoD", name : "COMMON", spend : 0, estimate: 0, date_spend: {}, cards : [], hash : []},
@@ -17,7 +37,6 @@ angular.module('MyApp', []).filter('uppercase', function() {
 	$scope.part = {};
 	$scope.selected_member;
 	$scope.selected_model = $scope.members[0];
-	$scope.memberMode = false;
 
 	var auth = function() {
 		var deferred = $q.defer();
@@ -26,14 +45,14 @@ angular.module('MyApp', []).filter('uppercase', function() {
 	  var authenticationFailure = function() { console.log("Failed authentication"); deferred.reject();};
 
 	  Trello.authorize({
-	      type: "redirect",
-	      success:  function() { 
-	      	console.log("Successful authentication"); 
-	      	deferred.resolve();
-	      }, error : function(error) {
-	      	console.log("Failed authentication");
-	      	deferred.reject();
-	      }
+      type: "redirect",
+      success:  function() { 
+      	console.log("Successful authentication"); 
+      	deferred.resolve();
+      }, error : function(error) {
+      	console.log("Failed authentication");
+      	deferred.reject();
+      }
 	  });
 
 		return deferred.promise;
@@ -355,7 +374,6 @@ angular.module('MyApp', []).filter('uppercase', function() {
 
 	          var card_desc = card.desc
 	          card_desc = card_desc.split('---')[0];
-	          card.desc = objectCopy(card_desc);
 
   					member_task[member_task_index].cards.push({
   						name : card_name,
@@ -505,16 +523,8 @@ angular.module('MyApp', []).filter('uppercase', function() {
 	  // });
 	}
 
-	$scope.showAllHash = function() {
-		$scope.memberMode = false;
-		$timeout(function() {
-	 		$('[data-toggle="tooltip"]').tooltip(); 
-	 	});
-	};
-
 	$scope.changeMember = function(event) {
 		console.log($scope.selected_member);
-		$scope.memberMode = true;
 
 		angular.element('#memberDounut').empty();
 		var member_index = getIndexInArr($scope.members, "username", $scope.selected_member);
@@ -575,18 +585,7 @@ angular.module('MyApp', []).filter('uppercase', function() {
 	}
 
 	$scope.makeTaskLable = function(card) {
-		var card_name = card.name;
-    var hashIndex = card_name.indexOf('#');
-    if(hashIndex !== -1) {
-    	if(hashIndex === 0) {
-	      var _hashLength = card_name.split(' ')[0].length;
-	      card_name = card_name.substr(_hashLength+1, card_name.length);
-	    } else {
-	      card_name = card_name.substr(0, hashIndex);
-	    }
-    }
-
-		var task_lable = card_name + " " + "[" + card.spend + " / " + card.estimate + "]  ";
+		var task_lable = card.name + " " + "[" + card.spend + " / " + card.estimate + "]  ";
 
 		var min_date = 99;
 		var max_date = 0;
@@ -594,10 +593,10 @@ angular.module('MyApp', []).filter('uppercase', function() {
 		var month = date.getMonth() + 1;
 		var day = date.getDate();
 		for(date in card.date_spend) {
-			if(date > max_date && card.date_spend[date] > 0) {
+			if(date > max_date) {
 				max_date = date;
 			}
-			if(date < min_date && card.date_spend[date] > 0) {
+			if(date < min_date) {
 				min_date = date;
 			}
 		}
@@ -628,6 +627,10 @@ angular.module('MyApp', []).filter('uppercase', function() {
 		return openWindow(card.url);
 	}
 
+	$scope.exportToWord = function() {
+		$('#contents').wordExport();
+	}
+
 	var init = function() {
 		$('#indicator').css('display', 'block');
 		auth().then(
@@ -645,22 +648,16 @@ angular.module('MyApp', []).filter('uppercase', function() {
 						$scope.selected_member = $scope.members[0].fullName;
 
 						$timeout(function() {
-						// $q.all(promises).then(
-							// function(success) {
-								calcLabel().then(
-									function(success) {
-										console.log("label is done", $scope.part);
-									}
-								);
-								console.log("getAction success");
-								console.log("$scope.part", $scope.part);
-								console.log("$scope.members", $scope.members);
-								console.log("$scope.boards", $scope.boards);
-								showPartLabel();
-								$timeout(function() {
-							 		$('[data-toggle="tooltip"]').tooltip(); 
-							 	});
-							// });
+							calcLabel().then(
+								function(success) {
+									console.log("label is done", $scope.part);
+								}
+							);
+							console.log("getAction success");
+							console.log("$scope.part", $scope.part);
+							console.log("$scope.members", $scope.members);
+							console.log("$scope.boards", $scope.boards);
+							showPartLabel();
 							$('#indicator').css('display', 'none');
 						}, 2000);
 					}, function(error) {
@@ -669,7 +666,6 @@ angular.module('MyApp', []).filter('uppercase', function() {
 				);
 			}
 		);
-
 	}
 
 	$timeout(function() {

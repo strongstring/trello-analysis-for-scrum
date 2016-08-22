@@ -5,14 +5,13 @@
 
     <link rel='stylesheet' href='/stylesheets/style.css' />
     <link href="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
     <link href="/stylesheets/bootstrap_datepicker.css" rel="stylesheet">
-    <link href="/stylesheets/startbootstrap-sb-admin-2-1.0.8/dist/css/timeline.css" rel="stylesheet">
     <link href="/stylesheets/startbootstrap-sb-admin-2-1.0.8/dist/css/sb-admin-2.css" rel="stylesheet">
     <link href="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/morrisjs/morris.css" rel="stylesheet">
     <link href="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-
     <link href="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/font-awesome/css/font-awesome.css" rel="stylesheet" type="text/css">
+    <link href="stylesheets/bootstrap-switch.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
     <script src="/javascripts/moment.js"></script>
@@ -22,18 +21,25 @@
     <script src="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/flot/excanvas.min.js"></script>
     <script src="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/flot/jquery.flot.js"></script>
     <script src="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/flot/jquery.flot.time.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.2.1/react.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.2.1/react-dom.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/remarkable/1.6.2/remarkable.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.24/browser.min.js"></script>
+    <script src="javascripts/bootstrap-switch.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-animate.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-aria.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-messages.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>
+
+    <script>
+      var TT = angular.module('MyApp', ['ngMaterial']);
+    </script>
     <script src="javascripts/excellentexport.min.js"></script>
     <script src="javascripts/trello/defines.js"></script>
     <script src="javascripts/trello/utils.js"></script>
-    <script src="javascripts/trello/calculator.js"></script>
+    <!-- <script src="javascripts/trello/calculator.js"></script> -->
     <script src="javascripts/trello/index.js"></script>
+    <script src="javascripts/trello/TrelloConnectService.js"></script>
+
   </head>
-  <body>
+  <body ng-app="MyApp" ng-controller="TrelloController as TC"  data-ng-init="TC.init()">
   <nav class="navbar navbar-default navbar-static-top" id="title" role="navigation" style="margin-bottom: 0">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -46,90 +52,158 @@
     </div>
     <!-- /.navbar-header -->
 
+    <!-- <div class="glyphicon glyphicon-th-list " aria-hidden="true"></div> -->
     <ul class="nav navbar-top-links navbar-right">
       <!-- /.dropdown -->
-      <li class="resourceMenu dropdown"  style="display:none;">
+      <li>
+        <a class="glyphicon glyphicon-th-list " ng-click="toggleLeft()" aria-hidden="true"></a>
+      </li>
+      <!-- <li class="resourceMenu dropdown" >
         <a class="dropdown-toggle" data-toggle="dropdown" href="#">
           <i class="fa fa-tasks fa-fw"></i>  <i class="fa fa-caret-down"></i>
         </a>
         <ul id="projectPreview" class="dropdown-menu dropdown-tasks">
         </ul>
-        <!-- /.dropdown-tasks -->
-      </li>
+      </li> -->
     </ul>
     <!-- /.navbar-top-links -->        
   </nav>
   <div id="indicator"></div>
-  <div id="wrapper" style="padding-top:50px;">
+  <div id="wrapper"  style="padding-top:50px;">
     <div id="page-wrapper">
-      <div class="col-md-9 titleHeader">
-        <h3 style="float:left;">Mobile Part H/Resource</h3>
-        <table id="printDump" style="display:none;"></table>
-        <a style="margin-left : 20px;" download="MobilePart.xls" href="#" class="btn btn-success disabled" id="exportExcel" onClick="return ExcellentExport.excel(this, 'printDump', 'MobilePart');"> EXCEL </a>
-      </div>
-      <div class="col-md-3 searchBtn"><button type="button" id="startSearch" class="btn btn-info" onClick="searchSNE()">SEARCH</button></div>
-      <div class="col-md-12">
-        <div class="panel-group" id="accordion">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <h4 class="panel-title">
-                <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Member</a>
-              </h4>
-            </div>
-            <div id="collapse1" class="panel-collapse collapse">
-              <div class="panel-body" id="memberSelectForm"></div>
-            </div>
+      <div class="panel-group" id="accordion">
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4 class="panel-title">
+              <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Detail Search</a>
+            </h4>
           </div>
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <h4 class="panel-title">
-                <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Detail Search</a>
-              </h4>
-            </div>
-            <div id="collapse2" class="panel-collapse collapse">
-              <div class="panel-body">
-                <div class="col-md-3 font_resizing">
-                  <h4>Iteration Start : </h4>
-                </div>
-                <div class="col-md-3 font_resizing" style="margin: 10px 0px;" >
-                  <input class="form-control" placeholder="2016-05-01" id="datetimepicker1"/>
-                </div>
-                <div class="col-md-3 font_resizing" style="margin: 10px 0px;">
-                  <h4>Work Day : </h4>
-                </div>
-                <div class="col-md-3 font_resizing" style="margin: 10px 0px;">
-                    <input class="form-control" id="datetimepicker2" placeholder="2016-05-02" />
-                  </div>
+          <div id="collapse2" class="panel-collapse collapse">
+            <div class="panel-body">
+              <div class="col-md-3 font_resizing">
+                <h4>Iteration Start : </h4>
               </div>
-            </div>
-          </div>
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <h4 class="panel-title">
-                <a data-toggle="collapse" data-parent="#accordion" href="#collapse3"> S & E Graph</a>
-              </h4>
-            </div>
-            <div id="collapse3" class="panel-collapse collapse in">
-              <div class="panel-body">
-                <div class="flot-chart">
-                    <div class="flot-chart-content" id="flot-line-chart-multi"></div>
-                </div>
+              <div class="col-md-3 font_resizing" style="margin: 10px 0px;" >
+                <input class="form-control" placeholder="2016-05-01" id="datetimepicker1"/>
               </div>
-            </div>
-          </div>
-        </div> 
-      </div>
-        <div class="col-md-12" id="projectDashBoard">
-          <div class="panel panel-default">
-            <div class="panel-heading panel-title">
-              Total Project Resource
-            </div>
-            <div class="panel-body" id="total_resource">
+              <div class="col-md-3 font_resizing" style="margin: 10px 0px;">
+                <h4>Work Day : </h4>
+              </div>
+              <div class="col-md-3 font_resizing" style="margin: 10px 0px;">
+                <input class="form-control" id="datetimepicker2" placeholder="2016-05-02" />
+              </div>
             </div>
           </div>
         </div>
-        <!-- /.col-md-12 -->
-    </div>
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4 class="panel-title">
+              <a data-toggle="collapse" data-parent="#accordion" href="#collapse3"> S & E Graph</a>
+            </h4>
+          </div>
+          <div id="collapse3" class="panel-collapse collapse in">
+            <div class="panel-body">
+              <div class="flot-chart">
+                <div class="flot-chart-content" id="flot-line-chart-multi"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div> 
+
+
+      <div class="panel panel-default">
+        <div class="panel-heading panel-title">
+          MEMBER Resource 
+          <span style="float:right;"><md-switch style="margin: 0px;" ng-model="simple" aria-label="Switch 1">Done task </md-switch>
+          </span>
+        </div>
+        <div class="panel-body" id="total_resource">
+          <md-radio-group ng-model="selectedMember">
+          <table class="table col-md-12">
+            <tr class="primary">
+              <td>Select</td><td>Member</td><td>Estimate</td>
+              <td>{{WEEK[0]}}</td><td>{{WEEK[1]}}</td><td>{{WEEK[2]}}</td><td>{{WEEK[3]}}</td>
+              <td>{{WEEK[4]}}</td><td>Remain</td>
+            </tr>
+            <tr ng-repeat="member in MEMBERS">
+              <td><md-radio-button value="{{member.username}}" class="md-primary"></md-radio-button></td>
+              <td class="textLabel" ng-Click="TC.selectMember(member.username)">{{member.fullName}}</td>
+              <td>{{member.estimate.toFixed(1)}}</td>
+              <td>{{member.date_spend[DAY[0]]}}</td>
+              <td>{{member.date_spend[DAY[1]]}}</td>
+              <td>{{member.date_spend[DAY[2]]}}</td>
+              <td>{{member.date_spend[DAY[3]]}}</td>
+              <td>{{member.date_spend[DAY[4]]}}</td>
+              <td>{{member.estimate - member.spend}} ({{member.spend}})</td>
+            </tr>
+          </table>
+          </md-radio-group>
+        </div>
+      </div>
+
+
+      <div class="panel panel-default" ng-repeat="board in BOARDS">
+        <div class="panel-heading panel-title">
+          {{board.name}}
+        </div>
+        <div class="panel-body">
+          <table class="table col-md-12">
+            <tr class="primary">
+              <td>Task</td><td>Member</td><td>Estimate</td>
+              <td>{{WEEK[0]}}</td><td>{{WEEK[1]}}</td><td>{{WEEK[2]}}</td><td>{{WEEK[3]}}</td>
+              <td>{{WEEK[4]}}</td><td>Remain</td>
+            </tr>
+            <tr ng-repeat="card in board.cards" ng-if="realTask(card)" ng-class="TC.getTaskState(card)">
+              <td><a style="margin-left: 5px;" ng-click="TC.openWindow(card)">{{card.name | short}} </a><span ng-click="TC.showDesc($event, card)" ng-show="TC.getDesc(card)" class="glyphicon glyphicon-comment"><span></td>
+              <td>
+                <div ng-repeat="member in card.members" style="margin: 5px;">
+                  {{member.fullName}}
+                </div>
+              </td>
+              <td>
+                <div ng-repeat="member in card.members" style="margin: 5px;">
+                  {{member.estimate.toFixed(1)}}
+                </div>
+              </td>
+              <td>
+                <div ng-repeat="member in card.members" style="margin: 5px;">
+                  {{member.date_spend[DAY[0]]}}
+                </div>
+              </td>
+              <td>
+                <div ng-repeat="member in card.members" style="margin: 5px;">
+                  {{member.date_spend[DAY[1]]}}
+                </div>
+              </td>
+              <td>
+                <div ng-repeat="member in card.members" style="margin: 5px;">
+                  {{member.date_spend[DAY[2]]}}
+                </div>
+              </td><td>
+                <div ng-repeat="member in card.members" style="margin: 5px;">
+                  {{member.date_spend[DAY[3]]}}
+                </div>
+              </td><td>
+                <div ng-repeat="member in card.members" style="margin: 5px;">
+                  {{member.date_spend[DAY[4]]}}
+                </div>
+              </td>
+              <td>
+                <div ng-repeat="member in card.members" style="margin: 5px;">
+                  {{member.estimate - member.spend}}
+                </div>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
   </div>
   <a href="#" class="back-to-top"><p class="fa fa-arrow-circle-o-up"></p></a>
+</div>
+</body>
 </html>

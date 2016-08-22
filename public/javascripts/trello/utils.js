@@ -26,9 +26,11 @@ var getWeeksArea = function(firstday) {
 
   var curr = (firstday === undefined) ? new Date : new Date(firstday); // get current date
   var first = curr.getDate() - curr.getDay() + 1; // First day is the day of the month - the day of the week
+  var second = first + 7;
   var last = first + 13; // last day is the first day + 6
 
   _obj['firstday'] = new Date(curr.setDate(first)).toUTCString();
+  _obj['second'] = new Date(curr.setDate(second)).toUTCString();
   _obj['lastday'] = new Date(curr.setDate(last)).toUTCString();
 
   return _obj;

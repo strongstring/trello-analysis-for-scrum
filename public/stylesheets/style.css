@@ -34,6 +34,7 @@ td {
 
 td.textLabel {
 	text-align: left;
+	width: 25%;
 }
 
 tr.taskFinish {
