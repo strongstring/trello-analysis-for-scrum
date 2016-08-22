@@ -32,9 +32,13 @@ td {
 	text-align: center;
 }
 
-td.textLabel {
+tr.textLabel {
 	text-align: left;
 	width: 25%;
+}
+
+tr.textLabel:hover {
+	background-color: #ddd;
 }
 
 tr.taskFinish {
@@ -42,15 +46,27 @@ tr.taskFinish {
 	color : #3c763d;
 }
 
+tr.taskFinish:hover {
+	background-color : #c1f9ab;
+}
+
 tr.taskDoing {
 	background-color : #fcf8e3;
 	color : #8a6d3b;
+}
+
+tr.taskDoing:hover {
+	background-color : #ffef9a;
 }
 
 tr.taskDone {
 	opacity: 0.5;
 	background-color: #D9EDF7;
 	color : #31708f;
+}
+
+tr.taskDone:hover {
+	background-color: #b4e0f7;
 }
 
 td.taskFinish {
@@ -119,6 +135,19 @@ a.back-to-top {
 	border-radius: 30px;
 }
 
+.selected {
+	font-size : 18px;
+  font-weight : bold;
+}
+
+.notSelected {
+	margin: 5px;
+}
+
 .resourceMenu {
 	display: none;
+}
+
+.md-open-menu-container{
+	z-index: 
 }

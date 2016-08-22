@@ -17,7 +17,7 @@ var getIterationStartDay = function() {
     _dumpDate.setDate(_dumpDate.getDate() + ITERATION_PERIOD);
   }
 
-  return _iterationDate;
+  return new Date(_iterationDate);
 }
 
 // get this week
