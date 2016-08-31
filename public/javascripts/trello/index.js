@@ -343,7 +343,7 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService) {
                   var x = item.datapoint[0].toFixed(0),
                       y = item.datapoint[1].toFixed(0);
 
-                  showTooltip(item.pageX, item.pageY, "(" + y + ")");
+                  showTooltip(item.pageX, item.pageY, y);
               }
           }
           else {
