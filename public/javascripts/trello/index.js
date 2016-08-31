@@ -245,26 +245,26 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService) {
   var showMemberResourceToGraph = function() {
     var _dataObj = {"estimateG" : [], "spendG" : []};
     var firstDay = Ctrl.IterationStartDay;
-      // firstDay = new Date($(iterationStartDay).data().date),
-      today = new Date();
-      targetElement = $('#flot-line-chart-multi');
+      firstDay.setDate(firstDay.getDate() -1);
+    var today = new Date();
       PART = angular.copy($scope.PART);
 
     console.log("hihihihi", firstDay);
 
     if (DEBUG_MODE) console.log("member is " + $scope.MEMBERS.length);
 
-    var estimateValForLogical = PART['estimate'],
-      estimateValForReal = PART['estimate'];
+    var estimateValForLogical = $scope.MEMBERS.length * 10 * 8;
+    var estimateValForReal = PART['estimate'];
 
     var stopflag = false;
-    for(var i = 0; i < 13; i++) {
+    for(var i = 0; i < 14; i++) {
       var _estimateData = [],
         _spendData = [];
 
       if(i === 0) {
         _estimateData.push(firstDay.getTime());
         _spendData.push(firstDay.getTime());
+
         _estimateData.push(estimateValForLogical);
         _spendData.push(estimateValForReal);
       } else {
@@ -274,13 +274,14 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService) {
 
         if(firstDay.getDate() === today.getDate()) stopflag = true;
 
-        if(i !== 5 && i !== 6 && i !== 11 && i !== 12) {
+        if(i !== 6 && i !== 7 && i !== 13) {
           estimateValForLogical -= ($scope.MEMBERS.length*8);
         }
         if(PART['date_spend'][firstDay.getDate()] !== undefined) {
           estimateValForReal -= PART['date_spend'][firstDay.getDate()];
+          console.log("PART['date_spend'][firstDay.getDate()]", firstDay.getDate(), PART['date_spend'][firstDay.getDate()]);
         }
-
+        console.log("estimateValForLogical", estimateValForLogical);
         _estimateData.push(estimateValForLogical);
         _spendData.push(estimateValForReal);
       }
@@ -310,15 +311,47 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService) {
           },
           tooltip: true,
           tooltipOpts: {
-              content: "%s for %x was %y",
+            content: function(label, xval, yval, flotItem){
+              return "Orders <b>"+yval+"</b> for <span>"+chartData.axis[xval][2]+"</span>"
+             },
+             shifts: {
+               x: -30,
+               y: -50
+             },
               xDateFormat: "%y-%0m-%0d",
-
-              onHover: function(flotItem, $tooltipEl) {
-                  // console.log(flotItem, $tooltipEl);
-              }
           }
       });
-    }
+
+      function showTooltip(x, y, contents) {
+          $('<div id="tooltip">' + contents + '</div>').css({
+              position: 'absolute',
+              display: 'none',
+              top: y + 5,
+              left: x + 5,
+              border: '1px solid #fdd',
+              padding: '2px',
+              'background-color': '#fee'
+          }).appendTo("body").fadeIn(200);
+      }
+
+       $("#flot-line-chart-multi").bind("plothover", function (event, pos, item) {
+          if (item) {
+              if (previousPoint != item.dataIndex) {
+                  previousPoint = item.dataIndex;
+
+                  $("#tooltip").remove();
+                  var x = item.datapoint[0].toFixed(0),
+                      y = item.datapoint[1].toFixed(0);
+
+                  showTooltip(item.pageX, item.pageY, "(" + y + ")");
+              }
+          }
+          else {
+              $("#tooltip").remove();
+              previousPoint = null;
+          }
+      });
+      }
 
     $scope.isSelectedMember = function(member) {
       console.log(member.username);
