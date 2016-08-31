@@ -445,8 +445,12 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService) {
 
           }, 2000);
         }, function(error) {
-          localStorage.removeItem('trello_token');
-          location.reload();
+          console.log(error);
+          if(error.status === 401) {
+            setTimeout(function() {
+              location.href = "";
+            }, 1000);
+          }
         }
       );
     }

@@ -81,6 +81,7 @@ TT.factory('TrelloConnectService',
                 }
               }, function(error) {
                 console.log(error);
+                localStorage.removeItem('trello_token');
               }
           ));
         }
