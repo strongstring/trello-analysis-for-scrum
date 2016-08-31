@@ -36,13 +36,14 @@ TT.factory('TrelloConnectService',
       this.MEMBERS = [];
       this.PART = {};
 
-
-
       this.auth = function() {
         var deferred = $q.defer();
 
         var onAuthorize = function() { console.log("Successful authentication"); deferred.resolve();};
-        var authenticationFailure = function() { console.log("Failed authentication"); deferred.reject();};
+        var authenticationFailure = function() { 
+          console.log("Failed authentication"); 
+          deferred.reject();
+        };
 
         Trello.authorize({
           type: "redirect",
@@ -107,41 +108,18 @@ TT.factory('TrelloConnectService',
 
       var searchSNE = function(board, cards, successFn) {
         var deferred = $q.defer();
-        var length = cards.length;
         board.cards = [];
 
-        for(var i = 0; i < length; i++) {
+        var cardsLength = cards.length;
+        for(var i = 0; i < cardsLength; i++) {
           var card = cards[i];
-          var hash_index = -1;
 
-          if(card.actions.length > 0) {
+          // make card's name
+          if(card.name === undefined) { 
             card.name = card.actions[0].data.card.name;
-            if(card.name.indexOf('#') !== -1) {
-              var name_info = card.name.split(' ');
-              var name_length = name_info.length;
-              var hash = "";
-              for(var j = 0; j < name_length; j++) {
-                if(name_info[j].indexOf('#') !== -1) {
-                  hash = name_info[j];
-                }
-              }
-              // console.log("hash task", hash);
-              hash_index = getIndexInArr(board.hash, "name", hash);
 
-              if(hash_index === -1) {
-                board.hash.push({
-                  board_name : board.name,
-                  name : hash,
-                  cards : [],
-                  spend : 0,
-                  estimate : 0,
-                  date_spend : {},
-                });
-
-                hash_index = board.hash.length -1;
-              }
-
-              var hashChecker = card.name.indexOf('#');
+            var hashChecker = card.name.indexOf('#');
+            if(hashChecker !== -1) {
               if(hashChecker === 0) {
                 var _hashLength = card.name.split(' ')[0].length;
                 card.name = card.name.substr(_hashLength+1, card.name.length);
@@ -151,23 +129,23 @@ TT.factory('TrelloConnectService',
             }
           }
 
-
-          var action_length = card.actions.length;
-          for(var j = 0; j < action_length; j++) {
+          // action check
+          var actionsLength = card.actions.length;
+          for(var j = 0; j < actionsLength; j++) {
             var action = card.actions[j];
 
             if(action.type !== 'updateCard' && action.data.text !== null && 
               action.data.text.indexOf('plus!') !== -1 && action.data.text.indexOf('^resetsync') === -1) {
 
-              var comment_text = action.data.text.substring(6);
-              var comment_info = comment_text.split(' ');
+              var commentText = action.data.text.substring(6);
+              var commentArr = commentText.split(' ');
               var duplicated_flag = false;
               var member = [];
               var date = new Date(action.date);
-              var comment_info_length = comment_info.length;
 
-              for(var k = 0; k < comment_info_length; k++) {
-                var info = comment_info[k];
+              var commentArrLength = commentArr.length;
+              for(var k = 0; k < commentArrLength; k++) {
+                var info = commentArr[k];
                 // Make Member Information
                 if(info.indexOf('@') !== -1) {
                   duplicated_flag = false;
@@ -191,100 +169,75 @@ TT.factory('TrelloConnectService',
                   if(member.length === 0) member.push(action.memberCreator.username);
                   // for double S&E in one comment line
                   if(!duplicated_flag) {
-                    if(card.spend === undefined) card.spend = 0;
-                    if(card.estimate === undefined) card.estimate = 0;
-                    if(card.date_spend === undefined) card.date_spend = {};
-                    if(card.members === undefined) card.members = [];
+                    if(card.spend === undefined) {
+                      card.spend = 0;
+                      card.estimate = 0;
+                      card.date_spend = {};
+                      card.members = [];
+                    }
 
-                    var action_member_length = member.length;
-                    for(var m = 0; m < action_member_length; m++) {
+                    var commentMemberLength = member.length;
+                    for(var m = 0; m < commentMemberLength; m++) {
                       // add member in card
 
                       var member_index = getIndexInArr(self.MEMBERS, 'username', member[m]);
-                      if(member_index === -1) return;
-                      if(card.members[m] === undefined) {
-                        card.members[m] = {
+                      if(member_index === -1) { break; }
+
+                      var card_member_index = getIndexInArr(card.members, 'username', member[m]);
+                      if(card_member_index === -1) {
+                        card.members.push({
                           username : self.MEMBERS[member_index].username,
                           fullName : self.MEMBERS[member_index].fullName,
                           date_spend : {},
                           spend : 0,
                           estimate : 0,
-                        }
+                        });
+                        card_member_index = card.members.length -1;
                       }
-                      var selected_member = card.members[m];
 
                       // add info in $scope.member
-                      if(member_index !== -1) {
-                        var root_member = self.MEMBERS[member_index];
-                        if(root_member.date_spend === undefined) root_member.date_spend = {};
-                        if(root_member.spend === undefined) root_member.spend = 0;
-                        if(root_member.estimate === undefined) root_member.estimate = 0;
+                      var selfMember = self.MEMBERS[member_index];
+                      if(selfMember.date_spend === undefined) {
+                        selfMember.date_spend = {};
+                        selfMember.spend = 0;
+                        selfMember.estimate = 0;
+                      }
 
-                        if(board.hash === undefined) board.hash = {
-                          members : [],
-                          date_spend : {},
-                          spend : 0,
-                          estimate : 0,
-                        };
-                        
-                        var board_hash = board.hash[hash_index];
-                        if(hash_index !== -1) {
-                          if(board_hash.members === undefined) board_hash.members = [];
-                          if(board_hash.members[member[m]] === undefined) {
-                            board_hash.members[member[m]] = {
-                              spend : 0,
-                              estimate : 0,
-                            }
+                      if(spend_time !== NaN && estimate_time !== NaN) {
+                        var cardMember = card.members[card_member_index];
+
+                        if(spend_time !== 0) {
+                          var comment_date = date.getDate();
+
+                          if(cardMember.date_spend[comment_date]  === undefined) {
+                            cardMember.date_spend[comment_date] = spend_time;
+                          } else {
+                            cardMember.date_spend[comment_date] += spend_time;
                           }
+                          if(card.date_spend[comment_date] === undefined) {
+                            card.date_spend[comment_date] = spend_time;
+                          } else {
+                            card.date_spend[comment_date] += spend_time;
+                          }
+                            
+                          if(selfMember.date_spend[comment_date] === undefined) {
+                            selfMember.date_spend[comment_date] = spend_time;
+                          } else { 
+                            selfMember.date_spend[comment_date] += spend_time;
+                          }
+                          
+                          cardMember.spend += spend_time;
+                          card.spend += spend_time;
+                          selfMember.spend += spend_time;
                         }
 
-                        if(spend_time !== NaN && estimate_time !== NaN) {
-                          
-                          // add spend in member in card
-                          if(spend_time !== 0) {
-                            if(selected_member.date_spend[date.getDate()]  === undefined) {
-                              selected_member.date_spend[date.getDate()] = spend_time;
-                            } else {
-                              selected_member.date_spend[date.getDate()] += spend_time;
-                            }
-                            if(card.date_spend[date.getDate()] === undefined) {
-                              card.date_spend[date.getDate()] = spend_time;
-                            } else {
-                              card.date_spend[date.getDate()] += spend_time;
-                            }
-                              
-                            if(root_member.date_spend[date.getDate()] === undefined) {
-                              root_member.date_spend[date.getDate()] = spend_time;
-                            } else {
-                              root_member.date_spend[date.getDate()] += spend_time;
-                            }
-                            
-                            selected_member.spend += spend_time;
-                            card.spend += spend_time;
-                            root_member.spend += spend_time;
-                            if(hash_index !== -1) {
-                              if(board_hash.date_spend === undefined) hash_index.date_spend = {};
-                              if(board_hash.date_spend[date.getDate()] === undefined) {
-                                board_hash.date_spend[date.getDate()] = 0;
-                              }
-                              board_hash.date_spend[date.getDate()] += spend_time;
-                              board_hash.spend += spend_time;
-                              board_hash.members[member[m]].spend += spend_time;
-                            }
-                          }
-
-                          // if(estimate_time !== NaN) {
-                          if(estimate_time !== 0) {
-                            card.estimate += estimate_time;
-                            selected_member.estimate += estimate_time;
-                            root_member.estimate += estimate_time;
-                            if(hash_index !== -1) {
-                              board_hash.estimate += estimate_time;
-                              board_hash.members[member[m]].estimate += estimate_time;
-                            }
-                          }
-                        } 
-                      }
+                        // if(estimate_time !== NaN) {
+                        if(estimate_time !== 0) {
+                          card.estimate += estimate_time;
+                          cardMember.estimate += estimate_time;
+                          selfMember.estimate += estimate_time;
+                        }
+                      } 
                     } // for (m) : member count
                     duplicated_flag = true;
                   }
@@ -293,17 +246,12 @@ TT.factory('TrelloConnectService',
             } // if (check 'plus!' about S & E comment)
           } // for (j)
           board.cards.push(card);
-          if(hash_index !== -1) board.hash[hash_index].cards.push(card);
         } // for (i)
 
         successFn();
-
-        // setTimeout(function() {
-        //   deferred.resolve();
-        // });
-        
-        // return deferred.promise;
       };
+
+      
 
       var calcSNE = function(board) {
         var part = self.PART;

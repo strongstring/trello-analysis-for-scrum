@@ -124,6 +124,7 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService) {
   $scope.DAY = [];
   $scope.simple = true;
   $scope.selectedMember = "";
+  Ctrl.holyday = [];
 
 
   var iterationPeriodCalculator = function() {
@@ -141,10 +142,6 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService) {
         break;
     }
 
-    console.log("mWorkday", mWorkday);
-    console.log("firstDay", firstDay);
-    console.log("second", second);
-
     var boundIterationDate;
     var season;
     if(mWorkday < second) {
@@ -158,18 +155,23 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService) {
     DumpDate = angular.copy(boundIterationDate);
     var dumpWeek = [];
     var dumpDay = [];
-    for(var i = 0; i < 5; i++) {
-
+    for(var i = 0; i < 7; i++) {
+      console.log("DumpDate", DumpDate.getDay());
       dumpWeek[i] = DumpDate.getMonth() + 1 + '/' + DumpDate.getDate();
       dumpDay[i] = DumpDate.getDate();
-      DumpDate.setDate(DumpDate.getDate() + 1);
+      if(DumpDate.getDay() === 6 || DumpDate.getDay() === 0) {
+        Ctrl.holyday.push(angular.copy(dumpDay[i]));
+      }
       console.log(dumpWeek);
       console.log(dumpDay);
+      DumpDate.setDate(DumpDate.getDate() + 1);
     }
     $scope.WEEK = angular.copy(dumpWeek);
     $scope.DAY = angular.copy(dumpDay);
     $scope.workDay = mWorkday;
     $scope.SEASON = season;
+
+    console.log("Ctrl.holyday", Ctrl.holyday);
 
     setTimeout(function() {
       $scope.$apply();
@@ -184,13 +186,25 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService) {
     }
   };
 
+  Ctrl.isHolyday = function(day) {
+    if(Ctrl.holyday.indexOf(day) === -1) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   Ctrl.getTaskState = function(card) {
     if((card.estimate - card.spend) === 0) {
       var workDay = ($scope.workDay).getDate();
       if(card.date_spend[workDay] > 0) {
         return "taskFinish";
       } else {
-        return "taskDone";
+        if(Object.keys(card.date_spend)[Object.keys(card.date_spend).length -1]  > workDay) {
+          return "taskDoing";
+        } else {
+          return "taskDone";
+        }
       }
     } else if(card.spend !== 0) {
       return "taskDoing";
@@ -216,22 +230,16 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService) {
       mSelectedMember = true;
     }
 
-    if((card.estimate - card.spend) == 0){
+    if(card.estimate === card.spend){
       if($scope.simple) {
         var workDay = ($scope.workDay).getDate();
-        // console.log("workDay", workDay);
-        // console.log("card.date_spend[workDay]", card.date_spend[workDay]);
-        if(card.date_spend[workDay] !== undefined && card.date_spend[workDay] > 0) {
-          return mSelectedMember;
-        } else {
-          return false;
+        if(Object.keys(card.date_spend)[Object.keys(card.date_spend).length -1] < workDay) {
+          mSelectedMember = false;
         }
-      } else {
-        return mSelectedMember;
-      }
-    } else {
-      return mSelectedMember;
+      } 
     }
+
+    return mSelectedMember;
   }
 
   var showMemberResourceToGraph = function() {
@@ -356,6 +364,7 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService) {
 
     Ctrl.DEBUG = {
       getTaskResouce : function(ev, card) {
+        console.log(card);
         $mdDialog.show(
           $mdDialog.alert()
             .parent(angular.element(document.querySelector('#popupContainer')))
@@ -411,7 +420,33 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService) {
           $timeout(function() {
             showMemberResourceToGraph();
             $('#indicator').css('display', 'none');
+
+            $(iterationStartDay).datetimepicker({
+              defaultDate: getIterationStartDay(),
+              format: 'YYYY-MM-DD'
+            });
+
+            $(iterationWorkDay).datetimepicker({
+              defaultDate : $scope.workDay,
+              format: 'YYYY-MM-DD'
+            });
+
+            $(iterationStartDay).on("dp.change", function(data) {
+              console.log(data);
+            });
+            $(iterationWorkDay).on("dp.change", function(data) {
+              $scope.workDay = new Date($(iterationWorkDay).data().date);
+              console.log($scope.workDay);
+
+              $timeout(function() {
+                $scope.$apply();
+              })
+            });
+
           }, 2000);
+        }, function(error) {
+          localStorage.removeItem('trello_token');
+          location.reload();
         }
       );
     }

@@ -146,16 +146,16 @@
             <tr>
               <td>Select</td><td>Member</td><td>Estimate</td>
               <td>{{WEEK[0]}}</td><td>{{WEEK[1]}}</td><td>{{WEEK[2]}}</td><td>{{WEEK[3]}}</td>
-              <td>{{WEEK[4]}}</td><td>Remain</td>
+              <td>{{WEEK[4]}}</td><td>{{WEEK[5]}}</td><td>{{WEEK[6]}}</td><td>Remain</td>
             </tr>
             <tr ng-repeat="member in MEMBERS" ng-class="{selected: member.username === selectedMember}">
               <td><md-radio-button value="{{member.username}}" class="md-primary"></md-radio-button></td>
               <td class="textLabel" ng-Click="TC.selectMember(member.username)" >{{member.fullName}}</td>
-              <td>{{member.estimate.toFixed(1)}}</td>
-              <td ng-repeat="day in DAY" ng-class="{selected: TC.isWorkDay(day)}">
+              <td class="regularHeight">{{member.estimate.toFixed(1)}}</td>
+              <td ng-repeat="day in DAY" ng-class="{selected: TC.isWorkDay(day), holyday : TC.isHolyday(day)}" class="regularHeight">
                   {{member.date_spend[day]}}
               </td>
-              <td>{{member.estimate - member.spend}}</td>
+              <td class="regularHeight">{{member.estimate - member.spend}}</td>
             </tr>
           </table>
           </md-radio-group>
@@ -172,28 +172,28 @@
             <tr>
               <td>Task</td><td>Member</td><td>Estimate</td>
               <td>{{WEEK[0]}}</td><td>{{WEEK[1]}}</td><td>{{WEEK[2]}}</td><td>{{WEEK[3]}}</td>
-              <td>{{WEEK[4]}}</td><td>Remain</td>
+              <td>{{WEEK[4]}}</td><td>{{WEEK[5]}}</td><td>{{WEEK[6]}}</td><td>Remain</td>
             </tr>
             <tr ng-repeat="card in board.cards" ng-if="realTask(card)" ng-class="TC.getTaskState(card)">
-              <td><a style="margin-left: 5px;" ng-click="TC.openWindow(card)">{{card.name | short}} </a><span ng-click="TC.showDesc($event, card)" ng-show="TC.getDesc(card)" class="glyphicon glyphicon-comment"><span></td>
+              <td><a style="margin-left: 5px;" ng-click="TC.DEBUG.getTaskResouce($event, card)">{{card.name | short}} </a><span ng-click="TC.showDesc($event, card)" ng-show="TC.getDesc(card)" class="glyphicon glyphicon-comment"><span></td>
               <td>
-                <div ng-repeat="member in card.members" style="margin: 5px;">
+                <div ng-repeat="member in card.members" class="regularHeight" ng-class="{selected: member.username === selectedMember}">
                   <!-- <a ng-click="TC.DEBUG.getMemberResouce($event, member)">{{member.fullName}}</a> -->
                   {{member.fullName}}
                 </div>
               </td>
               <td>
-                <div ng-repeat="member in card.members" style="margin: 5px;">
+                <div ng-repeat="member in card.members" class="regularHeight">
                   {{member.estimate.toFixed(1)}}
                 </div>
               </td>
-              <td ng-repeat="day in DAY">
-                <div ng-repeat="member in card.members"  ng-class="(TC.isWorkDay(day) ? 'selected' : 'notSelected' )">
-                  {{member.date_spend[day]}}
+              <td ng-repeat="day in DAY" ng-class="{'holyday' : TC.isHolyday(day)}">
+                <div ng-repeat="member in card.members" class="regularHeight" ng-class="{selected: TC.isWorkDay(day)}">
+                  {{member.date_spend[day] === undefined ? "&nbsp;" : member.date_spend[day]}}
                 </div>
               </td>
               <td>
-                <div ng-repeat="member in card.members" style="margin: 5px;">
+                <div ng-repeat="member in card.members" class="regularHeight">
                   {{member.estimate - member.spend}}
                 </div>
               </td>

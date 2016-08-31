@@ -151,3 +151,12 @@ a.back-to-top {
 .md-open-menu-container{
 	z-index: 
 }
+
+.holyday {
+	background-color: rgba(0,0,0,0.12);
+}
+
+.regularHeight {
+	height: 25px;
+  line-height: 25px;
+}
