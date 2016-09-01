@@ -175,7 +175,7 @@
               <td>{{WEEK[4]}}</td><td>{{WEEK[5]}}</td><td>{{WEEK[6]}}</td><td>Remain</td>
             </tr>
             <tr ng-repeat="card in board.cards" ng-if="realTask(card)" ng-class="TC.getTaskState(card)">
-              <td><a style="margin-left: 5px;" ng-click="TC.DEBUG.getTaskResouce($event, card)">{{card.name | short}} </a><span ng-click="TC.showDesc($event, card)" ng-show="TC.getDesc(card)" class="glyphicon glyphicon-comment"><span></td>
+              <td><a style="margin-left: 5px;" ng-click="TC.openWindow(card)">{{card.name | short}} </a><span ng-click="TC.showDesc($event, card)" ng-show="TC.getDesc(card)" class="glyphicon glyphicon-comment"><span></td>
               <td>
                 <div ng-repeat="member in card.members" class="regularHeight" ng-class="{selected: member.username === selectedMember}">
                   <!-- <a ng-click="TC.DEBUG.getMemberResouce($event, member)">{{member.fullName}}</a> -->
