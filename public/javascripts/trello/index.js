@@ -111,7 +111,7 @@ TT.filter('cutZero', function() {
 });
 
 TT.controller('TrelloController', 
-function($q, $timeout, $scope, $mdDialog, TrelloConnectService) {
+function($q, $timeout, $scope, $mdDialog, TrelloConnectService, $element) {
 
   var Ctrl = this;
   var TC = new TrelloConnectService();
@@ -126,6 +126,31 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService) {
   $scope.selectedMember = "";
   Ctrl.holyday = [];
 
+  // var dateChange = function() {
+  //   var mWorkday = angular.copy($scope.workDay);
+  //   var firstDay = angular.copy(Ctrl.IterationStartDay);
+  //   var second = new Date(getWeeksArea(firstDay).second);
+
+  //   var dayString = mWorkday.getDay();
+  //   switch(dayString) {
+  //     case 0 :  mWorkday.setDate(mWorkday.getDate() - 2);
+  //       break;
+  //     case 1 :  mWorkday.setDate(mWorkday.getDate() - 3);
+  //       break;
+  //     default : mWorkday.setDate(mWorkday.getDate() - 1); 
+  //       break;
+  //   }
+
+  //   var boundIterationDate;
+  //   var season;
+  //   if(mWorkday.getDate() < second.getDate()) {
+  //     season = 1;
+  //     boundIterationDate = firstDay;
+  //   } else {
+  //     season = 2;
+  //     boundIterationDate = second;
+  //   }
+  // }
 
   var iterationPeriodCalculator = function() {
     var mWorkday = angular.copy($scope.workDay);
@@ -142,15 +167,18 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService) {
         break;
     }
 
+    console.log("second", second);
     var boundIterationDate;
     var season;
-    if(mWorkday < second) {
+    if(mWorkday.getDate() !== second.getDate() || mWorkday < second) {
       season = 1;
       boundIterationDate = firstDay;
     } else {
       season = 2;
       boundIterationDate = second;
     }
+
+    console.log("boundIterationDate", boundIterationDate);
 
     DumpDate = angular.copy(boundIterationDate);
     var dumpWeek = [];
@@ -194,27 +222,60 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService) {
     }
   }
 
-  Ctrl.getTaskState = function(card) {
-    if((card.estimate - card.spend) === 0) {
-      var workDay = ($scope.workDay).getDate();
-      if(card.date_spend[workDay] > 0) {
-        return "taskFinish";
-      } else {
-        if(Object.keys(card.date_spend)[Object.keys(card.date_spend).length -1]  > workDay) {
-          return "taskDoing";
-        } else {
-          return "taskDone";
+  var isPrevDay = function(cardName, workDay) {
+    var prevDay = false;
+    var firstDate = angular.copy(Ctrl.IterationStartDay);
+    var workDate = $scope.workDay;
+    var prevMonth = firstDate.getMonth();
+
+    if(workDate.getMonth() !== prevMonth) {
+      var lastDay = new Date(firstDate.getFullYear(), firstDate.getMonth() + 1, 0).getDate();
+      var firstDay = firstDate.getDate();
+
+      for(var i = firstDay; i <= lastDay; i++) {
+        if(i - workDay === 0) {
+          prevDay = true;
+          break;
         }
       }
-    } else if(card.spend !== 0) {
-      return "taskDoing";
+      return prevDay;
     } else {
+      return prevDay;
+    }
+  };
+
+  Ctrl.getTaskState = function(card) {
+    console.log("card.name", card.name, card.estimate)
+    if(card.estimate === undefined || card.estimate === 0 ) return "taskHide";
+    if($scope.selectedMember !== "" ) {
+      var mSelectedMember = false;
+      var length = card.members.length;
+      for(var i = 0; i < length; i++) {
+        if(card.members[i].username === $scope.selectedMember) {
+          mSelectedMember = true;
+          break;
+        }
+      }
+      if(!mSelectedMember) return "taskHide";
+    }
+    if(card.estimate == card.spend) {
+      var workDay = ($scope.workDay).getDate();
+      var lastDayWorkDay = Object.keys(card.date_spend)[Object.keys(card.date_spend).length -1];
+      var isPrevWorkDay = isPrevDay(card.name, lastDayWorkDay);
+      if (card.date_spend[workDay] > 0) {
+        return "taskFinish";
+      } else {
+        return ($scope.simple) ? "taskHide" : "taskDone";
+      }
+    } else if(card.spend === 0) {
       return "textLabel";
+    } else {
+      return "taskDoing";
     }
   }
 
-  $scope.realTask = function(card) {
-
+  $scope.realTask = function(element, card) {
+    console.log(arguments);
     if(card.members === undefined || card.estimate <= 0) return false;
 
     var mSelectedMember = false;
@@ -233,9 +294,11 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService) {
     if(card.estimate === card.spend){
       if($scope.simple) {
         var workDay = ($scope.workDay).getDate();
-        if(Object.keys(card.date_spend)[Object.keys(card.date_spend).length -1] < workDay) {
+        var workMonth = ($scope.workDay).getMonth();
+        var lastDay = Object.keys(card.date_spend)[Object.keys(card.date_spend).length -1];
+        if( !isPrevDay(lastDay) && lastDay < workDay ){
           mSelectedMember = false;
-        }
+        } 
       } 
     }
 
@@ -244,7 +307,7 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService) {
 
   var showMemberResourceToGraph = function() {
     var _dataObj = {"estimateG" : [], "spendG" : []};
-    var firstDay = Ctrl.IterationStartDay;
+    var firstDay = angular.copy(Ctrl.IterationStartDay);
       firstDay.setDate(firstDay.getDate() -1);
     var today = new Date();
       PART = angular.copy($scope.PART);
@@ -469,6 +532,7 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService) {
             });
             $(iterationWorkDay).on("dp.change", function(data) {
               $scope.workDay = new Date($(iterationWorkDay).data().date);
+              iterationPeriodCalculator();
               console.log($scope.workDay);
 
               $timeout(function() {

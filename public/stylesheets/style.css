@@ -85,6 +85,14 @@ td.taskDone {
 	color : #31708f;
 }
 
+tr.taskHide {
+	display: none;
+}
+
+td.taskHide {
+	display: none;
+}
+
 #indicator {
 
     background-image: url(/images/indicator.gif);
