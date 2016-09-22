@@ -146,8 +146,10 @@
           <table class="table col-md-12">
             <tr>
               <td>Select</td><td>Member</td><td>Estimate</td>
-              <td>{{WEEK[0]}}</td><td>{{WEEK[1]}}</td><td>{{WEEK[2]}}</td><td>{{WEEK[3]}}</td>
-              <td>{{WEEK[4]}}</td><td>{{WEEK[5]}}</td><td>{{WEEK[6]}}</td><td>Remain</td>
+              <td>{{DAY[0]}}</td><td>{{DAY[1]}}</td><td>{{DAY[2]}}</td><td>{{DAY[3]}}</td>
+              <td>{{DAY[4]}}</td><td>{{DAY[5]}}</td><td>{{DAY[6]}}</td><td>{{DAY[7]}}</td>
+              <td>{{DAY[8]}}</td><td>{{DAY[9]}}</td><td>{{DAY[10]}}</td><td>{{DAY[11]}}</td>
+              <td>{{DAY[12]}}</td><td>{{DAY[13]}}</td><td>Remain</td>
             </tr>
             <tr ng-repeat="member in MEMBERS" ng-class="{selected: member.username === selectedMember}">
               <td><md-radio-button value="{{member.username}}" class="md-primary"></md-radio-button></td>
@@ -171,20 +173,22 @@
         <div class="panel-body">
           <table class="table col-md-12">
             <tr>
-              <td>Task</td><td>Member</td><td>Estimate</td>
-              <td>{{WEEK[0]}}</td><td>{{WEEK[1]}}</td><td>{{WEEK[2]}}</td><td>{{WEEK[3]}}</td>
-              <td>{{WEEK[4]}}</td><td>{{WEEK[5]}}</td><td>{{WEEK[6]}}</td><td>Remain</td>
+              <td>Task</td><td>Member</td><td>E</td>
+              <td>{{DAY[0]}}</td><td>{{DAY[1]}}</td><td>{{DAY[2]}}</td><td>{{DAY[3]}}</td>
+              <td>{{DAY[4]}}</td><td>{{DAY[5]}}</td><td>{{DAY[6]}}</td><td>{{DAY[7]}}</td>
+              <td>{{DAY[8]}}</td><td>{{DAY[9]}}</td><td>{{DAY[10]}}</td><td>{{DAY[11]}}</td>
+              <td>{{DAY[12]}}</td><td>{{DAY[13]}}</td><td>R</td>
             </tr>
             <tr ng-repeat="card in board.cards" ng-class="TC.getTaskState(card)">
               <td><a style="margin-left: 5px;" ng-click="TC.openWindow(card)">{{card.name | short}} </a><span ng-click="TC.showDesc($event, card)" ng-show="TC.getDesc(card)" class="glyphicon glyphicon-comment"><span></td>
               <td>
                 <div ng-repeat="member in card.members" class="regularHeight" ng-class="{selected: member.username === selectedMember}">
                   <!-- <a ng-click="TC.DEBUG.getMemberResouce($event, member)">{{member.fullName}}</a> -->
-                  {{member.fullName}}
+                  {{member.fullName | nameShort }}
                 </div>
               </td>
               <td>
-                <div ng-repeat="member in card.members" class="regularHeight">
+                <div ng-repeat="member in card.members" class="regularHeight" >
                   {{member.estimate.toFixed(1)}}
                 </div>
               </td>

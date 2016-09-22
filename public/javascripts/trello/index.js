@@ -100,6 +100,16 @@ TT.filter('short', function() {
   }
 });
 
+TT.filter('nameShort', function() {
+  return function(input) {
+    if(input.length > 8) {
+      return input.substr(0, 8) + "...";
+    } else {
+      return input;
+    }
+  }
+});
+
 TT.filter('cutZero', function() {
   return function(input) {
     if(input === 0) {
@@ -168,22 +178,22 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService, $element) {
     }
 
     console.log("second", second);
-    var boundIterationDate;
-    var season;
-    if(mWorkday.getDate() !== second.getDate() || mWorkday < second) {
-      season = 1;
-      boundIterationDate = firstDay;
-    } else {
-      season = 2;
-      boundIterationDate = second;
-    }
+    var boundIterationDate = firstDay;
+    // var season;
+    // if(mWorkday.getDate() !== second.getDate() || mWorkday < second) {
+    //   season = 1;
+    //   boundIterationDate = firstDay;
+    // } else {
+    //   season = 2;
+    //   boundIterationDate = second;
+    // }
 
     console.log("boundIterationDate", boundIterationDate);
 
     DumpDate = angular.copy(boundIterationDate);
     var dumpWeek = [];
     var dumpDay = [];
-    for(var i = 0; i < 7; i++) {
+    for(var i = 0; i < 14; i++) {
       console.log("DumpDate", DumpDate.getDay());
       dumpWeek[i] = DumpDate.getMonth() + 1 + '/' + DumpDate.getDate();
       dumpDay[i] = DumpDate.getDate();
@@ -197,7 +207,7 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService, $element) {
     $scope.WEEK = angular.copy(dumpWeek);
     $scope.DAY = angular.copy(dumpDay);
     $scope.workDay = mWorkday;
-    $scope.SEASON = season;
+    // $scope.SEASON = season;
 
     console.log("Ctrl.holyday", Ctrl.holyday);
 
@@ -245,7 +255,7 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService, $element) {
   };
 
   Ctrl.getTaskState = function(card) {
-    console.log("card.name", card.name, card.estimate)
+    // console.log("card.name", card.name, card.estimate)
     if(card.estimate === undefined || card.estimate === 0 ) return "taskHide";
     if($scope.selectedMember !== "" ) {
       var mSelectedMember = false;
@@ -539,7 +549,6 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService, $element) {
                 $scope.$apply();
               })
             });
-
           }, 2000);
         }, function(error) {
           console.log(error);
