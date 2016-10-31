@@ -43,6 +43,14 @@ var BOARD = {
     "id" : "u6SqfXJ9",
     "name" : "Argus"
   },
+  "INSTALLATION_ID" : {
+    "id" : "3iri7Xmr",
+    "name" : "Wisenet installation"
+  },
+  "S1SDK_ID" : {
+    "id" : "GrBbXsnV",
+    "name" : "S1 SDK"
+  },
 };
 
 // Iteration period

@@ -32,6 +32,8 @@ TT.factory('TrelloConnectService',
         {id : "nisQ181R", name : "SmartCam mobile", spend : 0, estimate: 0, date_spend: {}, cards : [], hash: []},
         {id : "duBw0VfK", name : "WiseNet mobile", spend : 0, estimate: 0, date_spend: {}, cards : [], hash: []},
         {id : "u6SqfXJ9", name : "Argus", spend : 0, estimate: 0, date_spend: {}, cards : [], hash: []},
+        {id : "3iri7Xmr", name : "Wisenet installation", spend : 0, estimate: 0, date_spend: {}, cards : [], hash: []},
+        {id : "GrBbXsnV", name : "S1 SDK", spend : 0, estimate: 0, date_spend: {}, cards : [], hash: []},
       ];
       this.MEMBERS = [];
       this.PART = {};
