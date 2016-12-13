@@ -28,13 +28,13 @@ TT.factory('TrelloConnectService',
 
       var self = this;
       this.BOARDS = [ 
-        {id : "I02GmIoD", name : "COMMON", spend : 0, estimate: 0, date_spend: {}, cards : [], hash : []},
+        {id : "I02GmIoD", name : "부서업무", spend : 0, estimate: 0, date_spend: {}, cards : [], hash : []},
         {id : "3UZJ3kPG", name : "iPOLiS mobile", spend : 0, estimate: 0, date_spend: {}, cards : [], hash: []},
         {id : "g0DBnhdi", name : "SSM mobile", spend : 0, estimate: 0, date_spend: {}, cards : [], hash: []},
         {id : "nisQ181R", name : "SmartCam mobile", spend : 0, estimate: 0, date_spend: {}, cards : [], hash: []},
-        {id : "duBw0VfK", name : "WiseNet mobile", spend : 0, estimate: 0, date_spend: {}, cards : [], hash: []},
-        {id : "u6SqfXJ9", name : "Argus", spend : 0, estimate: 0, date_spend: {}, cards : [], hash: []},
-        {id : "3iri7Xmr", name : "Wisenet installation", spend : 0, estimate: 0, date_spend: {}, cards : [], hash: []},
+        {id : "duBw0VfK", name : "Wisenet mobile", spend : 0, estimate: 0, date_spend: {}, cards : [], hash: []},
+        {id : "u6SqfXJ9", name : "Wisenet SmartCam", spend : 0, estimate: 0, date_spend: {}, cards : [], hash: []},
+        {id : "3iri7Xmr", name : "Wisenet Installation", spend : 0, estimate: 0, date_spend: {}, cards : [], hash: []},
         {id : "GrBbXsnV", name : "S1 SDK", spend : 0, estimate: 0, date_spend: {}, cards : [], hash: []},
       ];
       this.MEMBERS = [];
