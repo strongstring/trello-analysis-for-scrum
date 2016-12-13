@@ -1,6 +1,12 @@
 var iterationStartDay = "#datetimepicker1";
 var iterationWorkDay = "#datetimepicker2";
 
+Date.prototype.getWeekNumber = function(){
+    var d = new Date(+this);
+    d.setHours(0,0,0,0);
+    d.setDate(d.getDate()+4-(d.getDay()||7));
+    return Math.ceil((((d-new Date(d.getFullYear(),0,1))/8.64e7)+1)/7);
+};
 
 var getSelectedMember = function() {
   var _arr = [],
@@ -136,6 +142,9 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService, $element) {
   $scope.selectedMember = "";
   Ctrl.holyday = [];
 
+  var WeekNumber;
+
+
   // var dateChange = function() {
   //   var mWorkday = angular.copy($scope.workDay);
   //   var firstDay = angular.copy(Ctrl.IterationStartDay);
@@ -166,6 +175,8 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService, $element) {
     var mWorkday = angular.copy($scope.workDay);
     var firstDay = angular.copy(Ctrl.IterationStartDay);
     var second = new Date(getWeeksArea(firstDay).second);
+
+    WeekNumber = firstDay.getWeekNumber(); // 몇주차 Week인지 확인
 
     var dayString = mWorkday.getDay();
     switch(dayString) {
@@ -254,19 +265,11 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService, $element) {
     }
   };
 
-  Ctrl.getTaskState = function(card) {
+  Ctrl.getTaskState = function(card, username) {
     // console.log("card.name", card.name, card.estimate)
     if(card.estimate === undefined || card.estimate === 0 ) return "taskHide";
-    if($scope.selectedMember !== "" ) {
-      var mSelectedMember = false;
-      var length = card.members.length;
-      for(var i = 0; i < length; i++) {
-        if(card.members[i].username === $scope.selectedMember) {
-          mSelectedMember = true;
-          break;
-        }
-      }
-      if(!mSelectedMember) return "taskHide";
+    if($scope.selectedMember !== "" && username !== $scope.selectedMember) {
+      return "taskHide";
     }
     if(card.estimate == card.spend) {
       var workDay = ($scope.workDay).getDate();
@@ -464,6 +467,234 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService, $element) {
     Ctrl.openMenu = function($mdOpenMenu, ev) {
       originatorEv = ev;
       $mdOpenMenu(ev);
+    };
+
+    var getBoardWeek = function(arr, board, memberName) {
+      var length = board.cards.length;
+      // var plans = [];
+
+      for(var i = 0; i < length; i++) {
+        try {
+          var card = board.cards[i];
+          var memberLength = card.members.length;
+
+          if(card.members === undefined) break; // 레퍼런스의 경우 멤버없음.
+            for(var j = 0; j < memberLength; j++) {
+              var member = card.members[j];
+
+              if(member.username === memberName) {
+                var dumpCard = angular.copy(card);
+                dumpCard.name = "[" + board.name + "] " + card.name;
+                dumpCard.members = getObjInArr(dumpCard.members, 'username', memberName);
+                arr.push(dumpCard);
+                // console.log("Add + ", member.username, " name ", dumpCard.name );
+                break;
+              }
+            }
+        } catch (e) {
+          console.log(card);
+        }
+      }
+
+      console.log(arr);
+
+      // return plans;
+    }
+
+    var total_plans = [];
+    var rc = " \n "
+
+    $scope.getPlan = function() {
+      if($scope.selectedMember === '') return
+      
+      total_plans = getPlan($scope.selectedMember);
+
+      var resultString = getPlanner();
+      resultString += getFirstArchive();
+      resultString += getLastArchive();
+
+      return resultString;
+    };
+
+    var getPlanner = function() {
+      var resultString = "["+WeekNumber + "/" + (WeekNumber + 1) +"주차 계획]" + rc;
+      var length = total_plans.length;
+
+      resultString += "#  계획"+ rc;
+      for(var i = 0; i < length; i++) {
+        resultString += '-. ' + total_plans[i].name + rc;
+        // console.log(resultString);
+      }
+
+      resultString += rc + rc;
+
+      return resultString;
+    };
+
+    var getFirstArchive = function() {
+      var firstDay = angular.copy(Ctrl.IterationStartDay);
+      var second = new Date(getWeeksArea(firstDay).second).getDate();
+
+      var resultString = "[" + WeekNumber +"주차 성과]" + rc;
+      var done   = "#  진행완료" + rc;
+      var doing  = "#  진행중" + rc;
+      var notyet = "#  미진행" + rc;
+      var length = total_plans.length;
+
+      var first = firstDay.getDate();
+
+      console.log("first " + first, "second " + second);
+
+      for(var i = 0; i < length; i++) {
+        var card = total_plans[i];
+        var estimate = card.members[0].estimate;
+        var dateSpend = card.members[0].date_spend;
+        var spend = 0;
+        var cardString = "-. " + card.name;
+
+        console.log(card);
+        for(day in dateSpend) {
+          var dateNumber = typeof day === 'string' ? parseInt(day, 10) : day;
+          if(dateNumber >= first && dateNumber < second) {
+            console.log(card.name, "first " + first, "second " + second, day, dateSpend[day]);
+            if(spend === 0) {
+              cardString += "[" + day + " ~ "
+            }
+            spend += dateSpend[day];
+
+            if(estimate === spend) {
+              cardString += day + "]" + rc;
+            }
+          }
+        }
+
+        console.log("@@ " + cardString + " @@");
+        console.log("estimate", estimate, "spend", spend);
+        if(estimate === spend) {
+          // 끝난경우
+          done += cardString;
+        } else if (spend === 0) {
+          // 시작도 안한경우
+          cardString += rc;
+          notyet += cardString;
+        } else {
+          // 하다 만거
+          cardString += ", (" + (spend/estimate * 100).toFixed(1) + "%)]" + rc;
+          doing += cardString;
+        }
+      }
+
+      return resultString + done + doing + notyet + rc + rc;
+    };
+
+    var getLastArchive = function() {
+      var firstDay = angular.copy(Ctrl.IterationStartDay);
+      var first = firstDay.getDate();
+      var second = new Date(getWeeksArea(firstDay).second).getDate();
+      var last = second + 7;
+
+      var resultString = "[" + (WeekNumber + 1) +"주차 성과]" + rc;
+      var done   = "#  진행완료" + rc;
+      var doing  = "#  진행중" + rc;
+      var notyet = "#  미진행" + rc;
+      var length = total_plans.length;
+
+      console.log("second " + second, "last" + (second + 7));
+
+      for(var i = 0; i < length; i++) {
+        var card = total_plans[i];
+        var estimate = card.members[0].estimate;
+        var dateSpend = card.members[0].date_spend;
+        var spend = 0;
+        var alreadySpend = 0;
+        var cardString = "-. " + card.name;
+
+        console.log(card);
+        for(day in dateSpend) {
+          var dateNumber = typeof day === 'string' ? parseInt(day, 10) : day;
+          if(dateNumber >= second && dateNumber < last) {
+            console.log(card.name, "second " + second, "last " + last, day, dateSpend[day]);
+            if(spend === 0 && alreadySpend === 0) {
+              if(spend + alreadySpend === estimate) {
+                cardString += "[" + day + "]";
+              } else {
+                cardString += "[" + day + " ~ ";
+              }
+            }
+            spend += dateSpend[day];
+
+            if(estimate === (spend + alreadySpend)) {
+              cardString += day + "]" + rc;
+            }
+          } else {
+            if(spend === 0 && alreadySpend === 0) {
+              if(spend + alreadySpend === estimate) {
+                cardString += "[" + day + "]";
+              } else {
+                cardString += "[" + day + " ~ ";
+              }
+            }
+            alreadySpend += dateSpend[day];
+          }
+        }
+
+        console.log("@@ " + cardString + " @@");
+        console.log("estimate", estimate, "spend", spend);
+        if(alreadySpend === estimate) {
+
+        } else if(estimate === (spend + alreadySpend)) {
+          // 끝난경우
+          done += cardString;
+        } else if (spend === 0 && alreadySpend === 0) {
+          // 시작도 안한경우
+          cardString += rc;
+          notyet += cardString;
+        } else {
+          // 하다 만거
+          cardString += ", (" + ((spend + alreadySpend)/estimate * 100).toFixed(1) + "%)]" + rc;
+          doing += cardString;
+        }
+      }
+
+      return resultString + done + doing + notyet + rc + rc;
+    };
+
+    var planReview = function() {
+
+    };
+
+    var getPlan = function(username) {
+      var length = TC.BOARDS.length;
+      var mLength = TC.MEMBERS.length;
+
+      var memberPlans = [];
+
+      for(var i = 0; i < length; i++) {
+        var board = TC.BOARDS[i];
+        getBoardWeek(memberPlans, board, username);
+      }
+
+      // console.log(memberPlans);
+      var length = memberPlans.length;
+
+      for(var i = 0; i < length; i++) {
+        var plan = memberPlans[i];
+        // console.log(plan, plan.name);
+      }
+
+      return memberPlans;
+      // getBoardWeek : function(board, memberName) {
+
+      // },
+      // getWeek : function(memberName) {
+
+      // },
+      // getArchiveFirstWeek : function(memberName) {
+
+      // },
+      // getArchiveLastWeek : function(memberName) {
+
+      // },
     };
 
 

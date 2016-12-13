@@ -26,4 +26,8 @@ router.get('/task', function(req, res, next) {
 	res.render('task', { title: 'product test page' });
 });
 
+router.get('/dailyc', function(req, res, next) {
+	res.render('dailyc', { title: 'product test page' });
+});
+
 module.exports = router;

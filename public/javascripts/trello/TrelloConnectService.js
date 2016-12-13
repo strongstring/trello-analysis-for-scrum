@@ -2,6 +2,8 @@ TT.factory('TrelloConnectService',
   ['$q',
   function($q) {
 
+    var exceptMembers = ['yeonsunkang'];
+
     // @@@@@@@@@@@@@@ UTIL METHOD @@@@@@@@@@@@@ //
     var getObjInArr = function(arr, key, value) {
       return arr.filter(function(obj) { return obj[key] === value; });
@@ -64,23 +66,29 @@ TT.factory('TrelloConnectService',
         var promises = [];
         var length = self.BOARDS.length;
 
-        var init_flag = false;
+        // var init_flag = false;
         for(var i = 0; i < length; i++) {
           promises.push(
             Trello.get('/boards/' + self.BOARDS[i].id + '/members/',
               function(result) {
-                if(!init_flag) {
-                  init_flag = true;
-                  self.MEMBERS = result;
-                } else {
+                // if(!init_flag) {
+                  // init_flag = true;
+                  // self.MEMBERS = result;
+                // } else {
                   var memberLength = result.length;
 
                   for(var j = 0; j < memberLength; j++) {
-                    if( getIndexInArr(self.MEMBERS, 'username', result[j].username) === -1 ) {
-                      self.MEMBERS.push(result[j]);
+                    if(getIndexInArr(self.MEMBERS, 'username', result[j].username) === -1 ) {
+                      console.log('username', result[j].username);
+                      console.log(getIndexInArr(exceptMembers, 'username', result[j].username));
+                      if(getIndexInArr(exceptMembers, 'username', result[j].username) !== -1) {
+                        console.log('exceptMembers username', result[j].username);
+                      } else {
+                        self.MEMBERS.push(result[j]);
+                      }
                     }
                   }
-                }
+                // }
               }, function(error) {
                 console.log(error);
                 localStorage.removeItem('trello_token');
