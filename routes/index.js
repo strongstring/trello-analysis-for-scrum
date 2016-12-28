@@ -34,4 +34,8 @@ router.get('/adhoc', function(req, res, next) {
 	res.render('adhoc', { title: 'product test page' });
 });
 
+router.get('/smartcam', function(req, res, next) {
+	res.render('smartcam', { title: 'product test page' });
+});
+
 module.exports = router;
