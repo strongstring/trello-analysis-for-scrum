@@ -502,22 +502,61 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService, $element) {
     }
 
     var total_plans = [];
-    var rc = " \n "
+    var rc = "\n"
 
     $scope.getPlan = function() {
       if($scope.selectedMember === '') return
       
       total_plans = getPlan($scope.selectedMember);
 
-      var resultString = getPlanner();
+      var resultString = getLastArchive();
       resultString += getFirstArchive();
-      resultString += getLastArchive();
+      resultString += getPlanner();
 
       return resultString;
     };
 
+    var getPlanHeader = function() {
+      var firstDate = angular.copy(getIterationStartDay());
+      var lastDate = angular.copy(getIterationStartDay());
+        lastDate.setDate(lastDate.getDate() + 13);
+
+      return "!!! "+WeekNumber + "/" + (WeekNumber + 1) +"주차 계획 (" 
+        + getDateRange(firstDate, lastDate);
+    }
+
+    var getDateRange = function(firstDate, lastDate) {
+      return getDateString(firstDate) + "~" + getDateString(lastDate) + ")" + rc + rc
+        + getEditingString();
+    }
+
+    var getEditingString = function() {
+      return "----" + rc + rc
+        + "----" + rc + rc
+        + "{{{" + rc;
+    }
+
+    var getArchiveHeaderWithFirst = function(isFist) {
+      var number = isFist ? 0 : 1;
+
+      var firstDate = angular.copy(getIterationStartDay());
+        firstDate.setDate(firstDate.getDate() + (7 * number));
+      var lastDate = angular.copy(getIterationStartDay());
+        lastDate.setDate(lastDate.getDate() + (6 + 7 * number));
+      return "!!! " + (WeekNumber + number) + "주차 성과 (" 
+        + getDateRange(firstDate, lastDate);
+    }
+
+    var getFistArchiveHeader = function() {
+      return getArchiveHeaderWithFirst(true);
+    }
+
+    var getLastArchiveHeader = function() {
+      return getArchiveHeaderWithFirst(false);
+    }
+
     var getPlanner = function() {
-      var resultString = "["+WeekNumber + "/" + (WeekNumber + 1) +"주차 계획]" + rc;
+      var resultString = getPlanHeader();
       var length = total_plans.length;
 
       resultString += "#  계획"+ rc;
@@ -526,7 +565,7 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService, $element) {
         // console.log(resultString);
       }
 
-      resultString += rc + rc;
+      resultString += "}}}" + rc + rc + rc + rc + rc + rc + rc + rc;
 
       return resultString;
     };
@@ -534,8 +573,9 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService, $element) {
     var getFirstArchive = function() {
       var firstDay = angular.copy(Ctrl.IterationStartDay);
       var second = new Date(getWeeksArea(firstDay).second).getDate();
+      var month = firstDay.getMonth();
 
-      var resultString = "[" + WeekNumber +"주차 성과]" + rc;
+      var resultString = getFistArchiveHeader();
       var done   = "#  진행완료" + rc;
       var doing  = "#  진행중" + rc;
       var notyet = "#  미진행" + rc;
@@ -558,12 +598,17 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService, $element) {
           if(dateNumber >= first && dateNumber < second) {
             console.log(card.name, "first " + first, "second " + second, day, dateSpend[day]);
             if(spend === 0) {
-              cardString += "[" + day + " ~ "
+              cardString += " [" + day
             }
             spend += dateSpend[day];
 
             if(estimate === spend) {
-              cardString += day + "]" + rc;
+              if(estimate === dateSpend[day]) {
+                // 그날 시작한 일이 그날 끝나는 경우
+                cardString += "]" + rc;
+              } else {
+                cardString += " ~ " + day + "]" + rc;
+              }
             }
           }
         }
@@ -579,12 +624,12 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService, $element) {
           notyet += cardString;
         } else {
           // 하다 만거
-          cardString += ", (" + (spend/estimate * 100).toFixed(1) + "%)]" + rc;
+          cardString += "~ ] (" + (spend/estimate * 100).toFixed(1) + "%)" + rc;
           doing += cardString;
         }
       }
 
-      return resultString + done + doing + notyet + rc + rc;
+      return resultString + done + doing + notyet + rc + "}}}" + rc + rc + rc + rc + rc + rc + rc + rc;
     };
 
     var getLastArchive = function() {
@@ -593,7 +638,7 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService, $element) {
       var second = new Date(getWeeksArea(firstDay).second).getDate();
       var last = second + 7;
 
-      var resultString = "[" + (WeekNumber + 1) +"주차 성과]" + rc;
+      var resultString = getLastArchiveHeader();
       var done   = "#  진행완료" + rc;
       var doing  = "#  진행중" + rc;
       var notyet = "#  미진행" + rc;
@@ -612,28 +657,21 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService, $element) {
         console.log(card);
         for(day in dateSpend) {
           var dateNumber = typeof day === 'string' ? parseInt(day, 10) : day;
-          if(dateNumber >= second && dateNumber < last) {
-            console.log(card.name, "second " + second, "last " + last, day, dateSpend[day]);
-            if(spend === 0 && alreadySpend === 0) {
-              if(spend + alreadySpend === estimate) {
-                cardString += "[" + day + "]";
-              } else {
-                cardString += "[" + day + " ~ ";
-              }
-            }
-            spend += dateSpend[day];
 
+          if(spend === 0 && alreadySpend === 0) {
+            if(spend + alreadySpend === estimate) {
+              cardString += " [" + day + "]";
+            } else {
+              cardString += " [" + day + " ~ ";
+            }
+          }
+
+          if(dateNumber >= second && dateNumber < last) {
+            spend += dateSpend[day];
             if(estimate === (spend + alreadySpend)) {
               cardString += day + "]" + rc;
             }
           } else {
-            if(spend === 0 && alreadySpend === 0) {
-              if(spend + alreadySpend === estimate) {
-                cardString += "[" + day + "]";
-              } else {
-                cardString += "[" + day + " ~ ";
-              }
-            }
             alreadySpend += dateSpend[day];
           }
         }
@@ -651,12 +689,12 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService, $element) {
           notyet += cardString;
         } else {
           // 하다 만거
-          cardString += ", (" + ((spend + alreadySpend)/estimate * 100).toFixed(1) + "%)]" + rc;
+          cardString += "~ ] (" + ((spend + alreadySpend)/estimate * 100).toFixed(1) + "%)" + rc;
           doing += cardString;
         }
       }
 
-      return resultString + done + doing + notyet + rc + rc;
+      return resultString + done + doing + notyet + rc + "}}}" + rc + rc + rc + rc + rc + rc + rc + rc;
     };
 
     var planReview = function() {

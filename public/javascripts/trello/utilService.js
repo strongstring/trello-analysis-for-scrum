@@ -35,6 +35,17 @@ TT.service('Utils',[function() {
     return _obj;
   }
 
+  var getDateWithDay = function(baseDate, day) {
+    var baseDate = angular.copy(baseDate);
+    var baseDay = baseDate.getDate();
+
+    if(day > baseDay) {
+      return baseDate.setDate(baseDate.getDate() + (day - baseDay));
+    } else {
+      //  달이나, 해가 넘어가는 경
+    }
+  };
+
   var getDateString = function(date) {
     var dd = date.getDate(),
       mm = date.getMonth() + 1,

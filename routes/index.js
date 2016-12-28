@@ -30,4 +30,8 @@ router.get('/dailyc', function(req, res, next) {
 	res.render('dailyc', { title: 'product test page' });
 });
 
+router.get('/adhoc', function(req, res, next) {
+	res.render('adhoc', { title: 'product test page' });
+});
+
 module.exports = router;
