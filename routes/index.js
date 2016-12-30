@@ -42,8 +42,8 @@ router.get('/installation', function(req, res, next) {
 	res.render('installation', { title: 'product test page' });
 });
 
-// router.get('/wisenet', function(req, res, next) {
-// 	res.render('wisenet', { title: 'product test page' });
-// });
+router.get('/wisenet', function(req, res, next) {
+	res.render('wisenet', { title: 'product test page' });
+});
 
 module.exports = router;
