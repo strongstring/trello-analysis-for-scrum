@@ -54,5 +54,5 @@ var BOARD = {
 };
 
 // Iteration period
-var ITERATION_START_DATE = "2016-05-23",
+var ITERATION_START_DATE = "2016-05-26",
   ITERATION_PERIOD = 14;
