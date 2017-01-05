@@ -592,7 +592,7 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService, $element) {
         var spend = 0;
         var cardString = "-. " + card.name;
 
-        console.log(card);
+        // console.log(card);
         for(day in dateSpend) {
           var dateNumber = typeof day === 'string' ? parseInt(day, 10) : day;
           if(dateNumber >= first && dateNumber < second) {
@@ -613,8 +613,8 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService, $element) {
           }
         }
 
-        console.log("@@ " + cardString + " @@");
-        console.log("estimate", estimate, "spend", spend);
+        // console.log("@@ " + cardString + " @@");
+        // console.log("estimate", estimate, "spend", spend);
         if(estimate === spend) {
           // 끝난경우
           done += cardString;
@@ -636,7 +636,15 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService, $element) {
       var firstDay = angular.copy(Ctrl.IterationStartDay);
       var first = firstDay.getDate();
       var second = new Date(getWeeksArea(firstDay).second).getDate();
+      var today = new Date();
+      var lastDayOfMonth = new Date(today.getFullYear(), today.getMonth()+1, 0).getDate();
       var last = second + 7;
+      var remain = 0;
+
+      if(second + 7 > lastDayOfMonth) {
+        remain = second + 7 - lastDayOfMonth;
+        last = lastDayOfMonth;
+      }
 
       var resultString = getLastArchiveHeader();
       var done   = "#  진행완료" + rc;
@@ -644,7 +652,7 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService, $element) {
       var notyet = "#  미진행" + rc;
       var length = total_plans.length;
 
-      console.log("second " + second, "last" + (second + 7));
+      console.log("second " + second, "last" + last);
 
       for(var i = 0; i < length; i++) {
         var card = total_plans[i];
@@ -654,7 +662,7 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService, $element) {
         var alreadySpend = 0;
         var cardString = "-. " + card.name;
 
-        console.log(card);
+        // console.log(card);
         for(day in dateSpend) {
           var dateNumber = typeof day === 'string' ? parseInt(day, 10) : day;
 
@@ -666,7 +674,7 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService, $element) {
             }
           }
 
-          if(dateNumber >= second && dateNumber < last) {
+          if(dateNumber >= second && dateNumber < last || remain !== 0 && dateNumber < remain ) {
             spend += dateSpend[day];
             if(estimate === (spend + alreadySpend)) {
               cardString += day + "]" + rc;
@@ -676,8 +684,8 @@ function($q, $timeout, $scope, $mdDialog, TrelloConnectService, $element) {
           }
         }
 
-        console.log("@@ " + cardString + " @@");
-        console.log("estimate", estimate, "spend", spend);
+        // console.log("@@ " + cardString + " @@");
+        // console.log("estimate", estimate, "spend", spend);
         if(alreadySpend === estimate) {
 
         } else if(estimate === (spend + alreadySpend)) {
