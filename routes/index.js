@@ -38,6 +38,10 @@ router.get('/smartcam', function(req, res, next) {
 	res.render('smartcam', { title: 'product test page' });
 });
 
+router.get('/smartcamPlus', function(req, res, next) {
+	res.render('smartcamPlus', { title: 'product test page' });
+});
+
 router.get('/installation', function(req, res, next) {
 	res.render('installation', { title: 'product test page' });
 });
