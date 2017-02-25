@@ -1,0 +1,87 @@
+:root {
+  --icon-size: 84px;
+}
+
+p {
+  color: #4c4c4c;
+  margin: 0px;
+}
+
+#serviceBoard {
+	list-style: none;
+  width: 100%;
+  height: 100%;
+  padding-top: 50px;
+  padding-right: 40px;
+}
+
+
+
+
+
+#serviceBoard li.desc_header {
+  width: 100%;
+  height: calc((var(--icon-size) + 1px) / 2);
+  border-bottom: solid #e5e5e5 1px;
+}
+
+#serviceBoard li.desc_header .desc_name{
+  width: 40%;
+  margin-top:14px;
+  float:left;
+}
+
+#serviceBoard li.desc_header .desc_name p{ 
+  padding-left: 10px;
+}
+
+#serviceBoard li.desc_header .desc_comment{
+  width: 60%;
+  margin-top:14px;
+  float:left;
+  text-align: right;
+}
+
+
+
+
+
+
+#serviceBoard li {
+    width: 100%;
+    height: calc(var(--icon-size) + 1px);
+    border-bottom: solid #e5e5e5 1px;
+}
+
+#serviceBoard li .imageSpace {
+    width: 70px;
+    float: left;
+    top: 0;
+    bottom: 0;
+    margin: 7px;
+}
+
+#serviceBoard li .imageSpace img {
+	width: 100%;
+	height: 100%;
+}
+
+#serviceBoard li .comment {
+		width: calc(100% - var(--icon-size));
+    float: left;
+    height: 100%;
+}
+
+#serviceBoard li .comment .app_name {
+		float:left;
+		width: 40%;
+    height: 100%;
+    line-height: var(--icon-size);
+}
+
+#serviceBoard li .comment .latest_version {
+		float:left;
+		width: 60%;
+    height: 100%;
+    text-align: right;
+}

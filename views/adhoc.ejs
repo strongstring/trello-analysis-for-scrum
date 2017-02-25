@@ -2,65 +2,94 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-  <title>Wisenet Wisenet instraller</title>
-    <style>
-            li {margin: 10px;}
-            html {
-                font-family: Sans-serif;
-            }
-    </style>
+  <link rel='stylesheet' href='stylesheets/style.css' />
+  <link href="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/stylesheets/bootstrap_datepicker.css" rel="stylesheet">
+  <link href="/stylesheets/startbootstrap-sb-admin-2-1.0.8/dist/css/sb-admin-2.css" rel="stylesheet">
+  <link href="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/morrisjs/morris.css" rel="stylesheet">
+  <link href="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <link href="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/font-awesome/css/font-awesome.css" rel="stylesheet" type="text/css">
+  <link href="stylesheets/bootstrap-switch.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+  <script src="/javascripts/moment.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
+  <script src="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/flot/excanvas.min.js"></script>
+  <script src="javascripts/bootstrap-switch.min.js"></script>
+  
+  <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+  <script src="/javascripts/util/util.js"></script>
+
+  <link rel="stylesheet" type="text/css" href="/stylesheets/pages/adhoc.css">
+
+  <title><%= title %></title>
 </head>
+
 <body>
-<p style="
-    font-size: 20px;
-    margin-top: 40px;
-    margin-bottom:0px;
-    text-align: center;
-">Mobile OTA</p>
-<p class="otp" style="
-    font-size: 20px;
-    margin-bottom: 20px;
-    margin-top: 0px;
-    text-align: center;
-">(Over the air)</p>
+  <nav class="navbar navbar-default navbar-static-top" id="title" role="navigation" style="margin-bottom: 0; z-index: 2;">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/adhoc" style="font-weight: bold;">Mobile Part ADHOC Service</a>
+    </div>
+    <!-- /.navbar-top-links -->
+  </nav>
+  <ul id="serviceBoard">
+    
+  </ul>
+<script>
+  var serviceBoard = $('#serviceBoard');
 
-<div style="width: 50%; float:left;">
-  <p class="contentSite" style="text-align: center;">
-    <a href="/wisenet">
-      <img style="width: 150px;" src="/images/icon_wisenetmobile.png"/>
-    </a>
-  </p>
-  <p style="text-align: center;">
-    <a href="/wisenet">Wisenet Mobile</a>
-    </p>
-  <br/>
-</div>
+  MVCall('/api/serviceList', function(res) {
 
-<div style="width: 50%; float:left;">
-  <p class="contentSite" style="text-align: center;">
-    <a href="/smartcam">
-      <img style="width: 150px;" src="/images/icon_smartcam.png"/>
-    </a>
-  </p>
-  <p style="text-align: center;">
-    <a href="/smartcam">SmartCam</a>
-    </p>
-  <br/>
-</div>
+    serviceBoard.empty();
 
-<div style="width: 50%; float:left;">
-  <p class="contentSite" style="text-align: center;">
-    <a href="/installation">
-      <img style="width: 150px;" src="/images/icon_installation.png"/>
-    </a>
-  </p>
-  <p style="text-align: center;">
-    <a href="/installation">Wisenet Installation</a>
-    </p>
-  <br/>
-</div>
+    var header = $('<li class="desc_header"> \
+                      <div class="desc_name"> \
+                        <p> name </p> \
+                      </div> \
+                      <div class="desc_comment"> \
+                        <p>Latest Version</p> \
+                      </div> \
+                    </li>');
+    serviceBoard.append(header);                              // 헤더추가 
+
+    var length = res.length;
+    for(var i = 0; i < length; i++) {
+      var service = res[i];
+
+      var versionInfo = "";
+      if(service.link.ios !== undefined) {
+        versionInfo += '<p style="margin-top:20px"> iOS : ' + service.link.ios.version + '</p>';
+      }
+
+      if(service.link.android !== undefined) {
+        versionInfo += '<p> Android : ' + service.link.android.version + '</p>';
+      }
+
+      var content = $('<li> \
+                        <a href="' + service.page + '"> \
+                        <div class="imageSpace"> \
+                          <img src="' + service.imageUrl + '" /> \
+                        </div> \
+                        <div class="comment"> \
+                          <div class="app_name"> \
+                            <p>' + service.name + '</p> \
+                          </div> \
+                          <div class="latest_version"> \
+                          ' + versionInfo + ' \
+                          </div> \
+                        </div> \
+                        </a> \
+                      </li>');
+
+      serviceBoard.append(content);                         // 리스트 추가
+
+    }
+  }, function(error) {
+    console.log(error);
+  });
+</script>
 
 </body>
 </html>

@@ -31,7 +31,9 @@ router.get('/dailyc', function(req, res, next) {
 });
 
 router.get('/adhoc', function(req, res, next) {
-	res.render('adhoc', { title: 'product test page' });
+	res.render('adhoc', { 
+		title: 'Hanwha Techwin Mobile Team ADHOC Service',
+	});
 });
 
 router.get('/smartcam', function(req, res, next) {

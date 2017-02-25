@@ -70,4 +70,34 @@ router.get('/mobile/board', function(req, res, next) {
 	res.send(BOARD);
 });
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+var VersionManagerHeader = require("../model/VersionManager.js");
+
+var router = express.Router();
+var VersionManager = new VersionManagerHeader();
+
+var ERROR = {
+  "404" : {
+    errorCode : 404,
+    errorMessage : "not found",
+  }
+}
+
+router.get('/serviceList', function(req, res, next) {
+  var data = VersionManager.getServiceList();
+  res.send(data);
+});
+
 module.exports = router;
