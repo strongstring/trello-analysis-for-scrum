@@ -25,7 +25,7 @@ function createLegacyRow(version, option, iOSLink, AOSLink) {
 	}
 
 	if(AOSLink === undefined) {
-		contentString += '<p class="legacy-btn" style="opacity: 0.3">iOS</p>';
+		contentString += '<p class="legacy-btn" style="opacity: 0.3">Android</p>';
 	} else {
 		contentString += '<a href="' + AOSLink + '"> \
 												<p class="legacy-btn" onClick="actionDown(\'' + AOSLink + '\', false)">Android</p> \

@@ -6,10 +6,15 @@ SmartCamPlusModel.setImageLink("/images/icon_smartcamPlus.png");
 SmartCamPlusModel.setPage("smartcamPlus");
 SmartCamPlusModel.setVersion([
 	{ 
+		"version" : "1.01.170302.2", 
+		"link" : "https://dl.dropboxusercontent.com/s/8tfosjz8olrdm7k/manifest.plist", 
+		"platform" : "ios",
+		"option" : "Stable",
+	},
+	{ 
 		"version" : "1.01.170302", 
 		"link" : "https://dl.dropboxusercontent.com/s/ae5utqb0bdgb94b/manifest.plist", 
 		"platform" : "ios",
-		"option" : "Stable",
 	},
 	{ 
 		"version" : "1.01.170302", 
