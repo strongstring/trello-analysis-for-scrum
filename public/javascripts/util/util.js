@@ -9,3 +9,8 @@ function MVCall(url, sucFn, errFn) {
 		errFn(error);
 	});
 };
+
+function actionDown(url, biOS) {
+	var reqUrl = biOS ? "itms-services://?action=download-manifest&url=" + url : url;
+	window.open(reqUrl, "_blank");
+}

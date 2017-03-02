@@ -96,7 +96,17 @@ var ERROR = {
 }
 
 router.get('/serviceList', function(req, res, next) {
-  var data = VersionManager.getServiceList();
+  var data = VersionManager.getAllServiceList();
+  res.send(data);
+});
+
+router.get('/getLateVersion/:name', function(req, res, next) {
+  var data = VersionManager.getLatestVersion(req.params.name);
+  res.send(data);
+});
+
+router.get('/getServiceLink/:name', function(req, res, next) {
+  var data = VersionManager.getLinkist(req.params.name);
   res.send(data);
 });
 

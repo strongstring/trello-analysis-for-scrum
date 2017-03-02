@@ -47,6 +47,9 @@ MPServiceModel.prototype = {
 
 		return result;
 	},
+	getVersion : function() {
+		return this.version;
+	},
 	setImageLink : function(link) {
 		console.log("MPServiceModel ImageLink Change " + this.imageLink + " -> " + link);
 		this.imageLink = link;

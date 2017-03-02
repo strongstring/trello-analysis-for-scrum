@@ -3,6 +3,10 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
+  res.render('adhoc', { title: 'Analysis Work' });
+});
+
+router.get('/scrum', function(req, res, next) {
   res.render('index', { title: 'Analysis Work' });
 });
 
@@ -33,6 +37,12 @@ router.get('/dailyc', function(req, res, next) {
 router.get('/adhoc', function(req, res, next) {
 	res.render('adhoc', { 
 		title: 'Hanwha Techwin Mobile Team ADHOC Service',
+	});
+});
+
+router.get('/page/:id', function(req, res, next) {
+	res.render('page', { 
+		title: req.params.id,
 	});
 });
 

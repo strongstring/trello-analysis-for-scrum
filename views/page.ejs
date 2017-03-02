@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link href="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/stylesheets/bootstrap_datepicker.css" rel="stylesheet">
+    <link href="/stylesheets/startbootstrap-sb-admin-2-1.0.8/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/morrisjs/morris.css" rel="stylesheet">
+    <link href="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/font-awesome/css/font-awesome.css" rel="stylesheet" type="text/css">
+    <link href="/stylesheets/bootstrap-switch.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    <script src="/javascripts/moment.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
+    <script src="/stylesheets/startbootstrap-sb-admin-2-1.0.8/bower_components/flot/excanvas.min.js"></script>
+    <script src="/javascripts/bootstrap-switch.min.js"></script>
+    
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <script src="/javascripts/util/util.js"></script>
+    <script src="/javascripts/pageController.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="/stylesheets/pages/adhoc.css">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+  
+    <title>Wisenet Mobile Installer</title>
+</head>
+<body>
+
+  <nav class="navbar navbar-default navbar-static-top" id="title" role="navigation" style="margin-bottom: 0; z-index: 2;">
+    <div class="navbar-header">     
+      <a class="navbar-brand" href="/adhoc" style="font-weight: bold;">BACK</a>
+      <!-- <div class="app-toggle">
+        <div class="app-img" style="background-image: url("");"></div>
+        <div class="app-name">Wisenet Mobile</div>
+        <div class="glyphicon glyphicon-menu-down"></div>
+      </div> -->
+    </div>
+    <!-- /.navbar-top-links -->
+  </nav>
+
+  <div class="latest-app-boarder">
+    <div class="app-content ios">
+      <img src=""/>
+      <p class="app-name"></p>
+      <p class="app-version"></p>
+      <p>(iOS)</p>
+    </div>
+
+    <div class="app-content android">
+      <img src=""/>
+      <p class="app-name"></p>
+      <p class="app-version"></p>
+      <p>(Android)</p>
+    </div>
+  </div>
+
+<div class="legacy-boarder">
+  <div class="legacy-header" onClick="loadLegacyRow()">
+    Legacy version
+    <div class="glyphicon glyphicon-menu-up"></div>
+  </div>
+</div>
+
+<p style="margin:auto; width:95%; text-align: center;"><img style="width:90%;" src="/images/guide-en.png"></p><br />
+<table style="margin:auto; width:95%;">
+  <tr><td style="font-weight:bold;">Install Guide.</td></tr>
+  <tr><td>1. In iOS device please select from the icon application.</td></tr>
+  <tr><td>2. iOS8 or higher requires enterprise app reliability verification.</td></tr>
+  <tr><td>3. In the Settings - General - Device Management menu, press the 'Trust' button on Samsung Techwin Co., Ltd.'. </td></tr>
+</table><br/><br/>
+
+<p style="margin:auto; width:95%; text-align: center;"><img style="width:90%;" src="/images/guide-ko.png"/></p><br />
+<table style="margin:auto; width:95%;">
+  <tr><td style="font-weight:bold;">설치가이드</td></tr>
+  <tr><td>1. iOS 단말기에서 앱 아이콘을 선택해 주세요.</td></tr>
+  <tr><td>2. iOS8 이상의 버전에선 기업용 앱 신뢰성 확인이 필요합니다.</td></tr>
+  <tr><td>3. 설정 - 일반 - 기기관리 메뉴에서 'Smasung Techwin Co., Ltd.를 신뢰함 버튼을 눌러주세요.' </td></tr>
+</table>
+
+</body>
+</html>

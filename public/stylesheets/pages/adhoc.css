@@ -2,22 +2,82 @@
   --icon-size: 84px;
 }
 
-p {
+body {
+  background-color: white;
+}
+
+a {
   color: #4c4c4c;
   margin: 0px;
 }
 
-#serviceBoard {
-	list-style: none;
+a:hover {
+  color: #08f;
+}
+
+nav .navbar-brand {
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.navbar-header {
   width: 100%;
-  height: 100%;
-  padding-top: 50px;
-  padding-right: 40px;
+  background-color: white;
+}
+
+.app-toggle {
+  width: 60%;
+  max-width: 200px;
+  float: right;
+  margin-top: 10px;
+  cursor: pointer;
+  color: #777;
+}
+
+.app-toggle:hover {
+  color: #08f;
+}
+
+.app-toggle .app-img {
+  width: 30px;
+  height: 30px;
+  float: left;
+  margin-right: 10px;
+  background-size: cover;
+  display: block;
+}
+
+.app-toggle .app-name {
+  float: left;
+  height: 30px;
+  line-height: 30px;
+  margin-right: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+  max-width: 120px;
+  font-size: 12px;
+}
+
+.app-toggle .glyphicon-menu-down {
+  float: left;
+  height: 30px;
+  line-height: 30px;
 }
 
 
 
 
+
+/* -----------           ADHOC Page       ------------------- */
+
+#serviceBoard {
+    list-style: none;
+    width: 100%;
+    height: 100%;
+    padding: 50px 5% 5% 5%;
+}
 
 #serviceBoard li.desc_header {
   width: 100%;
@@ -41,8 +101,6 @@ p {
   float:left;
   text-align: right;
 }
-
-
 
 
 
@@ -76,7 +134,17 @@ p {
 		float:left;
 		width: 40%;
     height: 100%;
-    line-height: var(--icon-size);
+    position: relative;
+}
+
+#serviceBoard li .comment .app_name p {
+    top: 50%;
+    margin: auto;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    font-size: 12px;
 }
 
 #serviceBoard li .comment .latest_version {
@@ -84,4 +152,93 @@ p {
 		width: 60%;
     height: 100%;
     text-align: right;
+    font-size: 11px;
+}
+
+
+/* -----------           View Page       ------------------- */
+
+
+.latest-app-boarder {
+  width: 100%;
+  height: 40%;
+  max-height: 280px;
+  padding: 50px 5% 5% 5%;
+}
+
+.latest-app-boarder .app-content{
+  width: 50%;
+  float: left;
+  text-align: center;
+  cursor: pointer;
+  color: #777;
+}
+
+.latest-app-boarder .app-content:hover {
+  color: #08f;
+}
+
+.latest-app-boarder .app-content img{
+  width: 80%;
+  max-width: 160px;
+}
+
+.latest-app-boarder .app-content p{
+  margin: 0px;
+  font-size: 12px;
+}
+
+.legacy-boarder {
+  border-top: solid 1px #e7e7e7;
+  padding: 5%;
+}
+
+.legacy-boarder .legacy-header {
+  font-size: 18px;
+  height: 30px;
+  border-bottom: solid 1px #777;
+  width: 60%;
+  max-width: 200px;
+  margin-bottom: 20px;
+  cursor: pointer;
+  color: #777;
+}
+
+.legacy-boarder .legacy-header:hover {
+  color: #08f;
+  border-bottom: solid 1px #08f;
+}
+
+.legacy-boarder .legacy-header div{
+  float: right;
+  top: 5px;
+}
+
+.legacy-boarder .legacy-link {
+  width: 100%;
+  height: 50px;
+  border-bottom: solid 1px #e7e7e7;
+}
+
+.legacy-boarder .legacy-link .legacy-label {
+  width: 60%;
+  margin-right: 2%;
+  text-align: center;
+  float:left;
+  margin-bottom: 0px;
+  margin-top: 5px;
+}
+
+.legacy-boarder .legacy-link .legacy-btn {
+  width: 15%;
+  margin-right: 2%;
+  text-align: center;
+  float: left;
+  margin-bottom: 0px;
+  line-height: 50px;
+  cursor: pointer;
+}
+
+.legacy-boarder .legacy-link .legacy-btn:hover {
+  color: #08f;
 }

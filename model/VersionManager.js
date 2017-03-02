@@ -10,8 +10,21 @@ function VersionManager() {
 }
 
 VersionManager.prototype = {
-	getServiceList : function() {
+	getServiceIndex : function(serviceName) {
 
+		var length = this.services.length;
+		var findIndex = -1;
+
+		for(var i = 0; i < length; i++) {
+			if(this.services[i].getPage() === serviceName) {
+				findIndex = i;
+				break;
+			}
+		}
+
+		return findIndex;
+	},
+	getAllServiceList : function() {
 		var length = this.services.length;
 		var list = [];
 
@@ -28,6 +41,26 @@ VersionManager.prototype = {
 		}
 
 		return list;
+	},
+	getLinkist : function(serviceName) {
+		var sid = this.getServiceIndex(serviceName);
+		var result = [];
+		if(sid !== -1) {
+			result = this.services[sid].getVersion();
+		}
+
+		return result;
+	},
+	getLatestVersion : function(serviceName) {
+		var sid = this.getServiceIndex(serviceName);
+		var result = {};
+		if(sid !== -1) {
+			result.name = this.services[sid].getName();
+			result.link = this.services[sid].getLatestVersion();
+			result.imageUrl = this.services[sid].getImageLink();
+		}
+
+		return result;
 	},
 }
 
