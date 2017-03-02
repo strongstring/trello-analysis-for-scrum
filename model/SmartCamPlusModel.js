@@ -18,6 +18,18 @@ SmartCamPlusModel.setVersion([
 		"option" : "Stable",
 	},
 	{ 
+		"version" : "1.01.170302_debug", 
+		"link" : "https://dl.dropboxusercontent.com/s/pf6rm19wf1otfua/manifest.plist", 
+		"platform" : "ios",
+		"option" : "Debug",
+	},
+	{ 
+		"version" : "1.01.170302_debug", 
+		"link" : "https://dl.dropboxusercontent.com/s/1da3fl8k89qcajy/argus.apk",
+		"platform" : "android",
+		"option" : "Debug",
+	},
+	{ 
 		"version" : "1.00.170224", 
 		"link" : "https://dl.dropboxusercontent.com/s/7mal0z67yylob0m/manifest.plist", 
 		"platform" : "ios",
