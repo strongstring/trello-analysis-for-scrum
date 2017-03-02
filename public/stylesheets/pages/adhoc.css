@@ -174,6 +174,11 @@ nav .navbar-brand {
   color: #777;
 }
 
+.latest-app-boarder .app-content a {
+  text-decoration:none;
+  cursor: pointer;
+}
+
 .latest-app-boarder .app-content:hover {
   color: #08f;
 }
@@ -236,6 +241,11 @@ nav .navbar-brand {
   float: left;
   margin-bottom: 0px;
   line-height: 50px;
+  cursor: pointer;
+}
+
+.legacy-boarder .legacy-link .legacy-btn a {
+  text-decoration:none;
   cursor: pointer;
 }
 

@@ -19,13 +19,17 @@ function createLegacyRow(version, option, iOSLink, AOSLink) {
 	if(iOSLink === undefined) {
 		contentString += '<p class="legacy-btn" style="opacity: 0.3">iOS</p>';
 	} else {
-		contentString += '<p class="legacy-btn" onClick="actionDown("' + iOSLink + '", true)">iOS</p>';
+		contentString += ' <a href="itms-services://?action=download-manifest&url=' + iOSLink + '"> \
+											   <p class="legacy-btn">iOS</p> \
+											 </a>';
 	}
 
 	if(AOSLink === undefined) {
 		contentString += '<p class="legacy-btn" style="opacity: 0.3">iOS</p>';
 	} else {
-		contentString += '<p class="legacy-btn" onClick="actionDown(\'' + AOSLink + '\', false)">Android</p>';
+		contentString += '<a href="' + AOSLink + '"> \
+												<p class="legacy-btn" onClick="actionDown(\'' + AOSLink + '\', false)">Android</p> \
+											</a>' ;
 	}
 
 	contentString += '</div>';
@@ -54,7 +58,7 @@ function createLatestRow(appName, imageUrl, iOSLinkObj, AOSLinkObj) {
 	}
 
 	if($('.latest-app-boarder div.ios').length > 0) {
-		$('.latest-app-boarder div.ios').attr('onClick', "actionDown('" + iOSLinkObj.link + "', true)");
+		$('.latest-app-boarder div.ios a').attr('href', "itms-services://?action=download-manifest&url=" + iOSLinkObj.link); 
 		$('.latest-app-boarder div.ios .app-version').html(iOSLinkObj.version);
 	} 
 

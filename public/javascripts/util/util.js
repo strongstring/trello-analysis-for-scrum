@@ -12,5 +12,6 @@ function MVCall(url, sucFn, errFn) {
 
 function actionDown(url, biOS) {
 	var reqUrl = biOS ? "itms-services://?action=download-manifest&url=" + url : url;
-	location.href = reqUrl;
+	console.log("reqUrl : ", reqUrl);
+	window.location.href = reqUrl;
 }
