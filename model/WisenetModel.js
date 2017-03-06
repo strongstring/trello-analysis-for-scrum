@@ -6,6 +6,18 @@ WisenetModel.setImageLink("/images/icon_wisenetmobile.png");
 WisenetModel.setPage("wisenet");
 WisenetModel.setVersion([
 	{ 
+		"version" : "1.00.170307",
+		"option"  : "Stable",
+		"link" : "https://dl.dropboxusercontent.com/s/k6qvehjxpzdml8s/manifest.plist", 
+		"platform" : "ios",
+	},
+	{ 
+		"version" : "1.00.170307",
+		"option"  : "Stable",
+		"link" : "https://dl.dropboxusercontent.com/s/956xvwu0em6y9cv/android-debug_debug.apk",
+		"platform" : "android",
+	},
+	{ 
 		"version" : "1.00.170224",
 		"option"  : "Improved version",
 		"link" : "https://dl.dropboxusercontent.com/s/p1f5ltnd1zwaj4p/manifest.plist", 
@@ -19,13 +31,11 @@ WisenetModel.setVersion([
 	},
 	{ 
 		"version" : "1.00.170222",
-		"option"  : "Stable",
 		"link" : "https://dl.dropboxusercontent.com/s/kwql9vbq0g4ucjt/manifest.plist", 
 		"platform" : "ios",
 	},
 	{ 
 		"version" : "1.00.170222",
-		"option"  : "Stable",
 		"link" : "https://dl.dropboxusercontent.com/s/83a9njtfuofryua/Wisenet_mobile_1.00.170222.apk",
 		"platform" : "android",
 	},

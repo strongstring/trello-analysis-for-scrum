@@ -140,7 +140,7 @@ function initPage() {
 	});
 }
 
-(function() {
+$(document).ready(function() {
 	var pcFilter = "win16|win32|win64|mac|macintel";
 	var macFilter = "iphone|ipad";
  
@@ -159,4 +159,4 @@ function initPage() {
     console.log("Current Browser Platform : ", browserPlatform);
 
 	initPage();
-})();
+});
