@@ -6,10 +6,21 @@ SmartCamPlusModel.setImageLink("/images/icon_smartcamPlus.png");
 SmartCamPlusModel.setPage("smartcamPlus");
 SmartCamPlusModel.setVersion([
 	{ 
+		"version" : "1.03.170307", 
+		"link" : "https://dl.dropboxusercontent.com/s/z5uludaea2f6lc0/manifest.plist", 
+		"platform" : "ios",
+		"option" : "Stable",
+	},
+	{ 
+		"version" : "1.03.170307", 
+		"link" : "https://dl.dropboxusercontent.com/s/3o6n211o80d7ey3/WiseNet%20SmartCam_Android_v.1.03_20170307_WWW.apk",
+		"platform" : "android",
+		"option" : "Stable",
+	},
+	{ 
 		"version" : "1.01.170302.2", 
 		"link" : "https://dl.dropboxusercontent.com/s/8tfosjz8olrdm7k/manifest.plist", 
 		"platform" : "ios",
-		"option" : "Stable",
 	},
 	{ 
 		"version" : "1.01.170302", 
@@ -20,7 +31,6 @@ SmartCamPlusModel.setVersion([
 		"version" : "1.01.170302", 
 		"link" : "https://dl.dropboxusercontent.com/s/ku1qvfrdnvg48jy/argus.apk",
 		"platform" : "android",
-		"option" : "Stable",
 	},
 	{ 
 		"version" : "1.01.170302_debug", 
