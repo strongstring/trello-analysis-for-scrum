@@ -6,6 +6,12 @@ InstallationModel.setImageLink("/images/icon_installation.png");
 InstallationModel.setPage("installation");
 InstallationModel.setVersion([
 	{ 
+		"version" : "1.01.170330", 
+		"link" : "https://dl.dropboxusercontent.com/s/ifzlwbacwmyiqmv/installation_0330.apk",
+		"platform" : "android",
+		"option" : "Stable",
+	},
+	{ 
 		"version" : "1.00.170120", 
 		"link" : "https://dl.dropboxusercontent.com/s/nj5i18im3j2ma3s/manifest.plist", 
 		"platform" : "ios",
@@ -15,7 +21,6 @@ InstallationModel.setVersion([
 		"version" : "1.00.170120", 
 		"link" : "https://dl.dropboxusercontent.com/s/fntlxg2tdq5g590/Wisenet_Installation.v1.00.170120.apk",
 		"platform" : "android",
-		"option" : "Stable",
 	},
 	{ 
 		"version" : "0.40.170105", 
