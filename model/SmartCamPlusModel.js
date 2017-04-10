@@ -6,10 +6,21 @@ SmartCamPlusModel.setImageLink("/images/icon_smartcamPlus.png");
 SmartCamPlusModel.setPage("smartcamPlus");
 SmartCamPlusModel.setVersion([
 	{ 
+		"version" : "1.10.170411", 
+		"link" : "https://dl.dropboxusercontent.com/s/483pjp9gg9vihon/manifest.plist", 
+		"platform" : "ios",
+		"option" : "Stable",
+	},
+		{ 
+		"version" : "1.10.170411", 
+		"link" : "https://dl.dropboxusercontent.com/s/l05zsg9qqvz85ml/argus.apk",
+		"platform" : "android",
+		"option" : "Stable",
+	},
+	{ 
 		"version" : "1.03.170307", 
 		"link" : "https://dl.dropboxusercontent.com/s/z5uludaea2f6lc0/manifest.plist", 
 		"platform" : "ios",
-		"option" : "Stable",
 	},
 	{ 
 		"version" : "1.01.170302.2", 
@@ -25,7 +36,6 @@ SmartCamPlusModel.setVersion([
 		"version" : "1.01.170302", 
 		"link" : "https://dl.dropboxusercontent.com/s/ku1qvfrdnvg48jy/argus.apk",
 		"platform" : "android",
-		"option" : "Stable",
 	},
 	{ 
 		"version" : "1.01.170302_debug", 
