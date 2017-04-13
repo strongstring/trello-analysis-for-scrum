@@ -57,14 +57,22 @@ function createLatestRow(appName, imageUrl, iOSLinkObj, AOSLinkObj) {
 		$('.latest-app-boarder div .app-name:eq('+i+')').html(appName);
 	}
 
-	if($('.latest-app-boarder div.ios').length > 0) {
-		$('.latest-app-boarder div.ios a').attr('href', "itms-services://?action=download-manifest&url=" + iOSLinkObj.link); 
-		$('.latest-app-boarder div.ios .app-version').html(iOSLinkObj.version);
-	} 
+	if(iOSLinkObj !== undefined)  {
+		if($('.latest-app-boarder div.ios').length > 0) {
+			$('.latest-app-boarder div.ios a').attr('href', "itms-services://?action=download-manifest&url=" + iOSLinkObj.link); 
+			$('.latest-app-boarder div.ios .app-version').html(iOSLinkObj.version);
+		} 
+	} else {
+		$('.latest-app-boarder div img:eq(0)').css('opacity', '0.2');
+	}
 
-	if($('.latest-app-boarder div.android').length > 0) {
-		$('.latest-app-boarder div.android').attr('onClick', "actionDown('" + AOSLinkObj.link + "', false)");
-		$('.latest-app-boarder div.android .app-version').html(AOSLinkObj.version);
+	if(AOSLinkObj !== undefined)  {
+		if($('.latest-app-boarder div.android').length > 0) {
+			$('.latest-app-boarder div.android').attr('onClick', "actionDown('" + AOSLinkObj.link + "', false)");
+			$('.latest-app-boarder div.android .app-version').html(AOSLinkObj.version);
+		}
+	} else {
+		$('.latest-app-boarder div img:eq(1)').css('opacity', '0.2');
 	}
 }
 

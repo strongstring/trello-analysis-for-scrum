@@ -1,12 +1,14 @@
 var WisenetModel = require('./WisenetModel.js');
 var InstallationModel = require('./InstallationModel.js');
 var SmartCamPlusModel = require('./SmartCamPlusModel.js');
+var HiveModel = require('./HiveModel.js');
 
 function VersionManager() {
 	this.services = [];
 	this.services[0] = WisenetModel;
 	this.services[1] = InstallationModel;
 	this.services[2] = SmartCamPlusModel;
+	this.services[3] = HiveModel;
 }
 
 VersionManager.prototype = {
