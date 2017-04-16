@@ -6,16 +6,26 @@ InstallationModel.setImageLink("/images/icon_installation.png");
 InstallationModel.setPage("installation");
 InstallationModel.setVersion([
 	{ 
+		"version" : "1.10.170417", 
+		"link" : "https://dl.dropboxusercontent.com/s/t7252fhwfpaa2ys/manifest.plist", 
+		"platform" : "ios",
+		"option" : "Stable",
+	},
+	{ 
+		"version" : "1.10.170417", 
+		"link" : "https://dl.dropboxusercontent.com/s/94yths3oq1ujffq/Installation.apk",
+		"platform" : "android",
+		"option" : "Stable",
+	},
+	{ 
 		"version" : "1.01.170404", 
 		"link" : "https://dl.dropboxusercontent.com/s/m5hvx2jitnxlsiy/manifest.plist", 
 		"platform" : "ios",
-		"option" : "Stable",
 	},
 	{ 
 		"version" : "1.01.170330", 
 		"link" : "https://dl.dropboxusercontent.com/s/ifzlwbacwmyiqmv/installation_0330.apk",
 		"platform" : "android",
-		"option" : "Stable",
 	},
 	{ 
 		"version" : "1.00.170120", 
