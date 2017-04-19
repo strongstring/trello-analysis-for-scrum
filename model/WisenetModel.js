@@ -6,6 +6,12 @@ WisenetModel.setImageLink("/images/icon_wisenetmobile.png");
 WisenetModel.setPage("wisenet");
 WisenetModel.setVersion([
 	{ 
+		"version" : "1.01.170419",
+		"option"  : "DVR Version",
+		"link" : "https://dl.dropboxusercontent.com/s/3td1i7st2lrbpfl/wisenetMobile_dvrVersion.apk", 
+		"platform" : "android",
+	},
+	{ 
 		"version" : "1.01.170327",
 		"option"  : "Stable",
 		"link" : "https://dl.dropboxusercontent.com/s/qxafnhy30lbz7k7/manifest.plist", 
