@@ -68,7 +68,7 @@ function createLatestRow(appName, imageUrl, iOSLinkObj, AOSLinkObj) {
 
 	if(AOSLinkObj !== undefined)  {
 		if($('.latest-app-boarder div.android').length > 0) {
-			$('.latest-app-boarder div.android').attr('onClick', "actionDown('" + AOSLinkObj.link + "', false)");
+			$('.latest-app-boarder div.android a').attr('href', AOSLinkObj.link);
 			$('.latest-app-boarder div.android .app-version').html(AOSLinkObj.version);
 		}
 	} else {
