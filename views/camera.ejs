@@ -1,0 +1,66 @@
+
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>mqtt webrtc </title>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js" type="text/javascript"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js" type="text/javascript"></script>
+    <!--<script type="text/javascript" src="/js/mqttSDK_test.js"></script>-->
+    <script type="text/javascript" src="/javascripts/mqttSDK.js"></script>
+    <!-- <script type="text/javascript" src="/js/strophe.js"></script> -->
+    <style type='text/css'>
+     video {width:320;height:240}
+    </style>
+  </head>
+  <body>
+    <h1>Local Video</h1>
+    <p>Connected Information</p>
+    <p>hub id  : hub<%= hub %></p>
+    <p>ch  id  : ch<%= ch %></p>
+    <p>username: <%= user %></p>
+    <video id="localVideo"></video>
+
+    <!-- <div id="remoteVideos"> -->
+    <video id="remoteVideos"></video>
+    </div>
+
+    <script>
+
+    var hubId = 'hub<%= hub %>';
+    var chId = 'ch<%= ch %>';
+    var userName = '<%= user %>';
+
+    console.log("Hello MQTT Camera Application");
+    console.log("hub id : " + hubId + ", ch id : " + chId + ", userName : " + userName);
+ 
+    var webrtcSDK;
+
+    $(function() {
+      var loadingParams = {
+      // mqttServerIP: "wss://mostest.gaialab.co.kr/mqtt:442",
+      mqttServerIP: "wss://mobile.gaialab.co.kr/mqtt:443",
+      id          : hubId,
+      password    : 'openwd',
+      user_name   : hubId,
+      localVideo  : $('#localVideo'),
+      remoteVideo : $('#remoteVideos'),
+      mediaConstraints : {'mandatory': {'OfferToReceiveAudio':false, 'OfferToReceiveVideo':true }}
+      };     
+
+      webrtcSDK = new WebrtcSDK(loadingParams);
+
+      webrtcSDK.login();
+
+      setTimeout(function() {
+        webrtcSDK.join('camera');
+      }, 2000);
+    });
+
+    
+
+    
+        
+</script>
+</body>
+</html>

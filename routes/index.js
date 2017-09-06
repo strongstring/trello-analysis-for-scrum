@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var url  = require('url');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -64,6 +65,39 @@ router.get('/installation', function(req, res, next) {
 
 router.get('/wisenet', function(req, res, next) {
 	res.render('wisenet', { title: 'product test page' });
+});
+
+router.get('/camera', function(req, res) {
+    var query = url.parse(req.url,true).query;
+    var hubId = query.hub;
+    var chId = query.ch;
+    var user = query.user;
+
+    if(hubId && chId && user) {
+        console.log("open camera hub id : " + hubId + "ch id : " + chId + "user name : " + user);
+        res.render('camera', {
+            hub : hubId,
+            ch  : chId,
+            user : user,
+        });
+    } else {
+        res.send('<br /><br /> Please enter a valid url. <br /><br /> '
+            + '/camera?hub=[hubID]&ch=[chID]&user=[userName]');
+    }
+});
+
+router.get('/viewer', function (req, res) {
+    var query = url.parse(req.url,true).query;
+    var user = query.user;
+
+    if(user) {
+        res.render('viewer', {
+            user : user,
+        });
+    } else {
+        res.send('<br /><br /> Please enter a valid url. <br /><br /> '
+            + '/viewer?user=[userName]');
+    }
 });
 
 module.exports = router;

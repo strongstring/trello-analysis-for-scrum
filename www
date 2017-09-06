@@ -17,19 +17,17 @@ var http = require('http'),
   routes = require('./routes/index'),
   users = require('./routes/users'),
   api = require('./routes/api'),
-  lessMiddleware = require('less-middleware');
-
-var options = {
-  key: fs.readFileSync( path.join(__dirname, './bin/key.pem')),
-  cert: fs.readFileSync( path.join(__dirname, './bin/cert.pem')),
+  lessMiddleware = require('less-middleware'),
+  options = {
+    key: fs.readFileSync('key.pem'),
+    cert: fs.readFileSync('cert.pem')
 };
 
 /**
  * Get port from environment and store in Express.
  */
 
-var port1 = 3000;
-var port2 = 3003;
+var port2 = 50000;
 
 /**
  * Create HTTP server.
@@ -41,10 +39,6 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 app.use(bodyParser.json());
-
-http.createServer(app).listen(port1, function(){
-  console.log("Http server listening on port " + port1);
-});
 
 
 https.createServer(options, app).listen(port2, function(){
