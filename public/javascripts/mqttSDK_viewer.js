@@ -374,7 +374,7 @@ observer.register("message",messageHandler_2.listen,messageHandler_2);
 
 
 // mqttClient manager에  Subcribe 목록 전달
-mqttClients.push({ mqttClientId : 'hub01', client: new Paho.MQTT.Client('wss://mobile.gaialab.co.kr/:443', 'user01m013') });
+mqttClients.push({ mqttClientId : 'hub01', client: new Paho.MQTT.Client('wss://mobile.gaialab.co.kr/:443', 'client-'+randomString(6)) });
 mqttClients[0].client.subTopic = [];
 mqttClients[0].client.subTopic.push(signalHandler_1.buildTopic('sub'))
 mqttClients[0].client.subTopic.push(signalHandler_2.buildTopic('sub'))
@@ -384,7 +384,7 @@ mqttClients[0].client.subTopic.push(messageHandler_1.buildTopic('sub'))
 mqttClients[0].client.subTopic.push(messageHandler_2.buildTopic('sub'))
 
 
-mqttClients.push({ mqttClientId : 'hub02', client: new Paho.MQTT.Client('wss://mobile.gaialab.co.kr/:443', 'user01m204') });
+mqttClients.push({ mqttClientId : 'hub02', client: new Paho.MQTT.Client('wss://mobile.gaialab.co.kr/:443', 'client-'+randomString(6)) });
 mqttClients[1].client.subTopic = [];
 mqttClients[1].client.subTopic.push(signalHandler_hub02_ch01.buildTopic('sub'))
 mqttClients[1].client.subTopic.push(connectHandler_hub02.buildTopic('sub'))

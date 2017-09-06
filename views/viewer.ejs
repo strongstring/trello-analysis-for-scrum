@@ -10,6 +10,7 @@
     <script>
       var user = '<%= user %>';
     </script>
+    <script type="text/javascript" src="/javascripts/util/util.js"></script>
     <script type="text/javascript" src="/javascripts/mqttSDK_viewer.js"></script>
     <!--<script type="text/javascript" src="/js/mqttSDK.js"></script>-->
     <!-- <script type="text/javascript" src="/js/strophe.js"></script> -->
@@ -70,9 +71,6 @@
       signalHandler_hub02_ch01.makeOffer.call(signalHandler_hub02_ch01);
       
     });
-
-
-
 
     $("#setting").click( function() {
       // var loadingParams = {

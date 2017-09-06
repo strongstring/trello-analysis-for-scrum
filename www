@@ -27,7 +27,7 @@ var http = require('http'),
  * Get port from environment and store in Express.
  */
 
-var port2 = 50000;
+var port2 = 3000;
 
 /**
  * Create HTTP server.

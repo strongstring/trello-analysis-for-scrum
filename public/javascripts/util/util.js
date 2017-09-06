@@ -15,3 +15,13 @@ function actionDown(url, biOS) {
 	console.log("reqUrl : ", reqUrl);
 	window.location.href = reqUrl;
 }
+
+function randomString(length) {
+  var text = "";
+  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+  for (var i = 0; i < length; i++)
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+  return text;
+};
