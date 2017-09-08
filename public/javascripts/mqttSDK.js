@@ -1,6 +1,5 @@
 
 var client;
-var userName = "mosquitto1";
 
 var WebrtcSDK = function(loadingParams)
 {
@@ -9,10 +8,19 @@ var WebrtcSDK = function(loadingParams)
 
 
 WebrtcSDK.prototype.login = function(){
+  // console.dir(this.params);
+  // client = new Paho.MQTT.Client(this.params.mqttServerIP, this.params.id);
+  // var lastWill = new Paho.MQTT.Message(JSON.stringify({presence:{hub:false}}));
+  // lastWill.destinationName = 'hubs/'+hubId+'/connection';
+  // lastWill.qos = 0;
+  // lastWill.retained = true;
+
   console.dir(this.params);
   client = new Paho.MQTT.Client(this.params.mqttServerIP, this.params.id);
-  var lastWill = new Paho.MQTT.Message(JSON.stringify({presence:{hub:false}}));
-  lastWill.destinationName = 'hubs/'+hubId+'/connection';
+  var lastWill = new Paho.MQTT.Message(JSON.stringify({
+      state : false,
+  }));
+  lastWill.destinationName = 'chconnection/hubs/'+hubId+'/channel/'+chId+'/users/'+userName;
   lastWill.qos = 0;
   lastWill.retained = true;
 
@@ -42,8 +50,13 @@ WebrtcSDK.prototype.join = function(peerid){
     this.subscribe("offer")
     this.startVideo();
 
-    var message = new Paho.MQTT.Message(JSON.stringify({presence:{hub:true,ch01:true,ch02:true,ch03:true,ch04:true}}));
-    message.destinationName = 'hubs/'+hubId+'/connection'
+    // var message = new Paho.MQTT.Message(JSON.stringify({presence:{hub:true,ch01:true,ch02:true,ch03:true,ch04:true}}));
+    // message.destinationName = 'hubs/'+hubId+'/connection'
+    var message = new Paho.MQTT.Message(JSON.stringify({
+      state : true,
+    }));
+    message.destinationName = 'chconnection/hubs/'+hubId+'/channel/'+chId+'/users/'+userName;
+    console.log(message.destinationName);
     
     message.retained = true;
     client.send(message)
@@ -89,7 +102,7 @@ WebrtcSDK.prototype.onMessageArrived = function(message) {
             console.error('peerConnection alreay exist!');
           }
           this.peerConnection = this.prepareNewConnection();
-          var offer = new RTCSessionDescription(signal);
+          var offer = new RTCSessionDescription(signal.msg);
           
           this.peerConnection.setRemoteDescription(offer,this.makeAnswer.bind(this));
           console.log("hjkwon set remote description ");
@@ -171,19 +184,19 @@ var pc_config = {"iceServers" :[{"urls":["turn:173.194.72.127:19305?transport=ud
     peer.addStream(this.params.localStream);
   }
   
-  peer.addEventListener("addstream", onRemoteStreamAdded.bind(this), false);
-  peer.addEventListener("removestream", onRemoteStreamRemoved, false)
+  // peer.addEventListener("addstream", onRemoteStreamAdded.bind(this), false);
+  // peer.addEventListener("removestream", onRemoteStreamRemoved, false)
 
   // when remote adds a stream, hand it on to the local video element
-  function onRemoteStreamAdded(event) {
-    console.log("Added remote stream");
-    console.dir(event.stream)
-    console.log(this);
-    this.params.remoteVideo.attr('src', webkitURL.createObjectURL(event.stream));
-    this.params.remoteVideo[0].play();
-    this.params.remoteVideo[0].autoplay = true;
+  // function onRemoteStreamAdded(event) {
+  //   console.log("Added remote stream");
+  //   console.dir(event.stream)
+  //   console.log(this);
+  //   this.params.remoteVideo.attr('src', webkitURL.createObjectURL(event.stream));
+  //   this.params.remoteVideo[0].play();
+  //   this.params.remoteVideo[0].autoplay = true;
 
-  }
+  // }
 
   // when remote removes a stream, remove it from the local video element
   function onRemoteStreamRemoved(event) {
@@ -284,7 +297,11 @@ WebrtcSDK.prototype.sendSDPTextMQTT = function(RTCSessionDescription){
   //  message.destinationName = topic;
   //  client.send(message);
 
-    var message = new Paho.MQTT.Message(JSON.stringify(RTCSessionDescription));
+    var message = new Paho.MQTT.Message(JSON.stringify(
+      {
+        type : RTCSessionDescription.type,
+        msg : RTCSessionDescription
+      }));
     // message.destinationName = 'hub/device/signal/hub_01/ch_01/techwin_a'
     message.destinationName = 'hubs/'+hubId+'/devices/'+chId+'/users/'+userName+'/signal'
     client.send(message)
@@ -297,14 +314,31 @@ WebrtcSDK.prototype.sendIceTextMQTT = function(RTCIceCandidate){
   // var topic = 'hub/device/signal/hub_01/ch_01/techwin_a'
   var topic = 'hubs/'+hubId+'/devices/'+chId+'/users/'+userName+'/signal'
   //  message = new Paho.MQTT.Message(text);
-   var message = new Paho.MQTT.Message(JSON.stringify(RTCIceCandidate));
+   var message = new Paho.MQTT.Message(JSON.stringify(
+    {
+      type : 'new_icecandidate',
+      msg : RTCIceCandidate
+    }));
    message.destinationName = topic;
    client.send(message);
 }
 
 
 function requestUserMedia(constraints) {
-  return new Promise(function(resolve, reject) {
+  // return new Promise(function(resolve, reject) {
+  //   var onSuccess = function(stream) {
+  //     resolve(stream);
+  //   };
+  //   var onError = function(error) {
+  //     reject(error);
+  //   };
+  //   try {
+  //     navigator.webkitGetUserMedia(constraints, onSuccess, onError);
+  //   } catch (e) {
+  //     reject(e);
+  //   }
+  // });
+return new Promise(function(resolve, reject) {
     var onSuccess = function(stream) {
       resolve(stream);
     };

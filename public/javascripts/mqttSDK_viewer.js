@@ -175,7 +175,7 @@ signalHandler.prototype.prepareNewConnection =  function() {
 }
 
 
-signalHandler.prototype.listen = function(text,destinationName){   
+signalHandler.prototype.listen = function(text, destinationName){   
     var signal = JSON.parse(text),
         candidate, 
         answer ;
@@ -191,11 +191,11 @@ signalHandler.prototype.listen = function(text,destinationName){
         }
 
         if(signal.type == "offer" || signal.type == 'answer'){
-            answer = new RTCSessionDescription(signal);
+            answer = new RTCSessionDescription(signal.msg);
             this.peer.setRemoteDescription(answer);
             console.log("[HJKWON] Set Remote SDP: ", JSON.stringify(answer ));
         }else{
-            candidate = new RTCIceCandidate(signal),
+            candidate = new RTCIceCandidate(signal.msg),
             this.peer.addIceCandidate(candidate);
             console.log("[HJKWON] Set Remote candidate  :" + JSON.stringify( candidate ));
         }
@@ -214,7 +214,11 @@ signalHandler.prototype.makeOffer = function() {
 }
 
 signalHandler.prototype.sendSDPTextMQTT = function(topic,RTCSessionDescription){
-    var message = new Paho.MQTT.Message(JSON.stringify(RTCSessionDescription)),
+    var modelingMsg = {
+        type : RTCSessionDescription.type,
+        msg : RTCSessionDescription,
+    }
+    var message = new Paho.MQTT.Message(JSON.stringify(modelingMsg)),
     index = getMqttClient(this.hubId);   
     message.destinationName = topic;    
     
@@ -226,6 +230,10 @@ signalHandler.prototype.sendSDPTextMQTT = function(topic,RTCSessionDescription){
 }
 
 signalHandler.prototype.sendIceTextMQTT = function(topic, RTCIceCandidate){
+    var modelingMsg = {
+        type : 'new_icecandidate',
+        msg : RTCIceCandidate,
+    }
     var message = new Paho.MQTT.Message(JSON.stringify(RTCIceCandidate)),
         index = getMqttClient(this.hubId);
     

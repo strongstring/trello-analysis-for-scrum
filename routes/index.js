@@ -100,4 +100,19 @@ router.get('/viewer', function (req, res) {
     }
 });
 
+router.get('/mqttconnect', function (req, res) {
+    var query = url.parse(req.url,true).query;
+    var master = query.master;
+
+    if(master) {
+        res.render('connectManager', {
+            master : master,
+        });
+    } else {
+        res.render('connectManager', {
+            master : '',
+        });
+    }
+});
+
 module.exports = router;

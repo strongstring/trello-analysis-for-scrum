@@ -1,0 +1,275 @@
+
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>mqtt webrtc </title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js" type="text/javascript"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js" type="text/javascript"></script> -->
+    <!--<script type="text/javascript" src="/js/mqttws31.js"></script>-->
+    <style>
+      .hub {
+            width: 40%;
+            float: left;
+            margin: 5%;
+            height: 200px;
+      }
+    </style>
+    <script>
+      var master = '<%= master %>';
+    </script>
+    <script type="text/javascript" src="/javascripts/util/util.js"></script>
+    <!-- // <script type="text/javascript" src="/javascripts/mqttSDK_viewer.js"></script> -->
+    <!--<script type="text/javascript" src="/js/mqttSDK.js"></script>-->
+    <!-- <script type="text/javascript" src="/js/strophe.js"></script> -->
+    <style type='text/css'>
+     video {width:320;height:240}
+    </style>
+  </head>
+  <body>
+    <h1>Conenction Manager</h1>
+    <p>Connected Information</p>
+    <div id="hubsMonitor"></div>
+
+    
+    <script>
+
+    var hubs = {};
+    var initialTimer = undefined;
+
+    onLoadInitView();
+
+    // HUB Model //
+    HUB = function(hubId) {
+      this.id = hubId;
+      this.channels = {};
+    }
+
+    /*
+     * 채널 스테이트 변경 시 사용
+     * @param  {String}  channelId
+     * @param  {String}  user
+     * @param  {Boolean} state
+     * 
+     * @return {Boolean} changed
+     */ 
+    HUB.prototype.setChannelState = function(channelId, user, state){
+      var isChanged = false;
+
+      if(!this.channels[channelId]) {
+        this.channels[channelId] = {};
+      }
+
+      if(state) {
+        if(this.channels[channelId].user !== user) {
+          isChanged = true;  
+        }
+        this.channels[channelId].user = user;
+      }
+
+      if(this.channels[channelId].state !== state) {
+        isChanged = true;  
+      }
+      this.channels[channelId].state = state;
+
+      return isChanged;
+    }
+
+    /*
+     * HUB에 online 되어있는 장비가 있는경우 확인용.
+     * @return {Boolean} 
+     */ 
+    HUB.prototype.getState = function() {
+      var isAlive = false;
+
+      for(channelId in this.channels) {
+        if(this.channels[channelId].state) {
+          isAlive = true;
+        }
+      }
+      return isAlive;
+    }
+
+    /*
+     * MQTT Connection 공유용 정보조회 시 사용.
+     * @param  {String (optional)} userName
+     *
+     * @return {Object}
+     * {presence : {
+     *    hub : BOOL,
+     *    [CHID] : BOOL,,,
+     * }}
+     */ 
+    HUB.prototype.getHubInfo = function(userName){
+      var obj = {presence : {
+        hub : this.getState(),
+      }};
+      var channels = this.channels;
+
+      for(channelId in this.channels) {
+        if(typeof userName === 'undefined' || userName && channels[channelId].user === userName) {
+          obj.presence[channelId] = channels[channelId].state;
+        }
+      }
+
+      return obj;
+    }
+    
+
+    // MQTT Client Information //
+    var client = new Paho.MQTT.Client('wss://mobile.gaialab.co.kr/:443', 'client-'+randomString(6));
+    client.subTopics = ["chconnection/hubs/#",];
+
+    client.connect({userName: "mosquitto", password: 'openwd', 
+      onSuccess: function() {
+
+        initialTimer = setTimeout(function() {
+          initialTimer = undefined;
+          for(hubId in hubs) {
+            onUpdateHubInfo(hubId);
+          }
+        }, 2000);
+
+        client.onMessageArrived = function(message) {
+          console.log("destinationName : ", message.destinationName);
+          var value = JSON.parse(message.payloadString);
+
+          var tokenValue = message.destinationName.split('/');
+          if(tokenValue.length !== 7) {
+            return ;
+          }
+
+          var hubId     = tokenValue[2];
+          var channelId = tokenValue[4];
+          var userName  = tokenValue[6];
+
+
+          if(!hubs[hubId]) {
+            hubs[hubId] = new HUB(hubId);
+          }
+
+          // Property 정보가 바뀌었다면,
+          if(hubs[hubId].setChannelState(channelId, userName, value.state)) {
+            onUpdateHubInfo(hubId);
+          }
+        }
+
+        for (var i = 0; i < client.subTopics.length; i++) {
+          client.subscribe(client.subTopics[i]);
+          console.log("connectHandler.subscribe topic : " + client.subTopics[i]);
+        }
+      },
+      onFailure: function(error) {
+        console.log("connection fail");
+      },
+      useSSL: true, 
+      keepAliveInterval: 10 });
+
+
+  // UI  //
+  function sendConnection(hubId) {
+    if(!master) return;
+    if(!initialTimer) {
+      var message = new Paho.MQTT.Message(JSON.stringify(hubs[hubId].getHubInfo()));
+      message.destinationName = "hubs/"+hubId+"/connection";
+      message.retained = true;
+      console.log("sendConnection", message.destinationName, JSON.stringify(hubs[hubId].getHubInfo()));
+      client.send(message);
+    }
+  }
+
+  function onUpdateHubInfo(hubId) {
+    sendConnection(hubId);
+    onUpdateHubUI(hubId);
+  }
+
+  function onUpdateHubUI(hubId) {
+    if(!initialTimer) {
+      var monitor = $('#hubsMonitor');
+      var hubMonitor = $("#"+hubId);
+      var hubState = hubs[hubId].getState();
+      var channels = hubs[hubId].channels;
+
+      
+      if (hubState) {
+        if(hubMonitor.length === 0) {
+          hubMonitor = $('<div id="'+hubId+'" class="hub"></div>');
+          hubMonitor.append('<div class="hubName">'+hubId+'</div>');
+          monitor.append(hubMonitor);
+        }
+
+        for(channelId in channels) {
+          var selectString = '#'+hubId+' .'+channelId;
+          if($(selectString).length === 0) {
+            hubMonitor.append($('<div class="'+channelId+'"></div>'));
+          }
+
+          if(channels[channelId].state) {
+            $(selectString).html(channelId + ' ONLINE (' + channels[channelId].user + ')');
+            $(selectString).removeAttr('onclick');
+          } else {
+            $(selectString).html(channelId + ' OFFLINE' );
+            $(selectString).attr('onClick', "openNewCamera('" + hubId + "', '" + channelId + "')");
+          }
+        }
+        
+      }
+    }
+  }
+
+  function openNewCamera(hubId, chId) {
+    var username = prompt("Username", "mosquitto");
+
+    if(!username.includes("mosquitto")) {
+      return;
+    }
+    var hubIndex = hubId.split("hub")[1];
+    var chIndex =  chId.split("ch")[1];
+
+    window.open("/camera?hub=" + hubIndex + "&ch=" + chIndex + "&user=" + username);
+
+  }
+
+  function onLoadInitView() {
+    var monitor = $('#hubsMonitor');
+    var indexArray = ["01", "02", "03", "04"];
+
+    for(var i = 0; i < indexArray.length; i++) {
+      var hubName = "hub"+indexArray[i];
+      var hubMonitor = $('<div id="'+hubName+'" class="hub"></div>');
+
+      hubMonitor.append('<div class="hubName">'+hubName+'</div>');
+      
+
+      for(var j = 0; j < indexArray.length; j++) {
+        var channelName = "ch"+indexArray[j];
+        var channelDIV = $('<div class="'+channelName+'">'+channelName+' OFFLINE</div>').attr('onClick', "openNewCamera('" + hubName + "', '" + channelName + "')");
+        hubMonitor.append(channelDIV);
+      }
+
+      monitor.append(hubMonitor);
+    }
+  }
+        
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
