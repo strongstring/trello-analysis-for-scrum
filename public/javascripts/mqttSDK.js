@@ -297,14 +297,15 @@ WebrtcSDK.prototype.sendSDPTextMQTT = function(RTCSessionDescription){
   //  message.destinationName = topic;
   //  client.send(message);
 
-    var message = new Paho.MQTT.Message(JSON.stringify(
-      {
-        type : RTCSessionDescription.type,
-        msg : RTCSessionDescription
-      }));
+    var message = new Paho.MQTT.Message('{type : ' + RTCSessionDescription.type + ', msg : ' + JSON.stringify(RTCSessionDescription)
+      + '}');
     // message.destinationName = 'hub/device/signal/hub_01/ch_01/techwin_a'
     message.destinationName = 'hubs/'+hubId+'/devices/'+chId+'/users/'+userName+'/signal'
-    client.send(message)
+    try {
+      client.send(message)
+    } catch(e) {
+      console.log(e);
+    }
 
 }
 
@@ -314,13 +315,13 @@ WebrtcSDK.prototype.sendIceTextMQTT = function(RTCIceCandidate){
   // var topic = 'hub/device/signal/hub_01/ch_01/techwin_a'
   var topic = 'hubs/'+hubId+'/devices/'+chId+'/users/'+userName+'/signal'
   //  message = new Paho.MQTT.Message(text);
-   var message = new Paho.MQTT.Message(JSON.stringify(
-    {
-      type : 'new_icecandidate',
-      msg : RTCIceCandidate
-    }));
+   var message = new Paho.MQTT.Message('{type : "new_icecandidate", msg : ' + JSON.stringify(RTCIceCandidate) + '}');
    message.destinationName = topic;
-   client.send(message);
+   try {
+    client.send(message);
+   } catch(e) {
+    console.log(e);
+   }
 }
 
 
