@@ -114,7 +114,7 @@ WebrtcSDK.prototype.onMessageArrived = function(message) {
             console.error('no peerConnection !!!!!!!!!!!!!!');
           }
           console.log(this.peerConnection.remoteDescription.type);
-          var candidate = new RTCIceCandidate(signal);
+          var candidate = new RTCIceCandidate(signal.msg);
           this.peerConnection.addIceCandidate(candidate);
           console.log("set remote candidate " + JSON.stringify(candidate));
         }
@@ -292,17 +292,10 @@ WebrtcSDK.prototype.startVideo = function() {
 WebrtcSDK.prototype.sendSDPTextMQTT = function(RTCSessionDescription){
 
   var topic = 'hubs/'+hubId+'/devices/'+chId+'/users/'+userName+'/signal';
-  var msgObj = {type : RTCSessionDescription.type, msg : {
-    type : RTCSessionDescription.type,
-    sdp : RTCSessionDescription.sdp,
-  }};
+  var msgObj = {type : RTCSessionDescription.type, msg : RTCSessionDescription};
   console.log(JSON.stringify(msgObj));
   var message = new Paho.MQTT.Message(JSON.stringify(msgObj));
 
-  // var msgString = '{"type" : "' + RTCSessionDescription.type + '", "msg" : ' + JSON.stringify(RTCSessionDescription) + '}';
-  // console.log(msgString);
-  // var message = new Paho.MQTT.Message(msgString);
-  // message.destinationName = 'hub/device/signal/hub_01/ch_01/techwin_a'
   message.destinationName = topic;
   try {
     client.send(message)
@@ -316,11 +309,7 @@ WebrtcSDK.prototype.sendSDPTextMQTT = function(RTCSessionDescription){
 WebrtcSDK.prototype.sendIceTextMQTT = function(RTCIceCandidate){
 
    var topic = 'hubs/'+hubId+'/devices/'+chId+'/users/'+userName+'/signal'
-   var msgObj = {type : "new_icecandidate", msg : {
-    candidate : RTCIceCandidate.candidate,
-    sdpMLineIndex : RTCIceCandidate.sdpMLineIndex, 
-    sdpMid : RTCIceCandidate.sdpMid,
-   }};
+   var msgObj = {type : "new_icecandidate", msg : RTCIceCandidate};
    console.log(JSON.stringify(msgObj));
    var message = new Paho.MQTT.Message(JSON.stringify(msgObj));
    message.destinationName = topic;
