@@ -272,15 +272,19 @@ WebrtcSDK.prototype.setAnswerText= function(text) {
 }
 
 
+var mediaConstraints = {video: { width:{min:1280}, height: {min:720}, frameRate: { ideal: 10, min: 15 } }, audio: false}
+var deviceConstraints = {video: true, audio: false}
 WebrtcSDK.prototype.startVideo = function() {
- var mediaConstraints = {video: { width:{min:1280}, height: {min:720}, frameRate: { ideal: 10, min: 15 } }, audio: false}
  requestUserMedia(mediaConstraints).then(function(stream) {
   console.log("Got access to local media with mediaConstraints:\n" + "  '" + JSON.stringify(mediaConstraints) + "'");
   console.dir(this) 
-  this.params.localVideo.attr('src', webkitURL.createObjectURL(stream));
+  this.params.localVideo.attr('src', window.URL.createObjectURL(stream));
   this.params.localVideo[0].play();
   this.params.localVideo[0].autoplay = true;
   this.params.localStream = stream;
+
+  window.stream = stream; // make variable available to browser console
+  // video.srcObject = stream;
   // this.onUserMediaSuccess_(stream);
  }.bind(this)).catch(function(error) {
   // this.onError_("Error getting user media: " + error.message);
@@ -342,15 +346,11 @@ return new Promise(function(resolve, reject) {
     var onError = function(error) {
       reject(error);
     };
-    try {
       if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-        navigator.getUserMedia(constraints, onSuccess, onError);
+         navigator.mediaDevices.getUserMedia(deviceConstraints, onSuccess, onError);
       } else {
-        navigator.webkitGetUserMedia(constraints, onSuccess, onError);
+         navigator.webkitGetUserMedia(deviceConstraints, onSuccess, onError);
       }
-    } catch (e) {
-      reject(e);
-    }
   });
 }
 
