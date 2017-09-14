@@ -343,7 +343,11 @@ return new Promise(function(resolve, reject) {
       reject(error);
     };
     try {
-      navigator.webkitGetUserMedia(constraints, onSuccess, onError);
+      if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+        navigator.getUserMedia(constraints, onSuccess, onError);
+      } else {
+        navigator.webkitGetUserMedia(constraints, onSuccess, onError);
+      }
     } catch (e) {
       reject(e);
     }
