@@ -76,13 +76,18 @@ WebrtcSDK.prototype.subscribe = function(waitType) {
   console.log("hjkwon called subscribe")
   console.dir(this)
   // set callback
-  client.onMessageArrived = this.onMessageArrived.bind(this);
-   // Subscribe
-  // var topic = this.buildTopic(waitType,this.params.user_name);
-  // var topic = 'hummingbird/hub/device/signal/hub_01/ch_01/techwin_a'
-  var topic = 'hummingbird/hubs/'+hubId+'/devices/'+chId+'/users/'+userName+'/signal'
-  console.log(topic);
-  client.subscribe(topic);
+  if(client) {
+    client.onMessageArrived = this.onMessageArrived.bind(this);
+    setTimeout(function() {
+      
+      // Subscribe
+      // var topic = this.buildTopic(waitType,this.params.user_name);
+      // var topic = 'hummingbird/hub/device/signal/hub_01/ch_01/techwin_a'
+      var topic = 'hummingbird/hubs/'+hubId+'/devices/'+chId+'/users/'+userName+'/signal'
+      console.log(topic);
+      client.subscribe(topic);
+    }, 500);
+  }
 }
 
 
