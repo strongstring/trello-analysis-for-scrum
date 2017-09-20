@@ -241,7 +241,7 @@
       hubMonitor.append('<div class="hubName">'+hubName+'</div>');
       
 
-      for(var j = 0; j < indexArray.length/2; j++) {
+      for(var j = 0; j < indexArray.length; j++) {
         var channelName = "ch"+indexArray[j];
         var channelDIV = $('<div class="'+channelName+'">'+channelName+' OFFLINE</div>').attr('onClick', "openNewCamera('" + hubName + "', '" + channelName + "')");
         hubMonitor.append(channelDIV);
