@@ -16,7 +16,7 @@ WebrtcSDK.prototype.login = function(){
   // lastWill.retained = true;
 
   console.dir(this.params);
-  client = new Paho.MQTT.Client(this.params.mqttServerIP, this.params.id);
+  client = new Paho.MQTT.Client(this.params.mqttServerIP, 'client-'+randomString(6));
   var lastWill = new Paho.MQTT.Message(JSON.stringify({
       state : false,
   }));
