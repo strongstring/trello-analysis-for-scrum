@@ -232,7 +232,7 @@
 
   function onLoadInitView() {
     var monitor = $('#hubsMonitor');
-    var indexArray = ["01", "02", "03", "04"];
+    var indexArray = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10"];
 
     for(var i = 0; i < indexArray.length; i++) {
       var hubName = "hub"+indexArray[i];
@@ -241,7 +241,7 @@
       hubMonitor.append('<div class="hubName">'+hubName+'</div>');
       
 
-      for(var j = 0; j < indexArray.length; j++) {
+      for(var j = 0; j < indexArray.length/2; j++) {
         var channelName = "ch"+indexArray[j];
         var channelDIV = $('<div class="'+channelName+'">'+channelName+' OFFLINE</div>').attr('onClick', "openNewCamera('" + hubName + "', '" + channelName + "')");
         hubMonitor.append(channelDIV);
