@@ -359,15 +359,15 @@ messageHandler.prototype.buildTopic = function(type,protocalType){
 
 
 //  핸들러 생성
-var signalHandler_1 = new signalHandler("hub01",'ch01',user);
+var signalHandler_1 = new signalHandler("hub01",'ch02',user);
 var signalHandler_2 = new signalHandler("hub01",'ch02',user);
 var connectHandler_1 = new connectHandler("hub01");
-var commandHandler_1 = new commandHandler("hub01",'ch01',user);
-var messageHandler_1 = new messageHandler("hub01",'ch01');
+var commandHandler_1 = new commandHandler("hub01",'ch02',user);
+var messageHandler_1 = new messageHandler("hub01",'ch02');
 var messageHandler_2 = new messageHandler("hub01",'ch02');
 
 
-var signalHandler_hub02_ch01 = new signalHandler("hub02",'ch01',user);
+var signalHandler_hub02_ch01 = new signalHandler("hub02",'ch02',user);
 var connectHandler_hub02 = new connectHandler("hub02");
 
 // observer에 핸들러 등록

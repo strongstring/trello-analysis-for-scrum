@@ -1,5 +1,5 @@
-
 var client;
+var topic_;
 
 var WebrtcSDK = function(loadingParams)
 {
@@ -18,14 +18,22 @@ WebrtcSDK.prototype.login = function(){
   console.dir(this.params);
   client = new Paho.MQTT.Client(this.params.mqttServerIP, 'client-'+randomString(6));
   var lastWill = new Paho.MQTT.Message(JSON.stringify({
-      state : false,
+      presence:{hub:false}
   }));
-  lastWill.destinationName = 'chconnection/hubs/'+hubId+'/channel/'+chId+'/users/'+userName;
+  lastWill.destinationName = 'hubs/'+serial+'/connection';
   lastWill.qos = 0;
   lastWill.retained = true;
 
-  client.connect({"userName": userName, password: this.params.password,willMessage: lastWill , onSuccess: this.onConnect, 
-                  onFailure: this.failConnect,useSSL: false, keepAliveInterval: 10 });
+  console.log("login:: serial : " + serial, "password : " + devicePassword);
+  client.connect({
+    userName: serial, 
+    password: devicePassword, 
+    willMessage: lastWill, 
+    onSuccess: this.onConnect, 
+    onFailure: this.failConnect,
+    useSSL: false, 
+    keepAliveInterval: 10 
+  });
 }
 
 
@@ -39,6 +47,10 @@ WebrtcSDK.prototype.onConnect =  function (){
    $('#join').attr("disabled",false);
    // console.dir(this)
    // subscribe("offer");
+
+   var topic = 'hummingbird/hubs/'+serial+'/devices/+/users/+/command/checkPassword/+';
+   console.log(topic);
+   client.subscribe(topic);
 }
  
 
@@ -53,9 +65,9 @@ WebrtcSDK.prototype.join = function(peerid){
     // var message = new Paho.MQTT.Message(JSON.stringify({presence:{hub:true,ch01:true,ch02:true,ch03:true,ch04:true}}));
     // message.destinationName = 'hubs/'+hubId+'/connection'
     var message = new Paho.MQTT.Message(JSON.stringify({
-      state : true,
+      presence:{hub:true,ch01:true,ch02:false,ch03:false,ch04:false}
     }));
-    message.destinationName = 'chconnection/hubs/'+hubId+'/channel/'+chId+'/users/'+userName;
+    message.destinationName = 'hubs/'+serial+'/connection'
     console.log(message.destinationName);
     
     message.retained = true;
@@ -83,7 +95,7 @@ WebrtcSDK.prototype.subscribe = function(waitType) {
       // Subscribe
       // var topic = this.buildTopic(waitType,this.params.user_name);
       // var topic = 'hummingbird/hub/device/signal/hub_01/ch_01/techwin_a'
-      var topic = 'hummingbird/hubs/'+hubId+'/devices/'+chId+'/users/'+userName+'/signal'
+      var topic = 'hummingbird/hubs/'+serial+'/devices/+/users/+/signal'
       console.log(topic);
       client.subscribe(topic);
     }, 500);
@@ -98,6 +110,9 @@ WebrtcSDK.prototype.buildTopic = function(signalingType, user_name) {
 
   // callback for receiving message
 WebrtcSDK.prototype.onMessageArrived = function(message) {
+
+    topic_ = message.destinationName.substring(12,message.destinationName.length)
+    console.log("onMessageArrived:: topic_ : ", topic_);
   
     if (message.destinationName.indexOf('signal')) { 
         var signal = JSON.parse(message.payloadString);
@@ -123,8 +138,20 @@ WebrtcSDK.prototype.onMessageArrived = function(message) {
           this.peerConnection.addIceCandidate(candidate);
           console.log("set remote candidate " + JSON.stringify(candidate));
         }
-  }
-  else {
+  } else if (message.destinationName.indexOf('checkPassword')) {
+    console.log("Check pw " )
+        var topicArray = message.destinationName.split('/');
+    var topic = topicArray[1];
+    for(var i =2 ; i <topicArray.length ; i++){
+        topic += "/"+topicArray[i]
+    }
+    console.log("\n this is topic : " + topic);
+    
+
+   var message = new Paho.MQTT.Message(JSON.stringify({responseCode: 200, responseMessage : "correct"}));
+   message.destinationName = topic;
+   client.send(message);
+  } else {
     console.warn('Bad SDP topic');
     console.dir(message);
   }
@@ -300,12 +327,12 @@ WebrtcSDK.prototype.startVideo = function() {
 
 WebrtcSDK.prototype.sendSDPTextMQTT = function(RTCSessionDescription){
 
-  var topic = 'hubs/'+hubId+'/devices/'+chId+'/users/'+userName+'/signal';
+  
   var msgObj = {type : RTCSessionDescription.type, msg : RTCSessionDescription};
   console.log(JSON.stringify(msgObj));
   var message = new Paho.MQTT.Message(JSON.stringify(msgObj));
 
-  message.destinationName = topic;
+  message.destinationName = topic_;
   try {
     client.send(message)
   } catch(e) {
@@ -317,11 +344,11 @@ WebrtcSDK.prototype.sendSDPTextMQTT = function(RTCSessionDescription){
 
 WebrtcSDK.prototype.sendIceTextMQTT = function(RTCIceCandidate){
 
-   var topic = 'hubs/'+hubId+'/devices/'+chId+'/users/'+userName+'/signal'
+   
    var msgObj = {type : "new_icecandidate", msg : RTCIceCandidate};
    console.log(JSON.stringify(msgObj));
    var message = new Paho.MQTT.Message(JSON.stringify(msgObj));
-   message.destinationName = topic;
+   message.destinationName = topic_;
    try {
     client.send(message);
    } catch(e) {

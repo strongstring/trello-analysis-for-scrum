@@ -17,32 +17,29 @@
   <body>
     <h1>Local Video</h1>
     <p>Connected Information</p>
-    <p>hub id  : hub<%= hub %></p>
-    <p>ch  id  : ch<%= ch %></p>
-    <p>username: <%= user %></p>
     <video id="localVideo"></video>
 
   
 
     <script>
 
+    var HOST = 'wss://mqtt.hbird-iot.com/:443';
     var video = document.querySelector('video');
-    var hubId = 'hub<%= hub %>';
-    var chId = 'ch<%= ch %>';
-    var userName = '<%= user %>';
+    var serial = '<%= serial %>';
+    var devicePassword = '<%= devicePassword %>';
 
     console.log("Hello MQTT Camera Application");
-    console.log("hub id : " + hubId + ", ch id : " + chId + ", userName : " + userName);
+    console.log("serial : " + serial);
  
     var webrtcSDK;
 
     $(function() {
       var loadingParams = {
       // mqttServerIP: "wss://mostest.gaialab.co.kr/mqtt:442",
-      mqttServerIP: "wss://mobile.gaialab.co.kr/mqtt:443",
-      id          : hubId,
-      password    : 'openwd',
-      user_name   : hubId,
+      mqttServerIP: HOST,
+      id          : serial,
+      password    : devicePassword,
+      user_name   : serial,
       localVideo  : $('#localVideo'),
       remoteVideo : $('#remoteVideos'),
       mediaConstraints : {'mandatory': {'OfferToReceiveAudio':false, 'OfferToReceiveVideo':true }}

@@ -12,12 +12,9 @@
             width: 40%;
             float: left;
             margin: 5%;
-            height: 200px;
+            height: 20px;
       }
     </style>
-    <script>
-      var master = '<%= master %>';
-    </script>
     <script type="text/javascript" src="/javascripts/util/util.js"></script>
     <!-- // <script type="text/javascript" src="/javascripts/mqttSDK_viewer.js"></script> -->
     <!--<script type="text/javascript" src="/js/mqttSDK.js"></script>-->
@@ -33,6 +30,45 @@
 
     
     <script>
+
+    var HOST = "wss://tmqtt.hbird-iot.com/:443";
+    var recvSerials = '<%- JSON.stringify(serials) %>';
+    var serials = JSON.parse(recvSerials);
+
+    // var serials = [
+    //   {
+    //     id : "hbtwh-mobile01-1234-11e7-9983-adfa7ff293a5",
+    //     pw : "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiJoYnR3aC1tb2JpbGUwMS0xMjM0LTExZTctOTk4My1hZGZhN2ZmMjkzYTUiLCJ0eXBlIjoidXNlciIsIndpZCI6IjRtb2JpbGUwMSIsInByb2R1Y3RJZCI6Im1vYmlsZS1hbmRyb2lkLWlwaG9uZTdwbHVzIiwidXNlclN0YXR1cyI6IkFDVElWRSIsInNlcnZpY2VTdGF0dXMiOiJTVE9SQUdFLUFDVElWRSIsImlhdCI6MTUwNzc2NjMzMywiZXhwIjo0NjYzNTI2MzMzLCJpc3MiOiJhcGkuaGFud2hhc2VjdXJpdHktdnNhYXMuY29tIiwianRpIjoiMjJjZDgwZDAtYWVlMC0xMWU3LWFkZTMtYTUxMDViM2ViZjIyIn0.NmSvfsoAHEYuxFOiqGDnKTvdTOuKGWYNdLtfwH33i5_BrwiveChaeqTpOvC-e9tjftaSJizrhWt3IqustNB0zK3JjAZA36_prMnta2ZzsId_S7bEdvHSKdoKtrRE6bIlH40t8hcjKWIV-uZRhHIGEsjPQy0hZyi36l_Wc7nfdy8kQ2BkydgjgiBPtS7TCdFWaBxUk7TCNe24WfLx4-ruS4Vo_FvaCcclxESxS_t_eIrPT91IKZxIN70NR8alXV2vy2BaH5KmlazmVDddAzwMjwgb8WVzfYmSDj1hmYSZHoB7js5BFPGPuDFlKH8aMg5-rjlWLwESzN7R465nJ8F5Hw"
+    //   }, 
+    //   {
+    //     id : "hbtwh-mobile02-1234-11e7-9983-adfa7ff293a5",
+    //     pw : "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiJoYnR3aC1tb2JpbGUwMi0xMjM0LTExZTctOTk4My1hZGZhN2ZmMjkzYTUiLCJ0eXBlIjoidXNlciIsIndpZCI6IjRtb2JpbGUwMiIsInByb2R1Y3RJZCI6Im1vYmlsZS1hbmRyb2lkLWlwaG9uZTdwbHVzIiwidXNlclN0YXR1cyI6IkFDVElWRSIsInNlcnZpY2VTdGF0dXMiOiJTVE9SQUdFLUFDVElWRSIsImlhdCI6MTUwNzc2NjM0OSwiZXhwIjo0NjYzNTI2MzQ5LCJpc3MiOiJhcGkuaGFud2hhc2VjdXJpdHktdnNhYXMuY29tIiwianRpIjoiMmMwMDhiNzAtYWVlMC0xMWU3LWFkZTMtYTUxMDViM2ViZjIyIn0.ZXLNB-cUpXnUcfj9I7UU9Q_RbKe_Ay5B7QUzaWZWpFr5s1YCNKa6qvD4lInOjvnfKLycL_-qk_1pQxiSTohKkSfd8-fMHiCdBnFhpiy612fsvzzub7orsWKtb99HR0CrHE1Rr07nertR3EQ3kBao03B3CoMFZyuITRdaNT2y0JQOt2jsdRzeJBhOnssLLAlB3EaKiLn9u67knaXPzo2DuAAyP9EKxl1ABUVXYlTWUPrmmuT-Kqocj00QHZW4Lcnwuadr9FKwFk_vHOaMEIVpgdPFS3JUFfuruHJolR4rThl-RfvDb9aR11Tc2_gmvdMmmjOjSV-hdI_ZYDdWSYAhig"
+    //   }, 
+    //   {
+    //     id : "hbtwh-mobile03-1234-11e7-9983-adfa7ff293a5",
+    //     pw : "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiJoYnR3aC1tb2JpbGUwMy0xMjM0LTExZTctOTk4My1hZGZhN2ZmMjkzYTUiLCJ0eXBlIjoidXNlciIsIndpZCI6IjRtb2JpbGUwMyIsInByb2R1Y3RJZCI6Im1vYmlsZS1hbmRyb2lkLWlwaG9uZTdwbHVzIiwidXNlclN0YXR1cyI6IkFDVElWRSIsInNlcnZpY2VTdGF0dXMiOiJTVE9SQUdFLUFDVElWRSIsImlhdCI6MTUwNzc2NjM2NywiZXhwIjo0NjYzNTI2MzY3LCJpc3MiOiJhcGkuaGFud2hhc2VjdXJpdHktdnNhYXMuY29tIiwianRpIjoiMzZjMDUwOTAtYWVlMC0xMWU3LWFkZTMtYTUxMDViM2ViZjIyIn0.PLGpju9BrTFKQebMcs_AQoRIc8mHCBIM8MAQ0PoEw6Iz0x5XLp0YKFGxtE6zVRlvApCKfreSIu-IY5cuaXhSIsCZom5vtd-uBV2SutxBqXFyBfpaG6LCghq79go_z3_oA_s7LLkoj_jPflaN51RQAZY71_Mr4Q4VsrdBb32bOHuVlpXQAajJgs-eaqsLT3BWXyYh7KHnAjgC_ES8fRs55O7VO6_u12lw9tu9juNnHLnR1c5lGaR5gGbkw7fDLsEGmrITv2pOgN8eFamKWZOXe9k4zV1NonnU3-e9MhpB1AuSMd0msjpqJUZG3BDBhJWLHTlHySlYn61MDDj_MsPt-Q"
+    //   }, 
+    //   {
+    //     id : "hbtwh-mobile04-1234-11e7-9983-adfa7ff293a5",
+    //     pw : "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiJoYnR3aC1tb2JpbGUwNC0xMjM0LTExZTctOTk4My1hZGZhN2ZmMjkzYTUiLCJ0eXBlIjoidXNlciIsIndpZCI6IjRtb2JpbGUwNCIsInByb2R1Y3RJZCI6Im1vYmlsZS1hbmRyb2lkLWlwaG9uZTdwbHVzIiwidXNlclN0YXR1cyI6IkFDVElWRSIsInNlcnZpY2VTdGF0dXMiOiJTVE9SQUdFLUFDVElWRSIsImlhdCI6MTUwNzc2NjM4MSwiZXhwIjo0NjYzNTI2MzgxLCJpc3MiOiJhcGkuaGFud2hhc2VjdXJpdHktdnNhYXMuY29tIiwianRpIjoiM2YzYmNiMDAtYWVlMC0xMWU3LWFkZTMtYTUxMDViM2ViZjIyIn0.a_E2c-5cqfu3NWTNQnEbuBNo4vRoq9Z2BsrlDMizxHTrndAehrF7BQOvgGk1DfmZsGZfcAX_fNSodNbkgtVjLaRhcegt2JuaCZ9SMOtBeNboOGGsvy3N1iA2eu04S7qVkqlAcg7UCMKU8SgutN8UhEyr7jsd8XX7t7oGhagpH2Z35xeCm9M19dZX_4YTleXiIjIbCP5MBy5JURHG0nDvrQUq4DH2FkmdtmWz3PqbbxrP0fzl3QuL7h6IdiUXOWSMf5xvVp8cI1HfU7ZznPXoSSrKXZoN3uf4dthwJgIQL8iBDrgSn81i-yeUdxMcl5-7wVkW8hX6oQPR-DJ6O_kI0w"
+    //   }, 
+    //   {
+    //     id : "hbtwh-mobile05-1234-11e7-9983-adfa7ff293a5",
+    //     pw : "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiJoYnR3aC1tb2JpbGUwNS0xMjM0LTExZTctOTk4My1hZGZhN2ZmMjkzYTUiLCJ0eXBlIjoidXNlciIsIndpZCI6IjVtb2JpbGUwNSIsInByb2R1Y3RJZCI6Im1vYmlsZS1hbmRyb2lkLWlwaG9uZTdwbHVzIiwidXNlclN0YXR1cyI6IkFDVElWRSIsInNlcnZpY2VTdGF0dXMiOiJTVE9SQUdFLUFDVElWRSIsImlhdCI6MTUwNzc2NjQ0MSwiZXhwIjo0NjYzNTI2NDQxLCJpc3MiOiJhcGkuaGFud2hhc2VjdXJpdHktdnNhYXMuY29tIiwianRpIjoiNjMxZTU4ZDAtYWVlMC0xMWU3LWFkZTMtYTUxMDViM2ViZjIyIn0.LOyAfTEvnCyqIP_zWZ6fTkGVyUHxi5ZzzhXt8v-MEE1qXXOhoFuBO9AYUJrnJpeHq0wb6CoH-LqdyXKmMwc7lCudA-e798JLLUSX-3n1pn3qzQMNcjrxGpgwo7eExrFkYNsZ-19xdovg12-mVdX4cFETAEsS7ObakqmaRM4frXyi4cdnF2smRrhzsXYAYHTJiDzQ85qYBBNN__kVhooiv4yCaqxonK3QndKz3HEL_iYZJ-t5p7T7HyVBpkyTtnU_5skoQBPQ89KyJIlBfFrc58RPxOdf_NZ4Kf43hLx6iZpPFpel8C-hYmSlDBpMGE0j2rBe1NgN8-kOoHqErVqw4Q"
+    //   }, 
+    //   {
+    //     id : "hbtwh-mobile06-1234-11e7-9983-adfa7ff293a5",
+    //     pw : "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiJoYnR3aC1tb2JpbGUwNi0xMjM0LTExZTctOTk4My1hZGZhN2ZmMjkzYTUiLCJ0eXBlIjoidXNlciIsIndpZCI6IjZtb2JpbGUwNiIsInByb2R1Y3RJZCI6Im1vYmlsZS1hbmRyb2lkLWlwaG9uZTdwbHVzIiwidXNlclN0YXR1cyI6IkFDVElWRSIsInNlcnZpY2VTdGF0dXMiOiJTVE9SQUdFLUFDVElWRSIsImlhdCI6MTUwNzc2NjQ1NywiZXhwIjo0NjYzNTI2NDU3LCJpc3MiOiJhcGkuaGFud2hhc2VjdXJpdHktdnNhYXMuY29tIiwianRpIjoiNmM1ZTgyZDAtYWVlMC0xMWU3LWFkZTMtYTUxMDViM2ViZjIyIn0.GRBle_W3y0Ncxs-QivXdWEdUx-WWqEZzdlc9n8a6oDwb5EUeIe9tSEbvr_RT25_eBiNDhgCwXCrra_G6KzeFaZzf5lR4NT2RganV9v68y5vwaGIeUs7J2SGOibM5YRx7elMM-eVkVnIuxILnxcXn8fGJ3SRCA1anBdAGA9zwJurMt7JLwMnM2ODUfadlTZhDpbS3nSrXz9siigGR85Tqqhw1I6N96f5RuA32y-AefxJxScDuTxYfIq8NTR0iSkBkaUDiM538eTjoXbsXRLVA4E8HWrkuIFF-4Zqjxwea8QeMxmvQFpAso01f2Han9HAg2Cf3GGzC6cB3dSoy-zByiA"
+    //   }, 
+    //   {
+    //     id : "hbtwh-mobile07-1234-11e7-9983-adfa7ff293a5",
+    //     pw : "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiJoYnR3aC1tb2JpbGUwNy0xMjM0LTExZTctOTk4My1hZGZhN2ZmMjkzYTUiLCJ0eXBlIjoidXNlciIsIndpZCI6Ijdtb2JpbGUwNyIsInByb2R1Y3RJZCI6Im1vYmlsZS1hbmRyb2lkLWlwaG9uZTdwbHVzIiwidXNlclN0YXR1cyI6IkFDVElWRSIsInNlcnZpY2VTdGF0dXMiOiJTVE9SQUdFLUFDVElWRSIsImlhdCI6MTUwNzc2NjUyMSwiZXhwIjo0NjYzNTI2NTIxLCJpc3MiOiJhcGkuaGFud2hhc2VjdXJpdHktdnNhYXMuY29tIiwianRpIjoiOTJmOTJiYzAtYWVlMC0xMWU3LWFkZTMtYTUxMDViM2ViZjIyIn0.XdPRK4nN_UtL3mvTvzAjukwXqwUl_cQLhPbWEGbbwJsy5CW06oWKA41KSl6CIC-_5PQN0HhYtJ2ES80gpNE6ou9Re5nCbfYupFvXGncderFRjvXMJ397cTaumd4lxEiNUC0zmKS4Gx5WRsJ7cvrdKKkqJ3iIC9_6UOdv_C3KsfaK4BuP136B7IwdS9WXQnSqiQ9v2Xqm0SzV3Q18TxYV-dcvfTS3ZiX3QYPDv6_7mC3f560K6CokTQ14wSnrtFAjaXiVh7MNFfjBDjcKv-pqge7rEIAD-bkt8JmWL9fmLT-7gx4yoq5_HL7l2lK-0FE8rjNjBGjzZzgZs5E_vUE7nQ"
+    //   }, 
+    //   {
+    //     id : "hbtwh-mobile08-1234-11e7-9983-adfa7ff293a5",
+    //     pw : "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiJoYnR3aC1tb2JpbGUwOC0xMjM0LTExZTctOTk4My1hZGZhN2ZmMjkzYTUiLCJ0eXBlIjoidXNlciIsIndpZCI6Ijhtb2JpbGUwOCIsInByb2R1Y3RJZCI6Im1vYmlsZS1hbmRyb2lkLWlwaG9uZTdwbHVzIiwidXNlclN0YXR1cyI6IkFDVElWRSIsInNlcnZpY2VTdGF0dXMiOiJTVE9SQUdFLUFDVElWRSIsImlhdCI6MTUwNzc2NjQ4NSwiZXhwIjo0NjYzNTI2NDg1LCJpc3MiOiJhcGkuaGFud2hhc2VjdXJpdHktdnNhYXMuY29tIiwianRpIjoiN2Q4MWI3ZDAtYWVlMC0xMWU3LWFkZTMtYTUxMDViM2ViZjIyIn0.XO77BGSoG4v16iaeg3NlI06iSrsdkzeCWwwc0k8xrpq2G7-7FU6_lLqFW0UmT7z8vuREe6rntw5iqVhF2OFDA74sHtN8suU3xXU3PHPTk-Ye2LGoqZSk1HBETML_6zH0Hzkx9y12bUl9l_l96ns9Z3VV6wnjJ8w_vBSYbhMKxthxTgBbpvHQPdFD5cKtRNjpc_dr_TIIJlN3MsAOI-CklgPTEOlu082zijL1xqfpedoVgXsclW_kvld_-y-We9VReu1VkuUtOkFV969ZQ4NAA90-dK_Stm7hR7TXHaEE75POi0Km842DJ9Z5Y2bPM09PeGxuGmd1sP6XMjZEQDVScQ"
+    //   }
+    // ];
 
     var hubs = {};
     var initialTimer = undefined;
@@ -114,56 +150,6 @@
 
       return obj;
     }
-    
-
-    // MQTT Client Information //
-    var client = new Paho.MQTT.Client('wss://mobile.gaialab.co.kr/:443', 'client-'+randomString(6));
-    client.subTopics = ["chconnection/hubs/#",];
-
-    client.connect({userName: "mosquitto", password: 'openwd', 
-      onSuccess: function() {
-
-        initialTimer = setTimeout(function() {
-          initialTimer = undefined;
-          for(hubId in hubs) {
-            onUpdateHubInfo(hubId);
-          }
-        }, 2000);
-
-        client.onMessageArrived = function(message) {
-          console.log("destinationName : ", message.destinationName);
-          var value = JSON.parse(message.payloadString);
-
-          var tokenValue = message.destinationName.split('/');
-          if(tokenValue.length !== 7) {
-            return ;
-          }
-
-          var hubId     = tokenValue[2];
-          var channelId = tokenValue[4];
-          var userName  = tokenValue[6];
-
-
-          if(!hubs[hubId]) {
-            hubs[hubId] = new HUB(hubId);
-          }
-
-          // Property 정보가 바뀌었다면,
-          if(hubs[hubId].setChannelState(channelId, userName, value.state)) {
-            onUpdateHubInfo(hubId);
-          }
-        }
-
-        for (var i = 0; i < client.subTopics.length; i++) {
-          client.subscribe(client.subTopics[i]);
-          console.log("connectHandler.subscribe topic : " + client.subTopics[i]);
-        }
-      },
-      onFailure: function(error) {
-        console.log("connection fail");
-      },
-      useSSL: true, 
-      keepAliveInterval: 10 });
 
 
   // UI  //
@@ -217,35 +203,19 @@
     }
   }
 
-  function openNewCamera(hubId, chId) {
-    var username = prompt("Username", "mosquitto");
-
-    if(!username.includes("mosquitto")) {
-      return;
-    }
-    var hubIndex = hubId.split("hub")[1];
-    var chIndex =  chId.split("ch")[1];
-
-    window.open("/camera?hub=" + hubIndex + "&ch=" + chIndex + "&user=" + username);
+  function openNewCamera(serial) {
+    window.open("/camera?serial=" + serial);
 
   }
 
   function onLoadInitView() {
     var monitor = $('#hubsMonitor');
-    var indexArray = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10"];
 
-    for(var i = 0; i < indexArray.length; i++) {
-      var hubName = "hub"+indexArray[i];
-      var hubMonitor = $('<div id="'+hubName+'" class="hub"></div>');
-
-      hubMonitor.append('<div class="hubName">'+hubName+'</div>');
-      
-
-      for(var j = 0; j < indexArray.length; j++) {
-        var channelName = "ch"+indexArray[j];
-        var channelDIV = $('<div class="'+channelName+'">'+channelName+' OFFLINE</div>').attr('onClick', "openNewCamera('" + hubName + "', '" + channelName + "')");
-        hubMonitor.append(channelDIV);
-      }
+    for(hubSerial in serials) {
+      var hubMonitor = $('<div id="'+hubSerial+'" class="hub"></div>');
+      var channelName = "ch0"
+      var channelDIV = $('<div class="'+channelName+'"> ' + hubSerial + channelName+' Connect </div>').attr('onClick', "openNewCamera('" + hubSerial + "')");
+      hubMonitor.append(channelDIV);
 
       monitor.append(hubMonitor);
     }
