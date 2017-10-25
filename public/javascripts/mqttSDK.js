@@ -48,7 +48,7 @@ WebrtcSDK.prototype.onConnect =  function (){
    // console.dir(this)
    // subscribe("offer");
 
-   var topic = 'hummingbird/devices/'+serial+'/devices/+/users/+/command/checkPassword/+';
+   var topic = 'hummingbird/devices/'+serial+'/subdevices/+/users/+/command/checkPassword/+';
    console.log(topic);
    client.subscribe(topic);
 }
@@ -95,7 +95,7 @@ WebrtcSDK.prototype.subscribe = function(waitType) {
       // Subscribe
       // var topic = this.buildTopic(waitType,this.params.user_name);
       // var topic = 'hummingbird/hub/device/signal/hub_01/ch_01/techwin_a'
-      var topic = 'hummingbird/devices/'+serial+'/devices/+/users/+/signal'
+      var topic = 'hummingbird/devices/'+serial+'/subdevices/+/users/+/signal'
       console.log(topic);
       client.subscribe(topic);
     }, 500);
@@ -114,7 +114,7 @@ WebrtcSDK.prototype.onMessageArrived = function(message) {
     topic_ = message.destinationName.substring(12,message.destinationName.length)
     console.log("onMessageArrived:: topic_ : ", topic_);
   
-    if (message.destinationName.indexOf('signal')) { 
+    if (message.destinationName.indexOf('signal') !== -1) { 
         var signal = JSON.parse(message.payloadString);
         if(signal.type == "offer" || signal.type == 'answer'){
           console.log("call -------------  set remote sdp ")
