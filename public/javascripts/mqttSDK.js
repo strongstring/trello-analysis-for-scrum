@@ -20,7 +20,7 @@ WebrtcSDK.prototype.login = function(){
   var lastWill = new Paho.MQTT.Message(JSON.stringify({
       presence:{hub:false}
   }));
-  lastWill.destinationName = 'hubs/'+serial+'/connection';
+  lastWill.destinationName = 'devices/'+serial+'/connection';
   lastWill.qos = 0;
   lastWill.retained = true;
 
@@ -48,7 +48,7 @@ WebrtcSDK.prototype.onConnect =  function (){
    // console.dir(this)
    // subscribe("offer");
 
-   var topic = 'hummingbird/hubs/'+serial+'/devices/+/users/+/command/checkPassword/+';
+   var topic = 'hummingbird/devices/'+serial+'/devices/+/users/+/command/checkPassword/+';
    console.log(topic);
    client.subscribe(topic);
 }
@@ -67,7 +67,7 @@ WebrtcSDK.prototype.join = function(peerid){
     var message = new Paho.MQTT.Message(JSON.stringify({
       presence:{hub:true,ch01:true,ch02:false,ch03:false,ch04:false}
     }));
-    message.destinationName = 'hubs/'+serial+'/connection'
+    message.destinationName = 'devices/'+serial+'/connection'
     console.log(message.destinationName);
     
     message.retained = true;
@@ -95,7 +95,7 @@ WebrtcSDK.prototype.subscribe = function(waitType) {
       // Subscribe
       // var topic = this.buildTopic(waitType,this.params.user_name);
       // var topic = 'hummingbird/hub/device/signal/hub_01/ch_01/techwin_a'
-      var topic = 'hummingbird/hubs/'+serial+'/devices/+/users/+/signal'
+      var topic = 'hummingbird/devices/'+serial+'/devices/+/users/+/signal'
       console.log(topic);
       client.subscribe(topic);
     }, 500);
