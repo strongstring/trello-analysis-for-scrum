@@ -133,10 +133,16 @@ WebrtcSDK.prototype.onMessageArrived = function(message) {
           if (!this.peerConnection) {
             console.error('no peerConnection !!!!!!!!!!!!!!');
           }
-          console.log(this.peerConnection.remoteDescription.type);
+          
           var candidate = new RTCIceCandidate(signal.msg);
-          this.peerConnection.addIceCandidate(candidate);
-          console.log("set remote candidate " + JSON.stringify(candidate));
+          console.log("[TEST]", signal);
+          if(this.peerConnection.remoteDescription.type !== ""){
+            this.peerConnection.addIceCandidate(candidate);
+            console.log("set remote candidate " + JSON.stringify(candidate));
+            console.log("remoteDescription type", this.peerConnection.remoteDescription.type);
+          } else {
+            console.error('remoteDescription type is null');
+          }
         }
   } else if (message.destinationName.indexOf('checkPassword')) {
     console.log("Check pw " )
@@ -304,8 +310,8 @@ WebrtcSDK.prototype.setAnswerText= function(text) {
 }
 
 
-var mediaConstraints = {video: { width:{min:1280}, height: {min:720}, frameRate: { ideal: 10, min: 15 } }, audio: false}
-var deviceConstraints = {video: true, audio: false}
+var mediaConstraints = {video: { width:{min:1280}, height: {min:720}, frameRate: { ideal: 10, min: 15 } }, audio: true}
+var deviceConstraints = {video: true, audio: true}
 WebrtcSDK.prototype.startVideo = function() {
  requestUserMedia(mediaConstraints).then(function(stream) {
   console.log("Got access to local media with mediaConstraints:\n" + "  '" + JSON.stringify(mediaConstraints) + "'");
